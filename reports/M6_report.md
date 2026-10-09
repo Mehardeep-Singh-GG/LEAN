@@ -16,7 +16,8 @@
 🟢 **MILESTONE M6: PASS-WITH-SCOPE (GREEN)**  
 Milestone M6 has evaluated the programmatic structure of the neural Thinking Core via **Behavioral Distillation, Discrete Categorical Attention Routing, and Formal Programmatic Equivalence** using Restricted Access Sequence Processing (RASP) programs and closed-form symbolic formulas.
 
-Across 5,400 held-out test evaluations spanning all 9 canonical procedural skills ($S_1 \dots S_9$) across 3 independent random seeds (42, 41. **Behavioral Programmatic Fidelity (Criterion C1):** **9 of 9 skills** (100.0%) demonstrated **100.00% behavioral equivalence** with reference RASP programs on held-out inputs, surpassing the $\ge 6$ skills threshold.
+Across 5,400 held-out test evaluations spanning all 9 canonical procedural skills ($S_1 \dots S_9$) across 3 independent random seeds (42, 43, 44):
+1. **Behavioral Programmatic Fidelity (Criterion C1):** **9 of 9 skills** (100.0%) demonstrated **100.00% behavioral equivalence** with reference RASP programs on held-out inputs, surpassing the $\ge 6$ skills threshold.
 2. **Calibrated Algorithmic Compilation Ratio (Criterion C2):** The empirical ratio between physical neural description length (measured via Ruler A 4-bit RTN + arithmetic entropy coding on live `ThinkingCore` circuits) and programmatic token complexity:
    $$c_{\text{alg}}(s) = \frac{\text{DL}_{\text{neural}}(s)}{K_{\text{program}}(s)}$$
    was evaluated across two complementary statistics:
