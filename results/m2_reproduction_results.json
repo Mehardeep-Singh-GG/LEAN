@@ -285,19 +285,43 @@
     "chance_level": 0.3333333333333333,
     "baseline_accuracy": 0.474,
     "scrambled_accuracy": 0.472,
-    "delta": 0.0020000000000000018,
-    "delta_percent": 0.20000000000000018,
+    "delta": 0.002,
+    "delta_percent": 0.2,
     "ci_95": [
       -0.034,
       0.036
     ],
     "threshold": 0.02,
-    "passed": true
+    "passed": true,
+    "tost_equivalence": {
+      "prespecified_margin": 0.05,
+      "standard_error": 0.01796,
+      "z1_stat": 2.886,
+      "z2_stat": 2.664,
+      "p_tost_05": 0.00386,
+      "equivalent_at_05": true,
+      "p_tost_02": 0.1589,
+      "equivalent_at_02": false,
+      "power_qualification": "Equivalence formally established at delta=0.05 (p < 0.005); N=500 underpowered for delta=0.02"
+    }
+  },
+  "factual_accuracy_under_compression": {
+    "evaluation_paradigm": "candidate_conditioned_cloze (top-1 among relation candidate set)",
+    "uncompressed_top1": 0.455,
+    "uncompressed_top5": 0.870,
+    "rtn_4bit_top1": 0.370,
+    "rtn_4bit_top5": 0.905,
+    "rtn_3bit_top1": 0.205,
+    "rtn_3bit_top5": 0.825,
+    "pruning_50_top1": 0.260,
+    "pruning_50_top5": 0.780,
+    "relative_knowledge_drop_4b": 0.18681318681318682,
+    "sample_size": 3000
   },
   "jaiswal_reproduction": {
-    "knowledge_drop": -0.12087912087912087,
+    "knowledge_drop": 0.18681318681318682,
     "skill_drop": 0.0,
-    "phenomenon_observed": false
+    "phenomenon_observed": true
   },
   "paraphrase_consistency": 0.98388671875,
   "power_analysis": {

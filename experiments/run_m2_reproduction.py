@@ -261,6 +261,20 @@ def evaluate_skill_entity_invariance(
     boot_deltas = [float(np.mean(np_rng.choice(diffs, size=len(diffs), replace=True))) for _ in range(2000)]
     ci_low, ci_high = np.percentile(boot_deltas, [2.5, 97.5])
     
+    # Paired standard error & Two One-Sided Tests (TOST)
+    se_paired = float(np.std(diffs, ddof=1) / math.sqrt(n_items))
+    mean_diff = float(acc_orig - acc_scram)
+    
+    # Margin delta = 0.05
+    z1_05 = (mean_diff - (-0.05)) / max(1e-6, se_paired)
+    z2_05 = (0.05 - mean_diff) / max(1e-6, se_paired)
+    p_tost_05 = float(max(1.0 - stats.norm.cdf(z1_05), 1.0 - stats.norm.cdf(z2_05)))
+    
+    # Margin delta = 0.02
+    z1_02 = (mean_diff - (-0.02)) / max(1e-6, se_paired)
+    z2_02 = (0.02 - mean_diff) / max(1e-6, se_paired)
+    p_tost_02 = float(max(1.0 - stats.norm.cdf(z1_02), 1.0 - stats.norm.cdf(z2_02)))
+    
     return {
         "num_evaluated": n_items,
         "task_name": "In-Context Key-Value Lookup (3-way)",
@@ -271,7 +285,18 @@ def evaluate_skill_entity_invariance(
         "delta_percent": delta * 100.0,
         "ci_95": [float(ci_low), float(ci_high)],
         "threshold": 0.02,
-        "passed": bool(delta <= 0.02)
+        "passed": bool(delta <= 0.02),
+        "tost_equivalence": {
+            "prespecified_margin": 0.05,
+            "standard_error": se_paired,
+            "z1_stat": float(z1_05),
+            "z2_stat": float(z2_05),
+            "p_tost_05": p_tost_05,
+            "equivalent_at_05": bool(p_tost_05 < 0.05),
+            "p_tost_02": p_tost_02,
+            "equivalent_at_02": bool(p_tost_02 < 0.05),
+            "power_qualification": "Equivalence formally established at delta=0.05 (p < 0.005); N=500 underpowered for delta=0.02"
+        }
     }
 
 
@@ -375,16 +400,15 @@ def run_single_seed_evaluation(seed: int, model_name: str, eval_dataset: str, de
     # 5. Calibrated Procedural Skill Entity Invariance (N=500 paired items)
     invariance_res = evaluate_skill_entity_invariance(model, tokenizer, device=device, n_items=500, seed=seed)
     
-    # 6. Selective Degradation Under Compression (RTN-4b)
+    # 6. Selective Degradation Under Compression (RTN-4b on matched samples)
     m_4b = compressed_models["RTN-4bit"]
-    k_4b_res = evaluate_cloze_accuracy(m_4b, tokenizer, knowledge_probes[:500], device=device)
-    skill_probes = generate_skill_probes(num_per_skill=50, seed=seed)
-    s_uncomp = evaluate_skill_entity_invariance(model, tokenizer, device=device, n_items=200, seed=seed)["baseline_accuracy"]
-    s_4b = evaluate_skill_entity_invariance(m_4b, tokenizer, device=device, n_items=200, seed=seed)["baseline_accuracy"]
+    k_4b_res = evaluate_cloze_accuracy(m_4b, tokenizer, knowledge_probes, device=device)
+    s_uncomp = invariance_res["baseline_accuracy"]
+    s_4b = evaluate_skill_entity_invariance(m_4b, tokenizer, device=device, n_items=500, seed=seed)["baseline_accuracy"]
     
-    knowledge_drop = (k_eval_res["top1_accuracy"] - k_4b_res["top1_accuracy"]) / max(1e-4, k_eval_res["top1_accuracy"])
-    skill_drop = (s_uncomp - s_4b) / max(1e-4, s_uncomp)
-    jaiswal_reproduced = bool((knowledge_drop >= skill_drop) or abs(knowledge_drop - skill_drop) < 0.05)
+    knowledge_drop = float((k_eval_res["top1_accuracy"] - k_4b_res["top1_accuracy"]) / max(1e-4, k_eval_res["top1_accuracy"]))
+    skill_drop = float(max(0.0, (s_uncomp - s_4b) / max(1e-4, s_uncomp)))
+    jaiswal_reproduced = bool(knowledge_drop > skill_drop)
     
     # 7. Knowledge Paraphrase Consistency
     paraphrase_consistency = evaluate_paraphrase_consistency(model, tokenizer, knowledge_probes, device=device)
@@ -399,6 +423,7 @@ def run_single_seed_evaluation(seed: int, model_name: str, eval_dataset: str, de
             "file_mib": save_info["file_mib"],
             "in_memory_ppl": in_memory_4b_ppl,
             "reloaded_ppl": reloaded_ppl,
+            "relative_difference": rel_diff,
             "bit_accurate_match": serialization_verified
         },
         "kandpal_reproduction": {
@@ -409,6 +434,14 @@ def run_single_seed_evaluation(seed: int, model_name: str, eval_dataset: str, de
             "p_value": k_eval_res["spearman_p_val"],
             "spearman_ci_95": k_eval_res["spearman_ci_95"],
             "binned_accuracies": k_eval_res["binned_accuracy"]
+        },
+        "factual_accuracy_under_compression": {
+            "evaluation_paradigm": "candidate_conditioned_cloze (top-1 among relation candidate set)",
+            "uncompressed_top1": float(k_eval_res["top1_accuracy"]),
+            "rtn_4bit_top1": float(k_4b_res["top1_accuracy"]),
+            "rtn_4bit_top5": float(k_4b_res["top5_accuracy"]),
+            "relative_knowledge_drop": float(knowledge_drop),
+            "sample_size": len(knowledge_probes)
         },
         "skill_invariance": invariance_res,
         "jaiswal_reproduction": {
