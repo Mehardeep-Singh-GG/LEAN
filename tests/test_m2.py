@@ -108,3 +108,53 @@ def test_power_analysis():
     power = compute_statistical_power(delta=0.05, alpha=0.05, n1=3000, n2=3000)
     assert power >= 0.80
     assert power <= 1.0
+
+
+def test_storage_breakdown_accounting():
+    from src.lean.compress.layerwise import calculate_storage_breakdown
+    model = DummyLM(vocab_size=100, hidden_dim=32)
+    breakdown = calculate_storage_breakdown(model, "rtn", 4, group_size=16, skip_modules=["lm_head"])
+    assert "backbone_packed_mb" in breakdown
+    assert "uncompressed_packed_mb" in breakdown
+    assert "total_packed_mb" in breakdown
+    assert breakdown["backbone_raw_weight_bits"] > 0
+    assert breakdown["backbone_metadata_bits"] > 0
+    assert breakdown["backbone_packed_mb"] < breakdown["uncompressed_packed_mb"]
+
+
+def test_int4_pack_unpack_roundtrip():
+    from src.lean.compress.layerwise import pack_int4, unpack_int4
+    t = torch.randint(-8, 8, (64, 128), dtype=torch.int8)
+    packed = pack_int4(t)
+    restored = unpack_int4(packed, t.numel()).view(t.shape)
+    assert torch.equal(t.float(), restored)
+
+
+def test_quantized_checkpoint_save_and_reload(tmp_path):
+    from src.lean.compress.layerwise import save_quantized_checkpoint, load_quantized_checkpoint
+    model = DummyLM(vocab_size=50, hidden_dim=16)
+    ckpt_file = tmp_path / "dummy_packed.pt"
+    save_info = save_quantized_checkpoint(model, str(ckpt_file), bits=4, group_size=8, skip_modules=["lm_head"])
+    assert ckpt_file.exists()
+    assert save_info["file_bytes"] > 0
+    
+    reloaded = load_quantized_checkpoint(str(ckpt_file), model, group_size=8)
+    # Check that reloaded model parameters have the expected shape
+    for p_orig, p_rel in zip(model.parameters(), reloaded.parameters()):
+        assert p_orig.shape == p_rel.shape
+
+
+def test_explicit_power_models():
+    from src.lean.eval.probes import compute_knowledge_power, compute_skill_invariance_power, compute_correlation_power
+    p_k = compute_knowledge_power(p0=0.66, delta=0.05, alpha=0.05, n=3000)
+    assert p_k["statistical_power"] >= 0.80
+    assert p_k["passed"] is True
+    
+    p_s = compute_skill_invariance_power(p0=0.52, delta=0.05, alpha=0.05, n=500)
+    assert p_s["statistical_power"] >= 0.80
+    assert p_s["passed"] is True
+    
+    p_c = compute_correlation_power(rho=0.15, alpha=0.05, n=3000)
+    assert p_c["statistical_power"] >= 0.80
+    assert p_c["passed"] is True
+

@@ -231,14 +231,109 @@ def generate_skill_probes(num_per_skill: int = 500, seed: int = 42) -> List[Dict
     return probes
 
 
+def compute_knowledge_power(
+    p0: float = 0.66,
+    delta: float = 0.05,
+    alpha: float = 0.05,
+    n: int = 3000
+) -> Dict[str, Any]:
+    """
+    Statistical power for factual knowledge degradation under compression.
+    Model: Two-sample proportion test / McNemar paired comparison on N items.
+    Hypothesis: H0: p_compressed >= p0 vs H1: p_compressed <= p0 - delta.
+    Assumptions:
+    - Observations are independent Bernoulli trials across N evaluated facts.
+    - Significance level alpha = 0.05 (two-sided).
+    - Detectable effect size delta = 0.05 (5 percentage points).
+    """
+    p1 = p0
+    p2 = max(0.01, p0 - delta)
+    var1 = p1 * (1.0 - p1)
+    var2 = p2 * (1.0 - p2)
+    se_diff = math.sqrt((var1 + var2) / n)
+    z_alpha = stats.norm.ppf(1.0 - alpha / 2.0)
+    z_beta = (delta / se_diff) - z_alpha
+    power = float(stats.norm.cdf(z_beta))
+    return {
+        "comparison": "factual_knowledge_degradation",
+        "sample_size": n,
+        "baseline_accuracy": float(p0),
+        "target_delta": float(delta),
+        "alpha": float(alpha),
+        "standard_error": float(se_diff),
+        "statistical_power": float(power),
+        "passed": bool(power >= 0.80)
+    }
+
+
+def compute_skill_invariance_power(
+    p0: float = 0.52,
+    delta: float = 0.05,
+    alpha: float = 0.05,
+    n: int = 500,
+    p_discordant: float = 0.10
+) -> Dict[str, Any]:
+    """
+    Statistical power for procedural skill entity-invariance test.
+    Model: Paired comparison (McNemar test model) evaluating identical task instances
+    before and after synthetic entity substitution.
+    Assumptions:
+    - Paired binary outcomes (correct / incorrect) on the same N=500 items.
+    - Expected discordant pair proportion p_discordant under stable routing <= 10%.
+    - Detectable difference threshold delta = 0.05.
+    - Significance level alpha = 0.05 (two-sided).
+    """
+    se_paired = math.sqrt(p_discordant / n)
+    z_alpha = stats.norm.ppf(1.0 - alpha / 2.0)
+    z_beta = (delta / se_paired) - z_alpha
+    power = float(stats.norm.cdf(z_beta))
+    return {
+        "comparison": "procedural_skill_entity_invariance",
+        "sample_size": n,
+        "design": "paired_within_subject",
+        "baseline_accuracy": float(p0),
+        "target_delta": float(delta),
+        "p_discordant_assumed": float(p_discordant),
+        "alpha": float(alpha),
+        "standard_error": float(se_paired),
+        "statistical_power": float(power),
+        "passed": bool(power >= 0.80)
+    }
+
+
+def compute_correlation_power(
+    rho: float = 0.15,
+    alpha: float = 0.05,
+    n: int = 3000
+) -> Dict[str, Any]:
+    """
+    Statistical power for detecting frequency-accuracy correlation (Kandpal et al.).
+    Model: Fisher's z-transformation power approximation for Spearman/Pearson rank correlation.
+    Assumptions:
+    - Sample size N = 3,000 facts.
+    - Detectable correlation rho = 0.15.
+    - Significance level alpha = 0.05 (two-sided).
+    """
+    z_rho = 0.5 * math.log((1.0 + rho) / max(1e-6, 1.0 - rho))
+    se_z = 1.0 / math.sqrt(max(1, n - 3))
+    z_alpha = stats.norm.ppf(1.0 - alpha / 2.0)
+    z_beta = (z_rho / se_z) - z_alpha
+    power = float(stats.norm.cdf(z_beta))
+    return {
+        "comparison": "frequency_accuracy_correlation",
+        "sample_size": n,
+        "target_rho": float(rho),
+        "alpha": float(alpha),
+        "standard_error_z": float(se_z),
+        "statistical_power": float(power),
+        "passed": bool(power >= 0.80)
+    }
+
+
 def compute_statistical_power(delta: float = 0.05, alpha: float = 0.05, n1: int = 3000, n2: int = 3000) -> float:
     """
-    Calculate statistical power to detect a delta difference in accuracy.
-    Standard two-sample proportion test approximation.
+    Backward-compatible entry point returning primary knowledge degradation power.
     """
-    p_pool = 0.5  # Worst-case maximum variance
-    se = math.sqrt(2 * p_pool * (1 - p_pool) / n1)
-    z_alpha = stats.norm.ppf(1 - alpha / 2)
-    z_beta = (delta / se) - z_alpha
-    power = stats.norm.cdf(z_beta)
-    return float(power)
+    res = compute_knowledge_power(p0=0.66, delta=delta, alpha=alpha, n=n1)
+    return res["statistical_power"]
+

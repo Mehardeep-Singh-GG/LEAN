@@ -11,83 +11,1243 @@
       "name": "Uncompressed (fp16)",
       "compressor": "none",
       "param": 16,
-      "dl_bits": 1126825984,
+      "storage": {
+        "compressor": "none",
+        "param": 16,
+        "total_parameters": 70426624,
+        "backbone_parameters": 18874368,
+        "uncompressed_parameters": 51511296,
+        "backbone_raw_weight_bits": 301989888,
+        "backbone_metadata_bits": 442368,
+        "backbone_total_bits": 302432256,
+        "backbone_packed_mb": 36.052734375,
+        "backbone_compression_ratio": 0.9985372988785958,
+        "backbone_bits_per_param": 16.0234375,
+        "uncompressed_bits": 824180736,
+        "uncompressed_packed_mb": 98.25,
+        "total_packed_bits": 1126825984,
+        "total_packed_mb": 134.328125,
+        "total_compression_ratio": 1.0,
+        "total_bits_per_param": 16.0,
+        "in_memory_mb": 134.328125
+      },
       "perplexity": 34.56937016836445
     },
     {
       "name": "RTN-4bit",
       "compressor": "rtn",
       "param": 4,
-      "dl_bits": 890068892,
+      "storage": {
+        "compressor": "rtn",
+        "param": 4,
+        "total_parameters": 70426624,
+        "backbone_parameters": 18874368,
+        "uncompressed_parameters": 51511296,
+        "backbone_raw_weight_bits": 75497472,
+        "backbone_metadata_bits": 3391488,
+        "backbone_total_bits": 78888960,
+        "backbone_packed_mb": 9.404296875,
+        "backbone_compression_ratio": 3.8280373831775703,
+        "backbone_bits_per_param": 4.1796875,
+        "uncompressed_bits": 824180736,
+        "uncompressed_packed_mb": 98.25,
+        "total_packed_bits": 903282688,
+        "total_packed_mb": 107.6796875,
+        "total_compression_ratio": 1.2474787782050352,
+        "total_bits_per_param": 12.825869489356752,
+        "in_memory_mb": 134.328125
+      },
       "perplexity": 57.36488047603607
     },
     {
       "name": "RTN-3bit",
       "compressor": "rtn",
       "param": 3,
-      "dl_bits": 867933473,
+      "storage": {
+        "compressor": "rtn",
+        "param": 3,
+        "total_parameters": 70426624,
+        "backbone_parameters": 18874368,
+        "uncompressed_parameters": 51511296,
+        "backbone_raw_weight_bits": 56623104,
+        "backbone_metadata_bits": 3244032,
+        "backbone_total_bits": 59867136,
+        "backbone_packed_mb": 7.13671875,
+        "backbone_compression_ratio": 5.044334975369458,
+        "backbone_bits_per_param": 3.171875,
+        "uncompressed_bits": 824180736,
+        "uncompressed_packed_mb": 98.25,
+        "total_packed_bits": 884260864,
+        "total_packed_mb": 105.412109375,
+        "total_compression_ratio": 1.2743139834355488,
+        "total_bits_per_param": 12.555775270443178,
+        "in_memory_mb": 134.328125
+      },
       "perplexity": 378.91996201539604
     },
     {
       "name": "RTN-2bit",
       "compressor": "rtn",
       "param": 2,
-      "dl_bits": 841526608,
+      "storage": {
+        "compressor": "rtn",
+        "param": 2,
+        "total_parameters": 70426624,
+        "backbone_parameters": 18874368,
+        "uncompressed_parameters": 51511296,
+        "backbone_raw_weight_bits": 37748736,
+        "backbone_metadata_bits": 3096576,
+        "backbone_total_bits": 40845312,
+        "backbone_packed_mb": 4.869140625,
+        "backbone_compression_ratio": 7.393501805054152,
+        "backbone_bits_per_param": 2.1640625,
+        "uncompressed_bits": 824180736,
+        "uncompressed_packed_mb": 98.25,
+        "total_packed_bits": 865239040,
+        "total_packed_mb": 103.14453125,
+        "total_compression_ratio": 1.3023291043363,
+        "total_bits_per_param": 12.285681051529604,
+        "in_memory_mb": 134.328125
+      },
       "perplexity": 4268605019.478406
     },
     {
       "name": "Pruning-50%",
       "compressor": "prune",
       "param": 0.5,
-      "dl_bits": 994754000,
+      "storage": {
+        "compressor": "prune",
+        "param": 0.5,
+        "total_parameters": 70426624,
+        "backbone_parameters": 18874368,
+        "uncompressed_parameters": 51511296,
+        "backbone_raw_weight_bits": 150994944,
+        "backbone_metadata_bits": 19316736,
+        "backbone_total_bits": 170311680,
+        "backbone_packed_mb": 20.302734375,
+        "backbone_compression_ratio": 1.7731601731601732,
+        "backbone_bits_per_param": 9.0234375,
+        "uncompressed_bits": 824180736,
+        "uncompressed_packed_mb": 98.25,
+        "total_packed_bits": 994705408,
+        "total_packed_mb": 118.578125,
+        "total_compression_ratio": 1.1328238239557253,
+        "total_bits_per_param": 14.1239967430499,
+        "in_memory_mb": 134.328125
+      },
       "perplexity": 2384.371770265148
     }
   ],
+  "serialization_verification": {
+    "file_bytes": 112879141,
+    "file_mib": 107.6499376296997,
+    "in_memory_ppl": 57.36488047603607,
+    "reloaded_ppl": 57.47089186295159,
+    "relative_difference": 0.001848018783457195,
+    "bit_accurate_match": true
+  },
   "kandpal_reproduction": {
-    "spearman_rho": 0.4952360907310814,
-    "p_value": 3.849896696105912e-26,
-    "top1_acc": 0.6625,
+    "num_evaluated": 3000,
+    "top1_acc": 0.455,
+    "top5_acc": 0.875,
+    "spearman_rho": 0.13150174393813654,
+    "p_value": 4.792149792386621e-13,
+    "spearman_ci_95": [
+      0.09527950605323879,
+      0.16596218267693963
+    ],
     "binned_accuracies": [
       {
-        "bin_min": 4.2552725051033065,
-        "bin_max": 4.530938090577593,
-        "accuracy": 0.16129032258064516,
-        "count": 31
+        "decile": 1,
+        "bin_min": 4.204119982655925,
+        "bin_max": 4.623249290397901,
+        "count": 287,
+        "correct": 98,
+        "accuracy": 0.34146341463414637,
+        "ci_95": [
+          0.28901898913461055,
+          0.3980957696450098
+        ]
       },
       {
-        "bin_min": 4.530938090577593,
-        "bin_max": 4.80660367605188,
-        "accuracy": 0.4888888888888889,
-        "count": 135
+        "decile": 2,
+        "bin_min": 4.623249290397901,
+        "bin_max": 4.741151598851785,
+        "count": 308,
+        "correct": 120,
+        "accuracy": 0.38961038961038963,
+        "ci_95": [
+          0.3368278983427624,
+          0.44511257789423675
+        ]
       },
       {
-        "bin_min": 4.80660367605188,
-        "bin_max": 5.082269261526167,
-        "accuracy": 0.7483870967741936,
-        "count": 155
+        "decile": 3,
+        "bin_min": 4.741151598851785,
+        "bin_max": 4.827175247188375,
+        "count": 305,
+        "correct": 125,
+        "accuracy": 0.4098360655737705,
+        "ci_95": [
+          0.35609670762851897,
+          0.4658183933750297
+        ]
       },
       {
-        "bin_min": 5.082269261526167,
-        "bin_max": 5.357934847000454,
-        "accuracy": 0.9873417721518988,
-        "count": 79
+        "decile": 4,
+        "bin_min": 4.827175247188375,
+        "bin_max": 4.894316062684439,
+        "count": 298,
+        "correct": 125,
+        "accuracy": 0.41946308724832215,
+        "ci_95": [
+          0.36480872520358754,
+          0.4761673945529966
+        ]
+      },
+      {
+        "decile": 5,
+        "bin_min": 4.894316062684439,
+        "bin_max": 4.962842681201242,
+        "count": 300,
+        "correct": 136,
+        "accuracy": 0.4533333333333333,
+        "ci_95": [
+          0.39794515245358275,
+          0.509901524860708
+        ]
+      },
+      {
+        "decile": 6,
+        "bin_min": 4.962842681201242,
+        "bin_max": 5.023169933805034,
+        "count": 302,
+        "correct": 141,
+        "accuracy": 0.46688741721854304,
+        "ci_95": [
+          0.4113884305569472,
+          0.5232182114688959
+        ]
+      },
+      {
+        "decile": 7,
+        "bin_min": 5.023169933805034,
+        "bin_max": 5.088136088700551,
+        "count": 297,
+        "correct": 147,
+        "accuracy": 0.494949494949495,
+        "ci_95": [
+          0.43851672604878517,
+          0.5515112441260701
+        ]
+      },
+      {
+        "decile": 8,
+        "bin_min": 5.088136088700551,
+        "bin_max": 5.169262720788997,
+        "count": 303,
+        "correct": 142,
+        "accuracy": 0.46864686468646866,
+        "ci_95": [
+          0.41320313053074975,
+          0.5248756412459715
+        ]
+      },
+      {
+        "decile": 9,
+        "bin_min": 5.169262720788997,
+        "bin_max": 5.269979676645324,
+        "count": 298,
+        "correct": 147,
+        "accuracy": 0.49328859060402686,
+        "ci_95": [
+          0.4369725873046257,
+          0.5497754226750897
+        ]
+      },
+      {
+        "decile": 10,
+        "bin_min": 5.269979676645324,
+        "bin_max": 5.582290682718994,
+        "count": 302,
+        "correct": 184,
+        "accuracy": 0.609271523178808,
+        "ci_95": [
+          0.5532000086716412,
+          0.6625980726430764
+        ]
       }
+    ]
+  },
+  "skill_invariance": {
+    "num_evaluated": 500,
+    "task_name": "In-Context Key-Value Lookup (3-way)",
+    "chance_level": 0.3333333333333333,
+    "baseline_accuracy": 0.474,
+    "scrambled_accuracy": 0.472,
+    "delta": 0.0020000000000000018,
+    "delta_percent": 0.20000000000000018,
+    "ci_95": [
+      -0.034,
+      0.036
     ],
+    "threshold": 0.02,
     "passed": true
   },
   "jaiswal_reproduction": {
-    "knowledge_drop": -0.018867924528301987,
-    "skill_drop": 0.11578947368421051,
+    "knowledge_drop": -0.12087912087912087,
+    "skill_drop": 0.0,
     "phenomenon_observed": false
   },
-  "probe_validity": {
-    "skill_entity_invariance_delta": 0.016000000000000014,
-    "skill_invariant": true,
-    "paraphrase_consistency": 0.98388671875,
-    "paraphrase_passed": true
-  },
+  "paraphrase_consistency": 0.98388671875,
   "power_analysis": {
-    "calculated_power": 0.9721272130826837,
-    "passed": true
-  }
+    "knowledge_degradation": {
+      "comparison": "factual_knowledge_degradation",
+      "sample_size": 3000,
+      "baseline_accuracy": 0.455,
+      "target_delta": 0.05,
+      "alpha": 0.05,
+      "standard_error": 0.012766492601076198,
+      "statistical_power": 0.9747991241824409,
+      "passed": true
+    },
+    "skill_entity_invariance": {
+      "comparison": "procedural_skill_entity_invariance",
+      "sample_size": 500,
+      "design": "paired_within_subject",
+      "baseline_accuracy": 0.496,
+      "target_delta": 0.05,
+      "p_discordant_assumed": 0.1,
+      "alpha": 0.05,
+      "standard_error": 0.01414213562373095,
+      "statistical_power": 0.9424375237070283,
+      "passed": true
+    },
+    "frequency_accuracy_correlation": {
+      "comparison": "frequency_accuracy_correlation",
+      "sample_size": 3000,
+      "target_rho": 0.13150174393813654,
+      "alpha": 0.05,
+      "standard_error_z": 0.018266554145039696,
+      "statistical_power": 0.9999999357645236,
+      "passed": true
+    },
+    "overall_passed": true
+  },
+  "multi_seed_robustness": {
+    "seeds_evaluated": [
+      42,
+      43,
+      44
+    ],
+    "spearman_rho_mean": 0.13150174393813654,
+    "spearman_rho_std": 0.0,
+    "spearman_rho_ci_95": [
+      0.13150174393813654,
+      0.13150174393813654
+    ],
+    "fact_top1_mean": 0.455,
+    "fact_top1_std": 0.0,
+    "skill_baseline_mean": 0.496,
+    "skill_baseline_std": 0.015577761927397245,
+    "skill_invariance_delta_mean": 0.0040000000000000036,
+    "skill_invariance_delta_std": 0.0028284271247461927,
+    "robustness_passed": true
+  },
+  "per_seed_runs": [
+    {
+      "seed": 42,
+      "empirical_ppl": 34.56937016836445,
+      "ppl_delta_percent": 1.2303709475301414,
+      "compression_pareto": [
+        {
+          "name": "Uncompressed (fp16)",
+          "compressor": "none",
+          "param": 16,
+          "storage": {
+            "compressor": "none",
+            "param": 16,
+            "total_parameters": 70426624,
+            "backbone_parameters": 18874368,
+            "uncompressed_parameters": 51511296,
+            "backbone_raw_weight_bits": 301989888,
+            "backbone_metadata_bits": 442368,
+            "backbone_total_bits": 302432256,
+            "backbone_packed_mb": 36.052734375,
+            "backbone_compression_ratio": 0.9985372988785958,
+            "backbone_bits_per_param": 16.0234375,
+            "uncompressed_bits": 824180736,
+            "uncompressed_packed_mb": 98.25,
+            "total_packed_bits": 1126825984,
+            "total_packed_mb": 134.328125,
+            "total_compression_ratio": 1.0,
+            "total_bits_per_param": 16.0,
+            "in_memory_mb": 134.328125
+          },
+          "perplexity": 34.56937016836445
+        },
+        {
+          "name": "RTN-4bit",
+          "compressor": "rtn",
+          "param": 4,
+          "storage": {
+            "compressor": "rtn",
+            "param": 4,
+            "total_parameters": 70426624,
+            "backbone_parameters": 18874368,
+            "uncompressed_parameters": 51511296,
+            "backbone_raw_weight_bits": 75497472,
+            "backbone_metadata_bits": 3391488,
+            "backbone_total_bits": 78888960,
+            "backbone_packed_mb": 9.404296875,
+            "backbone_compression_ratio": 3.8280373831775703,
+            "backbone_bits_per_param": 4.1796875,
+            "uncompressed_bits": 824180736,
+            "uncompressed_packed_mb": 98.25,
+            "total_packed_bits": 903282688,
+            "total_packed_mb": 107.6796875,
+            "total_compression_ratio": 1.2474787782050352,
+            "total_bits_per_param": 12.825869489356752,
+            "in_memory_mb": 134.328125
+          },
+          "perplexity": 57.36488047603607
+        },
+        {
+          "name": "RTN-3bit",
+          "compressor": "rtn",
+          "param": 3,
+          "storage": {
+            "compressor": "rtn",
+            "param": 3,
+            "total_parameters": 70426624,
+            "backbone_parameters": 18874368,
+            "uncompressed_parameters": 51511296,
+            "backbone_raw_weight_bits": 56623104,
+            "backbone_metadata_bits": 3244032,
+            "backbone_total_bits": 59867136,
+            "backbone_packed_mb": 7.13671875,
+            "backbone_compression_ratio": 5.044334975369458,
+            "backbone_bits_per_param": 3.171875,
+            "uncompressed_bits": 824180736,
+            "uncompressed_packed_mb": 98.25,
+            "total_packed_bits": 884260864,
+            "total_packed_mb": 105.412109375,
+            "total_compression_ratio": 1.2743139834355488,
+            "total_bits_per_param": 12.555775270443178,
+            "in_memory_mb": 134.328125
+          },
+          "perplexity": 378.91996201539604
+        },
+        {
+          "name": "RTN-2bit",
+          "compressor": "rtn",
+          "param": 2,
+          "storage": {
+            "compressor": "rtn",
+            "param": 2,
+            "total_parameters": 70426624,
+            "backbone_parameters": 18874368,
+            "uncompressed_parameters": 51511296,
+            "backbone_raw_weight_bits": 37748736,
+            "backbone_metadata_bits": 3096576,
+            "backbone_total_bits": 40845312,
+            "backbone_packed_mb": 4.869140625,
+            "backbone_compression_ratio": 7.393501805054152,
+            "backbone_bits_per_param": 2.1640625,
+            "uncompressed_bits": 824180736,
+            "uncompressed_packed_mb": 98.25,
+            "total_packed_bits": 865239040,
+            "total_packed_mb": 103.14453125,
+            "total_compression_ratio": 1.3023291043363,
+            "total_bits_per_param": 12.285681051529604,
+            "in_memory_mb": 134.328125
+          },
+          "perplexity": 4268605019.478406
+        },
+        {
+          "name": "Pruning-50%",
+          "compressor": "prune",
+          "param": 0.5,
+          "storage": {
+            "compressor": "prune",
+            "param": 0.5,
+            "total_parameters": 70426624,
+            "backbone_parameters": 18874368,
+            "uncompressed_parameters": 51511296,
+            "backbone_raw_weight_bits": 150994944,
+            "backbone_metadata_bits": 19316736,
+            "backbone_total_bits": 170311680,
+            "backbone_packed_mb": 20.302734375,
+            "backbone_compression_ratio": 1.7731601731601732,
+            "backbone_bits_per_param": 9.0234375,
+            "uncompressed_bits": 824180736,
+            "uncompressed_packed_mb": 98.25,
+            "total_packed_bits": 994705408,
+            "total_packed_mb": 118.578125,
+            "total_compression_ratio": 1.1328238239557253,
+            "total_bits_per_param": 14.1239967430499,
+            "in_memory_mb": 134.328125
+          },
+          "perplexity": 2384.371770265148
+        }
+      ],
+      "serialization_verification": {
+        "file_bytes": 112879141,
+        "file_mib": 107.6499376296997,
+        "in_memory_ppl": 57.36488047603607,
+        "reloaded_ppl": 57.47089186295159,
+        "bit_accurate_match": false
+      },
+      "kandpal_reproduction": {
+        "num_evaluated": 3000,
+        "top1_acc": 0.455,
+        "top5_acc": 0.875,
+        "spearman_rho": 0.13150174393813654,
+        "p_value": 4.792149792386621e-13,
+        "spearman_ci_95": [
+          0.09527950605323879,
+          0.16596218267693963
+        ],
+        "binned_accuracies": [
+          {
+            "decile": 1,
+            "bin_min": 4.204119982655925,
+            "bin_max": 4.623249290397901,
+            "count": 287,
+            "correct": 98,
+            "accuracy": 0.34146341463414637,
+            "ci_95": [
+              0.28901898913461055,
+              0.3980957696450098
+            ]
+          },
+          {
+            "decile": 2,
+            "bin_min": 4.623249290397901,
+            "bin_max": 4.741151598851785,
+            "count": 308,
+            "correct": 120,
+            "accuracy": 0.38961038961038963,
+            "ci_95": [
+              0.3368278983427624,
+              0.44511257789423675
+            ]
+          },
+          {
+            "decile": 3,
+            "bin_min": 4.741151598851785,
+            "bin_max": 4.827175247188375,
+            "count": 305,
+            "correct": 125,
+            "accuracy": 0.4098360655737705,
+            "ci_95": [
+              0.35609670762851897,
+              0.4658183933750297
+            ]
+          },
+          {
+            "decile": 4,
+            "bin_min": 4.827175247188375,
+            "bin_max": 4.894316062684439,
+            "count": 298,
+            "correct": 125,
+            "accuracy": 0.41946308724832215,
+            "ci_95": [
+              0.36480872520358754,
+              0.4761673945529966
+            ]
+          },
+          {
+            "decile": 5,
+            "bin_min": 4.894316062684439,
+            "bin_max": 4.962842681201242,
+            "count": 300,
+            "correct": 136,
+            "accuracy": 0.4533333333333333,
+            "ci_95": [
+              0.39794515245358275,
+              0.509901524860708
+            ]
+          },
+          {
+            "decile": 6,
+            "bin_min": 4.962842681201242,
+            "bin_max": 5.023169933805034,
+            "count": 302,
+            "correct": 141,
+            "accuracy": 0.46688741721854304,
+            "ci_95": [
+              0.4113884305569472,
+              0.5232182114688959
+            ]
+          },
+          {
+            "decile": 7,
+            "bin_min": 5.023169933805034,
+            "bin_max": 5.088136088700551,
+            "count": 297,
+            "correct": 147,
+            "accuracy": 0.494949494949495,
+            "ci_95": [
+              0.43851672604878517,
+              0.5515112441260701
+            ]
+          },
+          {
+            "decile": 8,
+            "bin_min": 5.088136088700551,
+            "bin_max": 5.169262720788997,
+            "count": 303,
+            "correct": 142,
+            "accuracy": 0.46864686468646866,
+            "ci_95": [
+              0.41320313053074975,
+              0.5248756412459715
+            ]
+          },
+          {
+            "decile": 9,
+            "bin_min": 5.169262720788997,
+            "bin_max": 5.269979676645324,
+            "count": 298,
+            "correct": 147,
+            "accuracy": 0.49328859060402686,
+            "ci_95": [
+              0.4369725873046257,
+              0.5497754226750897
+            ]
+          },
+          {
+            "decile": 10,
+            "bin_min": 5.269979676645324,
+            "bin_max": 5.582290682718994,
+            "count": 302,
+            "correct": 184,
+            "accuracy": 0.609271523178808,
+            "ci_95": [
+              0.5532000086716412,
+              0.6625980726430764
+            ]
+          }
+        ]
+      },
+      "skill_invariance": {
+        "num_evaluated": 500,
+        "task_name": "In-Context Key-Value Lookup (3-way)",
+        "chance_level": 0.3333333333333333,
+        "baseline_accuracy": 0.474,
+        "scrambled_accuracy": 0.472,
+        "delta": 0.0020000000000000018,
+        "delta_percent": 0.20000000000000018,
+        "ci_95": [
+          -0.034,
+          0.036
+        ],
+        "threshold": 0.02,
+        "passed": true
+      },
+      "jaiswal_reproduction": {
+        "knowledge_drop": -0.12087912087912087,
+        "skill_drop": 0.0,
+        "phenomenon_observed": false
+      },
+      "paraphrase_consistency": 0.98388671875
+    },
+    {
+      "seed": 43,
+      "empirical_ppl": 34.56937016836445,
+      "ppl_delta_percent": 1.2303709475301414,
+      "compression_pareto": [
+        {
+          "name": "Uncompressed (fp16)",
+          "compressor": "none",
+          "param": 16,
+          "storage": {
+            "compressor": "none",
+            "param": 16,
+            "total_parameters": 70426624,
+            "backbone_parameters": 18874368,
+            "uncompressed_parameters": 51511296,
+            "backbone_raw_weight_bits": 301989888,
+            "backbone_metadata_bits": 442368,
+            "backbone_total_bits": 302432256,
+            "backbone_packed_mb": 36.052734375,
+            "backbone_compression_ratio": 0.9985372988785958,
+            "backbone_bits_per_param": 16.0234375,
+            "uncompressed_bits": 824180736,
+            "uncompressed_packed_mb": 98.25,
+            "total_packed_bits": 1126825984,
+            "total_packed_mb": 134.328125,
+            "total_compression_ratio": 1.0,
+            "total_bits_per_param": 16.0,
+            "in_memory_mb": 134.328125
+          },
+          "perplexity": 34.56937016836445
+        },
+        {
+          "name": "RTN-4bit",
+          "compressor": "rtn",
+          "param": 4,
+          "storage": {
+            "compressor": "rtn",
+            "param": 4,
+            "total_parameters": 70426624,
+            "backbone_parameters": 18874368,
+            "uncompressed_parameters": 51511296,
+            "backbone_raw_weight_bits": 75497472,
+            "backbone_metadata_bits": 3391488,
+            "backbone_total_bits": 78888960,
+            "backbone_packed_mb": 9.404296875,
+            "backbone_compression_ratio": 3.8280373831775703,
+            "backbone_bits_per_param": 4.1796875,
+            "uncompressed_bits": 824180736,
+            "uncompressed_packed_mb": 98.25,
+            "total_packed_bits": 903282688,
+            "total_packed_mb": 107.6796875,
+            "total_compression_ratio": 1.2474787782050352,
+            "total_bits_per_param": 12.825869489356752,
+            "in_memory_mb": 134.328125
+          },
+          "perplexity": 57.36488047603607
+        },
+        {
+          "name": "RTN-3bit",
+          "compressor": "rtn",
+          "param": 3,
+          "storage": {
+            "compressor": "rtn",
+            "param": 3,
+            "total_parameters": 70426624,
+            "backbone_parameters": 18874368,
+            "uncompressed_parameters": 51511296,
+            "backbone_raw_weight_bits": 56623104,
+            "backbone_metadata_bits": 3244032,
+            "backbone_total_bits": 59867136,
+            "backbone_packed_mb": 7.13671875,
+            "backbone_compression_ratio": 5.044334975369458,
+            "backbone_bits_per_param": 3.171875,
+            "uncompressed_bits": 824180736,
+            "uncompressed_packed_mb": 98.25,
+            "total_packed_bits": 884260864,
+            "total_packed_mb": 105.412109375,
+            "total_compression_ratio": 1.2743139834355488,
+            "total_bits_per_param": 12.555775270443178,
+            "in_memory_mb": 134.328125
+          },
+          "perplexity": 378.91996201539604
+        },
+        {
+          "name": "RTN-2bit",
+          "compressor": "rtn",
+          "param": 2,
+          "storage": {
+            "compressor": "rtn",
+            "param": 2,
+            "total_parameters": 70426624,
+            "backbone_parameters": 18874368,
+            "uncompressed_parameters": 51511296,
+            "backbone_raw_weight_bits": 37748736,
+            "backbone_metadata_bits": 3096576,
+            "backbone_total_bits": 40845312,
+            "backbone_packed_mb": 4.869140625,
+            "backbone_compression_ratio": 7.393501805054152,
+            "backbone_bits_per_param": 2.1640625,
+            "uncompressed_bits": 824180736,
+            "uncompressed_packed_mb": 98.25,
+            "total_packed_bits": 865239040,
+            "total_packed_mb": 103.14453125,
+            "total_compression_ratio": 1.3023291043363,
+            "total_bits_per_param": 12.285681051529604,
+            "in_memory_mb": 134.328125
+          },
+          "perplexity": 4268605019.478406
+        },
+        {
+          "name": "Pruning-50%",
+          "compressor": "prune",
+          "param": 0.5,
+          "storage": {
+            "compressor": "prune",
+            "param": 0.5,
+            "total_parameters": 70426624,
+            "backbone_parameters": 18874368,
+            "uncompressed_parameters": 51511296,
+            "backbone_raw_weight_bits": 150994944,
+            "backbone_metadata_bits": 19316736,
+            "backbone_total_bits": 170311680,
+            "backbone_packed_mb": 20.302734375,
+            "backbone_compression_ratio": 1.7731601731601732,
+            "backbone_bits_per_param": 9.0234375,
+            "uncompressed_bits": 824180736,
+            "uncompressed_packed_mb": 98.25,
+            "total_packed_bits": 994705408,
+            "total_packed_mb": 118.578125,
+            "total_compression_ratio": 1.1328238239557253,
+            "total_bits_per_param": 14.1239967430499,
+            "in_memory_mb": 134.328125
+          },
+          "perplexity": 2384.371770265148
+        }
+      ],
+      "serialization_verification": {
+        "file_bytes": 112879141,
+        "file_mib": 107.6499376296997,
+        "in_memory_ppl": 57.36488047603607,
+        "reloaded_ppl": 57.47089186295159,
+        "bit_accurate_match": false
+      },
+      "kandpal_reproduction": {
+        "num_evaluated": 3000,
+        "top1_acc": 0.455,
+        "top5_acc": 0.875,
+        "spearman_rho": 0.13150174393813654,
+        "p_value": 4.792149792386621e-13,
+        "spearman_ci_95": [
+          0.09527950605323879,
+          0.16596218267693963
+        ],
+        "binned_accuracies": [
+          {
+            "decile": 1,
+            "bin_min": 4.204119982655925,
+            "bin_max": 4.623249290397901,
+            "count": 287,
+            "correct": 98,
+            "accuracy": 0.34146341463414637,
+            "ci_95": [
+              0.28901898913461055,
+              0.3980957696450098
+            ]
+          },
+          {
+            "decile": 2,
+            "bin_min": 4.623249290397901,
+            "bin_max": 4.741151598851785,
+            "count": 308,
+            "correct": 120,
+            "accuracy": 0.38961038961038963,
+            "ci_95": [
+              0.3368278983427624,
+              0.44511257789423675
+            ]
+          },
+          {
+            "decile": 3,
+            "bin_min": 4.741151598851785,
+            "bin_max": 4.827175247188375,
+            "count": 305,
+            "correct": 125,
+            "accuracy": 0.4098360655737705,
+            "ci_95": [
+              0.35609670762851897,
+              0.4658183933750297
+            ]
+          },
+          {
+            "decile": 4,
+            "bin_min": 4.827175247188375,
+            "bin_max": 4.894316062684439,
+            "count": 298,
+            "correct": 125,
+            "accuracy": 0.41946308724832215,
+            "ci_95": [
+              0.36480872520358754,
+              0.4761673945529966
+            ]
+          },
+          {
+            "decile": 5,
+            "bin_min": 4.894316062684439,
+            "bin_max": 4.962842681201242,
+            "count": 300,
+            "correct": 136,
+            "accuracy": 0.4533333333333333,
+            "ci_95": [
+              0.39794515245358275,
+              0.509901524860708
+            ]
+          },
+          {
+            "decile": 6,
+            "bin_min": 4.962842681201242,
+            "bin_max": 5.023169933805034,
+            "count": 302,
+            "correct": 141,
+            "accuracy": 0.46688741721854304,
+            "ci_95": [
+              0.4113884305569472,
+              0.5232182114688959
+            ]
+          },
+          {
+            "decile": 7,
+            "bin_min": 5.023169933805034,
+            "bin_max": 5.088136088700551,
+            "count": 297,
+            "correct": 147,
+            "accuracy": 0.494949494949495,
+            "ci_95": [
+              0.43851672604878517,
+              0.5515112441260701
+            ]
+          },
+          {
+            "decile": 8,
+            "bin_min": 5.088136088700551,
+            "bin_max": 5.169262720788997,
+            "count": 303,
+            "correct": 142,
+            "accuracy": 0.46864686468646866,
+            "ci_95": [
+              0.41320313053074975,
+              0.5248756412459715
+            ]
+          },
+          {
+            "decile": 9,
+            "bin_min": 5.169262720788997,
+            "bin_max": 5.269979676645324,
+            "count": 298,
+            "correct": 147,
+            "accuracy": 0.49328859060402686,
+            "ci_95": [
+              0.4369725873046257,
+              0.5497754226750897
+            ]
+          },
+          {
+            "decile": 10,
+            "bin_min": 5.269979676645324,
+            "bin_max": 5.582290682718994,
+            "count": 302,
+            "correct": 184,
+            "accuracy": 0.609271523178808,
+            "ci_95": [
+              0.5532000086716412,
+              0.6625980726430764
+            ]
+          }
+        ]
+      },
+      "skill_invariance": {
+        "num_evaluated": 500,
+        "task_name": "In-Context Key-Value Lookup (3-way)",
+        "chance_level": 0.3333333333333333,
+        "baseline_accuracy": 0.508,
+        "scrambled_accuracy": 0.506,
+        "delta": 0.0020000000000000018,
+        "delta_percent": 0.20000000000000018,
+        "ci_95": [
+          -0.03604999999999999,
+          0.042
+        ],
+        "threshold": 0.02,
+        "passed": true
+      },
+      "jaiswal_reproduction": {
+        "knowledge_drop": -0.12087912087912087,
+        "skill_drop": 0.08490566037735855,
+        "phenomenon_observed": false
+      },
+      "paraphrase_consistency": 0.98388671875
+    },
+    {
+      "seed": 44,
+      "empirical_ppl": 34.56937016836445,
+      "ppl_delta_percent": 1.2303709475301414,
+      "compression_pareto": [
+        {
+          "name": "Uncompressed (fp16)",
+          "compressor": "none",
+          "param": 16,
+          "storage": {
+            "compressor": "none",
+            "param": 16,
+            "total_parameters": 70426624,
+            "backbone_parameters": 18874368,
+            "uncompressed_parameters": 51511296,
+            "backbone_raw_weight_bits": 301989888,
+            "backbone_metadata_bits": 442368,
+            "backbone_total_bits": 302432256,
+            "backbone_packed_mb": 36.052734375,
+            "backbone_compression_ratio": 0.9985372988785958,
+            "backbone_bits_per_param": 16.0234375,
+            "uncompressed_bits": 824180736,
+            "uncompressed_packed_mb": 98.25,
+            "total_packed_bits": 1126825984,
+            "total_packed_mb": 134.328125,
+            "total_compression_ratio": 1.0,
+            "total_bits_per_param": 16.0,
+            "in_memory_mb": 134.328125
+          },
+          "perplexity": 34.56937016836445
+        },
+        {
+          "name": "RTN-4bit",
+          "compressor": "rtn",
+          "param": 4,
+          "storage": {
+            "compressor": "rtn",
+            "param": 4,
+            "total_parameters": 70426624,
+            "backbone_parameters": 18874368,
+            "uncompressed_parameters": 51511296,
+            "backbone_raw_weight_bits": 75497472,
+            "backbone_metadata_bits": 3391488,
+            "backbone_total_bits": 78888960,
+            "backbone_packed_mb": 9.404296875,
+            "backbone_compression_ratio": 3.8280373831775703,
+            "backbone_bits_per_param": 4.1796875,
+            "uncompressed_bits": 824180736,
+            "uncompressed_packed_mb": 98.25,
+            "total_packed_bits": 903282688,
+            "total_packed_mb": 107.6796875,
+            "total_compression_ratio": 1.2474787782050352,
+            "total_bits_per_param": 12.825869489356752,
+            "in_memory_mb": 134.328125
+          },
+          "perplexity": 57.36488047603607
+        },
+        {
+          "name": "RTN-3bit",
+          "compressor": "rtn",
+          "param": 3,
+          "storage": {
+            "compressor": "rtn",
+            "param": 3,
+            "total_parameters": 70426624,
+            "backbone_parameters": 18874368,
+            "uncompressed_parameters": 51511296,
+            "backbone_raw_weight_bits": 56623104,
+            "backbone_metadata_bits": 3244032,
+            "backbone_total_bits": 59867136,
+            "backbone_packed_mb": 7.13671875,
+            "backbone_compression_ratio": 5.044334975369458,
+            "backbone_bits_per_param": 3.171875,
+            "uncompressed_bits": 824180736,
+            "uncompressed_packed_mb": 98.25,
+            "total_packed_bits": 884260864,
+            "total_packed_mb": 105.412109375,
+            "total_compression_ratio": 1.2743139834355488,
+            "total_bits_per_param": 12.555775270443178,
+            "in_memory_mb": 134.328125
+          },
+          "perplexity": 378.91996201539604
+        },
+        {
+          "name": "RTN-2bit",
+          "compressor": "rtn",
+          "param": 2,
+          "storage": {
+            "compressor": "rtn",
+            "param": 2,
+            "total_parameters": 70426624,
+            "backbone_parameters": 18874368,
+            "uncompressed_parameters": 51511296,
+            "backbone_raw_weight_bits": 37748736,
+            "backbone_metadata_bits": 3096576,
+            "backbone_total_bits": 40845312,
+            "backbone_packed_mb": 4.869140625,
+            "backbone_compression_ratio": 7.393501805054152,
+            "backbone_bits_per_param": 2.1640625,
+            "uncompressed_bits": 824180736,
+            "uncompressed_packed_mb": 98.25,
+            "total_packed_bits": 865239040,
+            "total_packed_mb": 103.14453125,
+            "total_compression_ratio": 1.3023291043363,
+            "total_bits_per_param": 12.285681051529604,
+            "in_memory_mb": 134.328125
+          },
+          "perplexity": 4268605019.478406
+        },
+        {
+          "name": "Pruning-50%",
+          "compressor": "prune",
+          "param": 0.5,
+          "storage": {
+            "compressor": "prune",
+            "param": 0.5,
+            "total_parameters": 70426624,
+            "backbone_parameters": 18874368,
+            "uncompressed_parameters": 51511296,
+            "backbone_raw_weight_bits": 150994944,
+            "backbone_metadata_bits": 19316736,
+            "backbone_total_bits": 170311680,
+            "backbone_packed_mb": 20.302734375,
+            "backbone_compression_ratio": 1.7731601731601732,
+            "backbone_bits_per_param": 9.0234375,
+            "uncompressed_bits": 824180736,
+            "uncompressed_packed_mb": 98.25,
+            "total_packed_bits": 994705408,
+            "total_packed_mb": 118.578125,
+            "total_compression_ratio": 1.1328238239557253,
+            "total_bits_per_param": 14.1239967430499,
+            "in_memory_mb": 134.328125
+          },
+          "perplexity": 2384.371770265148
+        }
+      ],
+      "serialization_verification": {
+        "file_bytes": 112879141,
+        "file_mib": 107.6499376296997,
+        "in_memory_ppl": 57.36488047603607,
+        "reloaded_ppl": 57.47089186295159,
+        "bit_accurate_match": false
+      },
+      "kandpal_reproduction": {
+        "num_evaluated": 3000,
+        "top1_acc": 0.455,
+        "top5_acc": 0.875,
+        "spearman_rho": 0.13150174393813654,
+        "p_value": 4.792149792386621e-13,
+        "spearman_ci_95": [
+          0.09527950605323879,
+          0.16596218267693963
+        ],
+        "binned_accuracies": [
+          {
+            "decile": 1,
+            "bin_min": 4.204119982655925,
+            "bin_max": 4.623249290397901,
+            "count": 287,
+            "correct": 98,
+            "accuracy": 0.34146341463414637,
+            "ci_95": [
+              0.28901898913461055,
+              0.3980957696450098
+            ]
+          },
+          {
+            "decile": 2,
+            "bin_min": 4.623249290397901,
+            "bin_max": 4.741151598851785,
+            "count": 308,
+            "correct": 120,
+            "accuracy": 0.38961038961038963,
+            "ci_95": [
+              0.3368278983427624,
+              0.44511257789423675
+            ]
+          },
+          {
+            "decile": 3,
+            "bin_min": 4.741151598851785,
+            "bin_max": 4.827175247188375,
+            "count": 305,
+            "correct": 125,
+            "accuracy": 0.4098360655737705,
+            "ci_95": [
+              0.35609670762851897,
+              0.4658183933750297
+            ]
+          },
+          {
+            "decile": 4,
+            "bin_min": 4.827175247188375,
+            "bin_max": 4.894316062684439,
+            "count": 298,
+            "correct": 125,
+            "accuracy": 0.41946308724832215,
+            "ci_95": [
+              0.36480872520358754,
+              0.4761673945529966
+            ]
+          },
+          {
+            "decile": 5,
+            "bin_min": 4.894316062684439,
+            "bin_max": 4.962842681201242,
+            "count": 300,
+            "correct": 136,
+            "accuracy": 0.4533333333333333,
+            "ci_95": [
+              0.39794515245358275,
+              0.509901524860708
+            ]
+          },
+          {
+            "decile": 6,
+            "bin_min": 4.962842681201242,
+            "bin_max": 5.023169933805034,
+            "count": 302,
+            "correct": 141,
+            "accuracy": 0.46688741721854304,
+            "ci_95": [
+              0.4113884305569472,
+              0.5232182114688959
+            ]
+          },
+          {
+            "decile": 7,
+            "bin_min": 5.023169933805034,
+            "bin_max": 5.088136088700551,
+            "count": 297,
+            "correct": 147,
+            "accuracy": 0.494949494949495,
+            "ci_95": [
+              0.43851672604878517,
+              0.5515112441260701
+            ]
+          },
+          {
+            "decile": 8,
+            "bin_min": 5.088136088700551,
+            "bin_max": 5.169262720788997,
+            "count": 303,
+            "correct": 142,
+            "accuracy": 0.46864686468646866,
+            "ci_95": [
+              0.41320313053074975,
+              0.5248756412459715
+            ]
+          },
+          {
+            "decile": 9,
+            "bin_min": 5.169262720788997,
+            "bin_max": 5.269979676645324,
+            "count": 298,
+            "correct": 147,
+            "accuracy": 0.49328859060402686,
+            "ci_95": [
+              0.4369725873046257,
+              0.5497754226750897
+            ]
+          },
+          {
+            "decile": 10,
+            "bin_min": 5.269979676645324,
+            "bin_max": 5.582290682718994,
+            "count": 302,
+            "correct": 184,
+            "accuracy": 0.609271523178808,
+            "ci_95": [
+              0.5532000086716412,
+              0.6625980726430764
+            ]
+          }
+        ]
+      },
+      "skill_invariance": {
+        "num_evaluated": 500,
+        "task_name": "In-Context Key-Value Lookup (3-way)",
+        "chance_level": 0.3333333333333333,
+        "baseline_accuracy": 0.506,
+        "scrambled_accuracy": 0.498,
+        "delta": 0.008000000000000007,
+        "delta_percent": 0.8000000000000007,
+        "ci_95": [
+          -0.034,
+          0.052
+        ],
+        "threshold": 0.02,
+        "passed": true
+      },
+      "jaiswal_reproduction": {
+        "knowledge_drop": -0.12087912087912087,
+        "skill_drop": 0.04672897196261686,
+        "phenomenon_observed": false
+      },
+      "paraphrase_consistency": 0.98388671875
+    }
+  ]
 }
