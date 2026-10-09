@@ -1,0 +1,137 @@
+{
+  "r1": {
+    "linearity_r2_a": 0.9999999989145918,
+    "linearity_r2_b": 0.9999999636920133,
+    "slope_a": 2.571807065217391,
+    "slope_b": 1.0001564810380978,
+    "mean_looseness_a": 2.591796875,
+    "mean_looseness_b": 1.3054728266996507,
+    "data": [
+      {
+        "k_facts": 128,
+        "theoretical_bits": 768.0,
+        "base_acc": 1.0,
+        "ruler_a_dl_bits": 2008,
+        "ruler_b_dl_bits": 1268.7473699179268,
+        "looseness_a": 2.6145833333333335,
+        "looseness_b": 1.6520148045806338
+      },
+      {
+        "k_facts": 256,
+        "theoretical_bits": 1536.0,
+        "base_acc": 1.0,
+        "ruler_a_dl_bits": 3983,
+        "ruler_b_dl_bits": 2035.7714571638744,
+        "looseness_a": 2.5930989583333335,
+        "looseness_b": 1.3253720424243973
+      },
+      {
+        "k_facts": 512,
+        "theoretical_bits": 3072.0,
+        "base_acc": 1.0,
+        "ruler_a_dl_bits": 7933,
+        "ruler_b_dl_bits": 3572.532125514842,
+        "looseness_a": 2.5823567708333335,
+        "looseness_b": 1.162933634607696
+      },
+      {
+        "k_facts": 1024,
+        "theoretical_bits": 6144.0,
+        "base_acc": 1.0,
+        "ruler_a_dl_bits": 15834,
+        "ruler_b_dl_bits": 6645.171149942016,
+        "looseness_a": 2.5771484375,
+        "looseness_b": 1.081570825185875
+      }
+    ]
+  },
+  "r2": {
+    "slope": 2.300724637681159,
+    "ci95": [
+      -1.535243348988005,
+      6.1366926243503235
+    ],
+    "is_invariant": true,
+    "data": [
+      {
+        "num_samples": 300,
+        "base_acc": 1.0,
+        "ruler_a_dl_bits": 16615,
+        "ruler_b_dl_bits": 4026.1965542159396,
+        "ruler_c_program_bits": 48.0
+      },
+      {
+        "num_samples": 600,
+        "base_acc": 1.0,
+        "ruler_a_dl_bits": 23007,
+        "ruler_b_dl_bits": 6849.647257644137,
+        "ruler_c_program_bits": 48.0
+      },
+      {
+        "num_samples": 1200,
+        "base_acc": 1.0,
+        "ruler_a_dl_bits": 23332,
+        "ruler_b_dl_bits": 12347.620868599315,
+        "ruler_c_program_bits": 48.0
+      },
+      {
+        "num_samples": 2400,
+        "base_acc": 1.0,
+        "ruler_a_dl_bits": 23521,
+        "ruler_b_dl_bits": 16387.536638470592,
+        "ruler_c_program_bits": 48.0
+      }
+    ]
+  },
+  "r3": {
+    "dl_r3": 25821,
+    "expected_sum": 25902,
+    "additivity_gap_percent": 0.3127171646977068
+  },
+  "r4": {
+    "slope": 5.446642857142857,
+    "r2": 0.999647251495905,
+    "data": [
+      {
+        "samples": 200,
+        "theo_bits": 1000.0,
+        "dl_a": 6565,
+        "dl_b": 2949.336668273901
+      },
+      {
+        "samples": 400,
+        "theo_bits": 2000.0,
+        "dl_a": 12307,
+        "dl_b": 4908.495620710768
+      },
+      {
+        "samples": 800,
+        "theo_bits": 4000.0,
+        "dl_a": 22964,
+        "dl_b": 8831.392743901544
+      }
+    ]
+  },
+  "inter_ruler_agreement": {
+    "spearman_rho": 0.9636363636363637,
+    "spearman_p": 1.8520398640703128e-06,
+    "passed": true
+  },
+  "tau_sensitivity": [
+    {
+      "tau": 0.9,
+      "dl_min_bits": 3983,
+      "config": "rtn_4b"
+    },
+    {
+      "tau": 0.95,
+      "dl_min_bits": 3983,
+      "config": "rtn_4b"
+    },
+    {
+      "tau": 0.99,
+      "dl_min_bits": 3983,
+      "config": "rtn_4b"
+    }
+  ]
+}

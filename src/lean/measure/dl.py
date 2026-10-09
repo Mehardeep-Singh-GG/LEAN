@@ -32,6 +32,39 @@ def dl_quantized_tensor(numel: int, bit_width: int, group_size: int = 128) -> in
     return weight_bits + scale_bits + zero_bits
 
 
+def empirical_entropy(tensor: torch.Tensor) -> float:
+    """
+    Calculate the empirical Shannon entropy H(X) in bits per element.
+    H(X) = -sum p(x) * log2(p(x))
+    """
+    flat = tensor.detach().flatten()
+    if flat.numel() == 0:
+        return 0.0
+    _, counts = torch.unique(flat, return_counts=True)
+    probs = counts.float() / flat.numel()
+    entropy = -torch.sum(probs * torch.log2(probs)).item()
+    return max(0.0, float(entropy))
+
+
+def dl_entropy_coded_tensor(tensor: torch.Tensor, group_size: int = 128) -> int:
+    """
+    Description length under arithmetic/entropy coding.
+    Calculates empirical Shannon entropy of quantized symbols + frequency table overhead + scale/zero overhead.
+    """
+    numel = tensor.numel()
+    if numel == 0:
+        return 0
+    h = empirical_entropy(tensor)
+    data_bits = math.ceil(numel * h)
+    
+    unique_vals = len(torch.unique(tensor.detach().flatten()))
+    codebook_overhead = unique_vals * 16  # 16-bit frequency counts for decoder
+    
+    num_groups = math.ceil(numel / group_size)
+    scale_overhead = num_groups * 16
+    return data_bits + codebook_overhead + scale_overhead
+
+
 def dl_low_rank(d_in: int, d_out: int, rank: int, bit_width: int = 16) -> int:
     """
     Exact bits for a low-rank factored matrix W ~= U @ V^T.
