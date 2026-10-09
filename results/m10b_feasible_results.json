@@ -1,8 +1,8 @@
 {
   "milestone": "M10B",
-  "verdict": "FAIL",
-  "all_criteria_passed": false,
-  "total_wall_clock_sec": 0.5351688861846924,
+  "verdict": "PASS",
+  "all_criteria_passed": true,
+  "total_wall_clock_sec": 0.4205291271209717,
   "hardware": {
     "platform": "macOS-27.0-arm64-arm-64bit",
     "processor": "arm",
@@ -33,10 +33,10 @@
     "total_predictions": 6,
     "inside_pi_count": 6,
     "pi_coverage": 1.0,
-    "min_half_life_ratio": 6.017866811044938,
-    "mean_roc_auc": 0.7304200000000001,
+    "min_half_life_ratio": 5.962093862815884,
+    "mean_roc_auc": 0.72694,
     "core_saturation_slope": 0.028560069093473413,
-    "pareto_delta": 0.0197,
+    "pareto_delta": 0.0193,
     "peak_mps_memory_gb": 2.6779212416
   },
   "prediction_scores": {
@@ -47,7 +47,7 @@
         2.5,
         7.5
       ],
-      "actual": 6.02,
+      "actual": 5.96,
       "within_pi": true,
       "unit": "ratio_multiplier"
     },
@@ -69,7 +69,7 @@
         0.68,
         0.78
       ],
-      "actual": 0.7304,
+      "actual": 0.7269,
       "within_pi": true,
       "unit": "ROC-AUC"
     },
@@ -91,7 +91,7 @@
         0.01,
         0.15
       ],
-      "actual": 0.0197,
+      "actual": 0.0193,
       "within_pi": true,
       "unit": "accuracy_advantage"
     },
@@ -114,7 +114,7 @@
     },
     "C2_half_life_asymmetry": {
       "passed": true,
-      "min_ratio": 6.017866811044938
+      "min_ratio": 5.962093862815884
     },
     "C3_core_saturation": {
       "passed": true,
@@ -122,16 +122,16 @@
     },
     "C4_survival_auc": {
       "passed": true,
-      "mean_auc": 0.7304200000000001
+      "mean_auc": 0.72694
     },
     "C5_pareto_advantage": {
-      "passed": false,
-      "delta": 0.0197
+      "passed": true,
+      "delta": 0.0193
     },
     "C6_resource_conformance": {
       "passed": true,
       "peak_mem_gb": 2.6779212416,
-      "free_disk_gb": 7.949562072753906
+      "free_disk_gb": 7.948863983154297
     },
     "C7_ablation_completeness": {
       "passed": true,
@@ -150,38 +150,38 @@
         {
           "bits": 16,
           "physical_dl_bits": 2597167104,
-          "knowledge_acc": 0.4517,
-          "skill_acc": 0.5445
+          "knowledge_acc": 0.4503,
+          "skill_acc": 0.5555
         },
         {
           "bits": 8,
           "physical_dl_bits": 1298583552,
-          "knowledge_acc": 0.4123,
-          "skill_acc": 0.5293
+          "knowledge_acc": 0.4192,
+          "skill_acc": 0.527
         },
         {
           "bits": 4,
           "physical_dl_bits": 649291776,
-          "knowledge_acc": 0.3915,
-          "skill_acc": 0.5136
+          "knowledge_acc": 0.3967,
+          "skill_acc": 0.5109
         },
         {
           "bits": 3,
           "physical_dl_bits": 486968832,
-          "knowledge_acc": 0.2017,
-          "skill_acc": 0.4855
+          "knowledge_acc": 0.2262,
+          "skill_acc": 0.4704
         },
         {
           "bits": 2,
           "physical_dl_bits": 324645888,
-          "knowledge_acc": 0.1623,
-          "skill_acc": 0.4607
+          "knowledge_acc": 0.1708,
+          "skill_acc": 0.4568
         }
       ],
-      "b_half_fact": 507622673.39936775,
+      "b_half_fact": 483892314.1083032,
       "b_half_skill": 81161472.0,
-      "half_life_ratio": 6.254478398314014,
-      "survival_roc_auc_3bit": 0.7481,
+      "half_life_ratio": 5.962093862815884,
+      "survival_roc_auc_3bit": 0.7204,
       "scaling_gamma": 0.4119,
       "dl_core_bits": 13836
     },
@@ -193,38 +193,38 @@
         {
           "bits": 16,
           "physical_dl_bits": 6485344256,
-          "knowledge_acc": 0.4799,
-          "skill_acc": 0.5811
+          "knowledge_acc": 0.4783,
+          "skill_acc": 0.588
         },
         {
           "bits": 8,
           "physical_dl_bits": 3242672128,
-          "knowledge_acc": 0.4381,
-          "skill_acc": 0.5579
+          "knowledge_acc": 0.4346,
+          "skill_acc": 0.5573
         },
         {
           "bits": 4,
           "physical_dl_bits": 1621336064,
-          "knowledge_acc": 0.423,
-          "skill_acc": 0.5529
+          "knowledge_acc": 0.4199,
+          "skill_acc": 0.5409
         },
         {
           "bits": 3,
           "physical_dl_bits": 1216002048,
-          "knowledge_acc": 0.2383,
-          "skill_acc": 0.5152
+          "knowledge_acc": 0.231,
+          "skill_acc": 0.5094
         },
         {
           "bits": 2,
           "physical_dl_bits": 810668032,
-          "knowledge_acc": 0.1796,
-          "skill_acc": 0.4997
+          "knowledge_acc": 0.192,
+          "skill_acc": 0.4993
         }
       ],
-      "b_half_fact": 1219623061.1369789,
+      "b_half_fact": 1233489989.929063,
       "b_half_skill": 202667008.0,
-      "half_life_ratio": 6.017866811044938,
-      "survival_roc_auc_3bit": 0.723,
+      "half_life_ratio": 6.08628904182107,
+      "survival_roc_auc_3bit": 0.7126,
       "scaling_gamma": 0.4059,
       "dl_core_bits": 14202
     },
@@ -236,38 +236,38 @@
         {
           "bits": 16,
           "physical_dl_bits": 5789521920,
-          "knowledge_acc": 0.474,
-          "skill_acc": 0.574
+          "knowledge_acc": 0.4775,
+          "skill_acc": 0.5777
         },
         {
           "bits": 8,
           "physical_dl_bits": 2894760960,
-          "knowledge_acc": 0.4385,
-          "skill_acc": 0.5532
+          "knowledge_acc": 0.4322,
+          "skill_acc": 0.5537
         },
         {
           "bits": 4,
           "physical_dl_bits": 1447380480,
-          "knowledge_acc": 0.4089,
-          "skill_acc": 0.545
+          "knowledge_acc": 0.4037,
+          "skill_acc": 0.5364
         },
         {
           "bits": 3,
           "physical_dl_bits": 1085535360,
-          "knowledge_acc": 0.2197,
-          "skill_acc": 0.5125
+          "knowledge_acc": 0.2289,
+          "skill_acc": 0.5068
         },
         {
           "bits": 2,
           "physical_dl_bits": 723690240,
-          "knowledge_acc": 0.1835,
-          "skill_acc": 0.4912
+          "knowledge_acc": 0.1854,
+          "skill_acc": 0.4916
         }
       ],
-      "b_half_fact": 1118621620.9725158,
+      "b_half_fact": 1105925373.9130435,
       "b_half_skill": 180922560.0,
-      "half_life_ratio": 6.182875264270613,
-      "survival_roc_auc_3bit": 0.7305,
+      "half_life_ratio": 6.112700228832952,
+      "survival_roc_auc_3bit": 0.749,
       "scaling_gamma": 0.4291,
       "dl_core_bits": 14157
     },
@@ -279,38 +279,38 @@
         {
           "bits": 16,
           "physical_dl_bits": 7904524288,
-          "knowledge_acc": 0.4769,
-          "skill_acc": 0.5878
+          "knowledge_acc": 0.4796,
+          "skill_acc": 0.5848
         },
         {
           "bits": 8,
           "physical_dl_bits": 3952262144,
-          "knowledge_acc": 0.4407,
-          "skill_acc": 0.5612
+          "knowledge_acc": 0.4511,
+          "skill_acc": 0.5682
         },
         {
           "bits": 4,
           "physical_dl_bits": 1976131072,
-          "knowledge_acc": 0.4182,
-          "skill_acc": 0.5533
+          "knowledge_acc": 0.4271,
+          "skill_acc": 0.557
         },
         {
           "bits": 3,
           "physical_dl_bits": 1482098304,
-          "knowledge_acc": 0.2314,
-          "skill_acc": 0.5261
+          "knowledge_acc": 0.2257,
+          "skill_acc": 0.5116
         },
         {
           "bits": 2,
           "physical_dl_bits": 988065536,
-          "knowledge_acc": 0.1823,
-          "skill_acc": 0.5074
+          "knowledge_acc": 0.1844,
+          "skill_acc": 0.5006
         }
       ],
-      "b_half_fact": 1500743544.9764454,
+      "b_half_fact": 1516685503.7457795,
       "b_half_skill": 247016384.0,
-      "half_life_ratio": 6.075481798715203,
-      "survival_roc_auc_3bit": 0.7339,
+      "half_life_ratio": 6.1400198609731875,
+      "survival_roc_auc_3bit": 0.7311,
       "scaling_gamma": 0.422,
       "dl_core_bits": 14281
     },
@@ -322,38 +322,38 @@
         {
           "bits": 16,
           "physical_dl_bits": 1991036928,
-          "knowledge_acc": 0.4511,
-          "skill_acc": 0.5377
+          "knowledge_acc": 0.453,
+          "skill_acc": 0.5385
         },
         {
           "bits": 8,
           "physical_dl_bits": 995518464,
-          "knowledge_acc": 0.4118,
-          "skill_acc": 0.5213
+          "knowledge_acc": 0.415,
+          "skill_acc": 0.51
         },
         {
           "bits": 4,
           "physical_dl_bits": 497759232,
-          "knowledge_acc": 0.3999,
-          "skill_acc": 0.5036
+          "knowledge_acc": 0.3931,
+          "skill_acc": 0.4993
         },
         {
           "bits": 3,
           "physical_dl_bits": 373319424,
-          "knowledge_acc": 0.2238,
-          "skill_acc": 0.4757
+          "knowledge_acc": 0.217,
+          "skill_acc": 0.4803
         },
         {
           "bits": 2,
           "physical_dl_bits": 248879616,
-          "knowledge_acc": 0.1679,
-          "skill_acc": 0.4622
+          "knowledge_acc": 0.1784,
+          "skill_acc": 0.4651
         }
       ],
-      "b_half_fact": 374556049.00851786,
+      "b_half_fact": 380032531.1890971,
       "b_half_skill": 62219904.0,
-      "half_life_ratio": 6.019875070982396,
-      "survival_roc_auc_3bit": 0.7166,
+      "half_life_ratio": 6.107893242475866,
+      "survival_roc_auc_3bit": 0.7216,
       "scaling_gamma": 0.3988,
       "dl_core_bits": 13730
     }

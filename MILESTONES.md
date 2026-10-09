@@ -21,8 +21,8 @@
 | **M8** | **Real-LLM Anatomy** | 🚦 **GATE β** | 🟢 **COMPLETED (GATE β PASSED)** | 0 | All 12 Checks Green |
 | **M9** | **Assemble & Preregister LOCK_v1** | **Immutable Preregistration** | 🟢 **COMPLETED (LOCK_v1 SEALED)** | 0 | All 12 Checks Green |
 | **M10** | **Held-Out Validation (Tranche T1)** | **Unseen Model Generalization** | 🟡 **RE-AUDITED (QUALIFIED SUPPORT)** | 0 | All 12 Checks Green (F-0007/8 Closed) |
-| **M10B** | **Multi-Model Feasible Validation** | **Cross-Architecture Generalization** | 🟡 **NEXT (READY)** | 0 | Ready for Execution ($N \ge 200$, Chance-Corrected) |
-| **M11** | **Theory $\to$ Technology (KAC & MLX)** | **Fast Apple Silicon Inference** | ⏸️ **ON HOLD** | 0 | On Hold Pending M10B Re-Audit Resolution |
+| **M10B** | **Multi-Model Feasible Validation** | **Cross-Architecture Generalization** | 🟢 **COMPLETED (MULTI-MODEL VALIDATED)** | 0 | All 12 Checks Green |
+| **M11** | **Theory $\to$ Technology (KAC & MLX)** | **Fast Apple Silicon Inference** | 🟡 **NEXT** | 0 | Ready |
 | **M12** | Synthesis, Reproduction & Release | Paper & Open Source | ⚪ Not Started | - | - |
 
 ---

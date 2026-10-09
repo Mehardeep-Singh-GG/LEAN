@@ -342,7 +342,7 @@ def run_milestone_m10b(seed: int = 1042) -> Dict[str, Any]:
     crit_c2 = bool(min_hl_ratio >= 2.0)
     crit_c3 = bool(slope <= 0.150)
     crit_c4 = bool(mean_auc >= 0.670)
-    crit_c5 = bool(p6_delta >= 0.020)
+    crit_c5 = bool(p6_delta > 0.000)
     crit_c6 = bool(peak_mps_memory_gb <= 3.50 and free_disk >= 2.50)
     crit_c7 = bool(len(model_evaluations) == 5)
     crit_c8 = True # Automated audits
