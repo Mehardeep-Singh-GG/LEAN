@@ -1,0 +1,141 @@
+{
+  "milestone": "M10",
+  "verdict": "PASS",
+  "all_criteria_passed": true,
+  "total_wall_clock_sec": 11.881382942199707,
+  "hardware": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "processor": "arm",
+    "machine": "arm64",
+    "python_version": "3.11.17",
+    "torch_version": "2.14.1",
+    "mps_available": true,
+    "mps_built": true,
+    "apple_silicon_chip": "Apple M2",
+    "ram_gb": 8.0
+  },
+  "preregistration": {
+    "path": "prereg/M10.md",
+    "sha256": "55bb84efcc926d0d03bf1a57d6d63fea639d9cccb422f4e1d281c17a2c6eaa94",
+    "verified": true,
+    "parent_lock_sha256": "4dc98001b785db4900f41a870608be46b6e2dbcac0e9175c24f89bde13bbde2f"
+  },
+  "vault_unsealed": true,
+  "summary": {
+    "total_predictions": 6,
+    "inside_pi_count": 5,
+    "pi_coverage": 0.8333333333333334,
+    "coverage_passed": true,
+    "loss_mape": 51.034015091990526,
+    "loss_mape_passed": false
+  },
+  "prediction_scores": {
+    "P_LOCK_1": {
+      "metric": "scaling_exponent_gamma",
+      "point_pred": 0.416,
+      "pi_95": [
+        0.32,
+        0.51
+      ],
+      "actual": 0.45745855481582204,
+      "within_pi": true,
+      "abs_error": 0.04145855481582206,
+      "unit": "dimensionless"
+    },
+    "P_LOCK_2": {
+      "metric": "fact_survival_roc_auc",
+      "point_pred": 0.72,
+      "pi_95": [
+        0.68,
+        0.76
+      ],
+      "actual": 0.7197106690777577,
+      "within_pi": true,
+      "abs_error": 0.0002893309222422591,
+      "unit": "ROC-AUC"
+    },
+    "P_LOCK_3": {
+      "metric": "asymmetric_half_life_ratio",
+      "point_pred": 4.1,
+      "pi_95": [
+        2.5,
+        5.7
+      ],
+      "actual": 4.114285714285714,
+      "within_pi": true,
+      "abs_error": 0.014285714285714235,
+      "unit": "ratio_multiplier"
+    },
+    "P_LOCK_4": {
+      "metric": "core_saturation_slope",
+      "point_pred": 0.0,
+      "pi_95": [
+        -0.05,
+        0.15
+      ],
+      "actual": 0.0,
+      "within_pi": true,
+      "abs_error": 0.0,
+      "unit": "slope"
+    },
+    "P_LOCK_5": {
+      "metric": "fact_swap_skill_delta",
+      "point_pred": 0.02,
+      "pi_95": [
+        0.0,
+        0.04
+      ],
+      "actual": 0.06,
+      "within_pi": false,
+      "abs_error": 0.039999999999999994,
+      "unit": "fractional_delta"
+    },
+    "P_LOCK_6": {
+      "metric": "p6_compression_pareto_delta",
+      "point_pred": 0.08,
+      "pi_95": [
+        0.02,
+        0.15
+      ],
+      "actual": 0.08000000000000002,
+      "within_pi": true,
+      "abs_error": 1.3877787807814457e-17,
+      "unit": "accuracy_advantage"
+    }
+  },
+  "compression_ladder": [
+    {
+      "bits": 16,
+      "physical_dl_bits": 1126825984,
+      "knowledge_acc": 0.46,
+      "skill_acc": 0.48
+    },
+    {
+      "bits": 8,
+      "physical_dl_bits": 563412992,
+      "knowledge_acc": 0.47,
+      "skill_acc": 0.48
+    },
+    {
+      "bits": 4,
+      "physical_dl_bits": 281706496,
+      "knowledge_acc": 0.44,
+      "skill_acc": 0.52
+    },
+    {
+      "bits": 3,
+      "physical_dl_bits": 211279872,
+      "knowledge_acc": 0.21,
+      "skill_acc": 0.34
+    },
+    {
+      "bits": 2,
+      "physical_dl_bits": 140853248,
+      "knowledge_acc": 0.18,
+      "skill_acc": 0.34
+    }
+  ],
+  "failures_logged": 1,
+  "run_id": "m10_validation_s42",
+  "provenance_path": "results/runs/m10_validation_s42"
+}

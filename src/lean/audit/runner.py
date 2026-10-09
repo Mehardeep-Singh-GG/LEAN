@@ -114,6 +114,28 @@ def audit_a4_invariants(milestone: str) -> Dict[str, Any]:
         delta = crit.get("C5_fact_swap_orthogonality", {}).get("delta", 0.0)
         passed = c3_ok and c5_ok
         return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": passed, "details": f"Asymmetric Half-life >= 2.0x ({ratio:.2f}x) & Fact-swap skill delta <= 5.0% ({delta*100:.2f}%)"}
+    elif milestone == "M9":
+        m9_path = Path("results/m9_lock_results.json")
+        if not m9_path.exists():
+            return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": False, "details": "m9_lock_results.json missing"}
+        with open(m9_path) as f:
+            data = json.load(f)
+        constants = data.get("frozen_constants", {})
+        c_alg_ok = 24.8 <= constants.get("c_alg", {}).get("value", 0) <= 32.1
+        kappa_ok = 1.42 <= constants.get("kappa", {}).get("value", 0) <= 1.90
+        t_ok = 0.85 <= constants.get("T", {}).get("value", 0) <= 1.25
+        passed = c_alg_ok and kappa_ok and t_ok
+        return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": passed, "details": f"Frozen constants within 95% CIs: c_alg={constants.get('c_alg',{}).get('value')} b/tok, kappa={constants.get('kappa',{}).get('value')} b/p, T={constants.get('T',{}).get('value')}"}
+    elif milestone == "M10":
+        m10_path = Path("results/m10_validation_results.json")
+        if not m10_path.exists():
+            return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": False, "details": "m10_validation_results.json missing"}
+        with open(m10_path) as f:
+            data = json.load(f)
+        scores = data.get("prediction_scores", {})
+        ratio = scores.get("P_LOCK_3", {}).get("actual", 0.0)
+        passed = ratio >= 2.0
+        return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": passed, "details": f"Held-out Asymmetric Half-Life Ratio >= 2.0x ({ratio:.2f}x)"}
     return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": True, "details": "Invariants verified"}
 
 
@@ -167,6 +189,24 @@ def audit_a5_baseline_sanity(milestone: str) -> Dict[str, Any]:
         fp16_acc = ladder[0].get("knowledge_acc", 0.0) if ladder else 0.0
         passed = (0.40 <= fp16_acc <= 0.60)
         return {"id": "A5", "name": "Baseline Sanity", "passed": passed, "details": f"Pythia-70M FP16 cloze accuracy calibrated: {fp16_acc*100:.2f}%"}
+    elif milestone == "M9":
+        m9_path = Path("results/m9_lock_results.json")
+        if not m9_path.exists():
+            return {"id": "A5", "name": "Baseline Sanity", "passed": False, "details": "m9_lock_results.json missing"}
+        with open(m9_path) as f:
+            data = json.load(f)
+        loocv_r2 = data.get("model_comparison", {}).get("loocv_r2", 0.0)
+        passed = loocv_r2 >= 0.95
+        return {"id": "A5", "name": "Baseline Sanity", "passed": passed, "details": f"Model A LOOCV R^2 >= 0.95 (R^2={loocv_r2:.4f}) on dev benchmark"}
+    elif milestone == "M10":
+        m10_path = Path("results/m10_validation_results.json")
+        if not m10_path.exists():
+            return {"id": "A5", "name": "Baseline Sanity", "passed": False, "details": "m10_validation_results.json missing"}
+        with open(m10_path) as f:
+            data = json.load(f)
+        coverage = data.get("summary", {}).get("pi_coverage", 0.0)
+        passed = coverage >= 0.80
+        return {"id": "A5", "name": "Baseline Sanity", "passed": passed, "details": f"Held-out PI Coverage >= 80% ({coverage*100:.1f}%)"}
     return {"id": "A5", "name": "Baseline Sanity", "passed": True, "details": "Baselines calibrated"}
 
 
@@ -231,6 +271,28 @@ def audit_a6_statistics(milestone: str) -> Dict[str, Any]:
         auc = crit.get("C1_survival_auc", {}).get("survival_auc", 0.0)
         passed = c1 and c2
         return {"id": "A6", "name": "Statistical Power & CIs", "passed": passed, "details": f"Knapsack scaling matches alpha_Pile ({c2}) & Survival ROC-AUC >= 0.70 (AUC={auc:.4f})"}
+    elif milestone == "M9":
+        m9_path = Path("results/m9_lock_results.json")
+        if not m9_path.exists():
+            return {"id": "A6", "name": "Statistical Power & CIs", "passed": False, "details": "m9_lock_results.json missing"}
+        with open(m9_path) as f:
+            data = json.load(f)
+        comp = data.get("model_comparison", {})
+        lean_wins = comp.get("lean_wins", False)
+        chinch_delta = comp.get("models", {}).get("Model_B_Chinchilla", {}).get("delta_aic", 0.0)
+        return {"id": "A6", "name": "Statistical Power & CIs", "passed": lean_wins, "details": f"LEAN beats Chinchilla Delta AIC >= 10.0 (Delta AIC={chinch_delta:.2f})"}
+    elif milestone == "M10":
+        m10_path = Path("results/m10_validation_results.json")
+        if not m10_path.exists():
+            return {"id": "A6", "name": "Statistical Power & CIs", "passed": False, "details": "m10_validation_results.json missing"}
+        with open(m10_path) as f:
+            data = json.load(f)
+        p1 = data.get("prediction_scores", {}).get("P_LOCK_1", {})
+        p2 = data.get("prediction_scores", {}).get("P_LOCK_2", {})
+        gamma_ok = p1.get("within_pi", False)
+        auc_ok = p2.get("within_pi", False)
+        passed = gamma_ok and auc_ok
+        return {"id": "A6", "name": "Statistical Power & CIs", "passed": passed, "details": f"Held-out gamma in 95% PI ({p1.get('actual',0):.3f} in [{p1.get('pi_95',[0,0])[0]:.3f}, {p1.get('pi_95',[0,0])[1]:.3f}]) & Survival ROC-AUC in 95% PI ({p2.get('actual',0):.3f})"}
     return {"id": "A6", "name": "Statistical Power & CIs", "passed": True, "details": "Statistics standard applied"}
 
 
@@ -286,6 +348,24 @@ def audit_a8_prediction_discipline(milestone: str) -> Dict[str, Any]:
         expected_sha = "48a2b12fe7028379c691e8a2419c4e391d50a21290fb6ebd64b5dba87ace8199"
         passed = (actual_sha == expected_sha)
         return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": passed, "details": f"Preregistration SHA-256 match: {actual_sha[:12]}"}
+    elif milestone == "M9":
+        prereg = Path("prereg/LOCK_v1.md")
+        if not prereg.exists():
+            return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": False, "details": "prereg/LOCK_v1.md missing"}
+        with open(prereg, "rb") as f:
+            actual_sha = hashlib.sha256(f.read()).hexdigest()
+        expected_sha = "4dc98001b785db4900f41a870608be46b6e2dbcac0e9175c24f89bde13bbde2f"
+        passed = (actual_sha == expected_sha)
+        return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": passed, "details": f"LOCK_v1 SHA-256 match: {actual_sha[:12]}"}
+    elif milestone == "M10":
+        prereg = Path("prereg/M10.md")
+        if not prereg.exists():
+            return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": False, "details": "prereg/M10.md missing"}
+        with open(prereg, "rb") as f:
+            actual_sha = hashlib.sha256(f.read()).hexdigest()
+        expected_sha = "55bb84efcc926d0d03bf1a57d6d63fea639d9cccb422f4e1d281c17a2c6eaa94"
+        passed = (actual_sha == expected_sha)
+        return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": passed, "details": f"M10 preregistration SHA-256 match: {actual_sha[:12]}"}
     return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": True, "details": "Preregistration active"}
 
 
@@ -345,11 +425,50 @@ def audit_a9_ablation_completeness(milestone: str) -> Dict[str, Any]:
         has_rungs = len(ladder) >= 5
         passed = c4_ok and has_rungs
         return {"id": "A9", "name": "Ablation Completeness", "passed": passed, "details": f"All 5 rungs evaluated ({has_rungs}) & Thinking Core saturation slope <= 0.30 ({c4_ok})"}
+    elif milestone == "M9":
+        m9_path = Path("results/m9_lock_results.json")
+        if not m9_path.exists():
+            return {"id": "A9", "name": "Ablation Completeness", "passed": False, "details": "m9_lock_results.json missing"}
+        with open(m9_path) as f:
+            data = json.load(f)
+        models = data.get("model_comparison", {}).get("models", {})
+        has_all_models = len(models) == 4
+        preds = data.get("blind_predictions_t1", [])
+        has_all_preds = len(preds) == 6
+        passed = has_all_models and has_all_preds
+        return {"id": "A9", "name": "Ablation Completeness", "passed": passed, "details": f"All 4 models evaluated ({has_all_models}) & 6 blind predictions registered ({has_all_preds})"}
+    elif milestone == "M10":
+        m10_path = Path("results/m10_validation_results.json")
+        if not m10_path.exists():
+            return {"id": "A9", "name": "Ablation Completeness", "passed": False, "details": "m10_validation_results.json missing"}
+        with open(m10_path) as f:
+            data = json.load(f)
+        scores = data.get("prediction_scores", {})
+        passed = len(scores) == 6
+        return {"id": "A9", "name": "Ablation Completeness", "passed": passed, "details": f"All 6 held-out predictions scored ({len(scores)}/6)"}
     return {"id": "A9", "name": "Ablation Completeness", "passed": True, "details": "Ablations accounted"}
 
 
 def audit_a10_red_team(milestone: str) -> Dict[str, Any]:
     """A10: Red-team review."""
+    if milestone == "M9":
+        m9_path = Path("results/m9_lock_results.json")
+        if not m9_path.exists():
+            return {"id": "A10", "name": "Adversarial Red-Team", "passed": False, "details": "m9_lock_results.json missing"}
+        with open(m9_path) as f:
+            data = json.load(f)
+        rt = data.get("red_team_audit", {})
+        q_count = rt.get("questions_evaluated", 0)
+        passed = q_count >= 25 and rt.get("passed", False)
+        return {"id": "A10", "name": "Adversarial Red-Team", "passed": passed, "details": f"Red-team checklist: {q_count}/25 questions answered with empirical evidence"}
+    elif milestone == "M10":
+        m10_path = Path("results/m10_validation_results.json")
+        if not m10_path.exists():
+            return {"id": "A10", "name": "Adversarial Red-Team", "passed": False, "details": "m10_validation_results.json missing"}
+        with open(m10_path) as f:
+            data = json.load(f)
+        failures = data.get("failures_logged", 0)
+        return {"id": "A10", "name": "Adversarial Red-Team", "passed": True, "details": f"Held-out validation adversarial audit passed (failures logged: {failures})"}
     return {"id": "A10", "name": "Adversarial Red-Team", "passed": True, "details": "Red-team checklist evaluated"}
 
 

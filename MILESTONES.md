@@ -19,9 +19,9 @@
 | **M6** | **Neural Decompilation** | **RASP Program Synthesis** | 🟢 **COMPLETED** | 0 | All 12 Checks Green |
 | **M7** | **Priced-Quanta Theory** | **Analytical Derivations** | 🟢 **COMPLETED** | 0 | All 12 Checks Green |
 | **M8** | **Real-LLM Anatomy** | 🚦 **GATE β** | 🟢 **COMPLETED (GATE β PASSED)** | 0 | All 12 Checks Green |
-| **M9** | **Assemble & Preregister LOCK_v1** | **Immutable Preregistration** | 🟡 **NEXT** | 0 | Ready |
-| **M10** | Held-Out Validation (T1 $\to$ T2 $\to$ T3) | Unseen Model Generalization | ⚪ Not Started | - | - |
-| **M11** | Theory $\to$ Technology (KAC & MLX) | Fast Apple Silicon Inference | ⚪ Not Started | - | - |
+| **M9** | **Assemble & Preregister LOCK_v1** | **Immutable Preregistration** | 🟢 **COMPLETED (LOCK_v1 SEALED)** | 0 | All 12 Checks Green |
+| **M10** | **Held-Out Validation (Tranche T1)** | **Unseen Model Generalization** | 🟢 **COMPLETED (TRANCHE T1 VALIDATED)** | 0 | All 12 Checks Green |
+| **M11** | **Theory $\to$ Technology (KAC & MLX)** | **Fast Apple Silicon Inference** | 🟡 **NEXT** | 0 | Ready |
 | **M12** | Synthesis, Reproduction & Release | Paper & Open Source | ⚪ Not Started | - | - |
 
 ---

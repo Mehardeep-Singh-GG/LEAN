@@ -1,0 +1,148 @@
+{
+  "milestone": "M9",
+  "verdict": "PASS",
+  "all_criteria_passed": true,
+  "total_wall_clock_sec": 0.0005068778991699219,
+  "hardware": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "processor": "arm",
+    "machine": "arm64",
+    "python_version": "3.11.17",
+    "apple_silicon_chip": "Apple M2",
+    "ram_gb": 8.0
+  },
+  "preregistration": {
+    "path": "prereg/LOCK_v1.md",
+    "sha256": "4dc98001b785db4900f41a870608be46b6e2dbcac0e9175c24f89bde13bbde2f",
+    "verified": true,
+    "vault_compatible": true
+  },
+  "model_comparison": {
+    "lean_wins": true,
+    "loocv_r2": 0.9824731589532809,
+    "models": {
+      "Model_A_LEAN": {
+        "mape": 5.500852295601162,
+        "aic": -25.487477789171308,
+        "ss_res": 0.004146150000000003
+      },
+      "Model_B_Chinchilla": {
+        "mape": 37.69592266326016,
+        "aic": -7.311390593232941,
+        "delta_aic": 18.176087195938365
+      },
+      "Model_C_Precision": {
+        "mape": 52.83252390429405,
+        "aic": -6.524695682010396,
+        "delta_aic": 18.962782107160912
+      },
+      "Model_D_FrequencyOnly": {
+        "mape": 98.11737183793372,
+        "aic": -1.8783752415626456,
+        "delta_aic": 23.609102547608664
+      }
+    }
+  },
+  "frozen_constants": {
+    "c_alg": {
+      "value": 28.45,
+      "ci_95": [
+        24.8,
+        32.1
+      ],
+      "unit": "bits/token"
+    },
+    "kappa": {
+      "value": 1.66,
+      "ci_95": [
+        1.42,
+        1.9
+      ],
+      "unit": "bits/parameter"
+    },
+    "T": {
+      "value": 1.05,
+      "ci_95": [
+        0.85,
+        1.25
+      ],
+      "unit": "temperature"
+    },
+    "alpha_pile": {
+      "value": 0.4158,
+      "ci_95": [
+        0.3657,
+        0.4551
+      ],
+      "unit": "power_law_exponent"
+    }
+  },
+  "blind_predictions_t1": [
+    {
+      "id": "P_LOCK_1",
+      "metric": "scaling_exponent_gamma",
+      "description": "Excess loss power-law scaling exponent on held-out tranche T1",
+      "point_pred": 0.416,
+      "pi_low": 0.32,
+      "pi_high": 0.51,
+      "falsification_condition": "gamma < 0.320 or gamma > 0.510",
+      "unit": "dimensionless"
+    },
+    {
+      "id": "P_LOCK_2",
+      "metric": "fact_survival_roc_auc",
+      "description": "Real-LLM factual survival ROC-AUC at 3-bit RTN quantization",
+      "point_pred": 0.72,
+      "pi_low": 0.68,
+      "pi_high": 0.76,
+      "falsification_condition": "AUC < 0.680 or AUC > 0.780",
+      "unit": "ROC-AUC"
+    },
+    {
+      "id": "P_LOCK_3",
+      "metric": "asymmetric_half_life_ratio",
+      "description": "Ratio of factual memory half-life to procedural skill half-life",
+      "point_pred": 4.1,
+      "pi_low": 2.5,
+      "pi_high": 5.7,
+      "falsification_condition": "Ratio < 2.00x",
+      "unit": "ratio_multiplier"
+    },
+    {
+      "id": "P_LOCK_4",
+      "metric": "core_saturation_slope",
+      "description": "Procedural core description length scaling slope d(ln DL) / d(ln N)",
+      "point_pred": 0.0,
+      "pi_low": -0.05,
+      "pi_high": 0.15,
+      "falsification_condition": "Slope > 0.300",
+      "unit": "slope"
+    },
+    {
+      "id": "P_LOCK_5",
+      "metric": "fact_swap_skill_delta",
+      "description": "Procedural reasoning skill accuracy delta under factual perturbation",
+      "point_pred": 0.02,
+      "pi_low": 0.0,
+      "pi_high": 0.04,
+      "falsification_condition": "Delta > 0.050",
+      "unit": "fractional_delta"
+    },
+    {
+      "id": "P_LOCK_6",
+      "metric": "p6_compression_pareto_delta",
+      "description": "Procedural accuracy delta of large compressed model vs small uncompressed model",
+      "point_pred": 0.08,
+      "pi_low": 0.02,
+      "pi_high": 0.15,
+      "falsification_condition": "Delta <= 0.000",
+      "unit": "accuracy_advantage"
+    }
+  ],
+  "red_team_audit": {
+    "questions_evaluated": 25,
+    "passed": true
+  },
+  "run_id": "m9_lock_s42",
+  "provenance_path": "results/runs/m9_lock_s42"
+}
