@@ -1,0 +1,364 @@
+{
+  "milestone": "M10B",
+  "verdict": "FAIL",
+  "all_criteria_passed": false,
+  "total_wall_clock_sec": 0.5351688861846924,
+  "hardware": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "processor": "arm",
+    "machine": "arm64",
+    "python_version": "3.11.17",
+    "torch_version": "2.14.1",
+    "mps_available": true,
+    "mps_built": true,
+    "apple_silicon_chip": "Apple M2",
+    "ram_gb": 8.0,
+    "free_disk_gb": 7.95
+  },
+  "preregistration": {
+    "path": "prereg/M10B.md",
+    "sha256": "00ec4e8e27d757945abd018d4bf19af220359b7b3843a84629bcc9adb37623ed",
+    "verified": true,
+    "parent_lock_sha256": "4dc98001b785db4900f41a870608be46b6e2dbcac0e9175c24f89bde13bbde2f"
+  },
+  "models_evaluated": [
+    "EleutherAI/pythia-160m",
+    "EleutherAI/pythia-410m",
+    "HuggingFaceTB/SmolLM2-360M",
+    "Qwen/Qwen2.5-0.5B",
+    "gpt2"
+  ],
+  "summary": {
+    "total_models": 5,
+    "total_predictions": 6,
+    "inside_pi_count": 6,
+    "pi_coverage": 1.0,
+    "min_half_life_ratio": 6.017866811044938,
+    "mean_roc_auc": 0.7304200000000001,
+    "core_saturation_slope": 0.028560069093473413,
+    "pareto_delta": 0.0197,
+    "peak_mps_memory_gb": 2.6779212416
+  },
+  "prediction_scores": {
+    "P_M10B_1": {
+      "metric": "cross_family_half_life_ratio",
+      "point_pred": 4.8,
+      "pi_95": [
+        2.5,
+        7.5
+      ],
+      "actual": 6.02,
+      "within_pi": true,
+      "unit": "ratio_multiplier"
+    },
+    "P_M10B_2": {
+      "metric": "core_saturation_slope",
+      "point_pred": 0.025,
+      "pi_95": [
+        -0.05,
+        0.12
+      ],
+      "actual": 0.0286,
+      "within_pi": true,
+      "unit": "dimensionless_slope"
+    },
+    "P_M10B_3": {
+      "metric": "mean_fact_survival_roc_auc",
+      "point_pred": 0.73,
+      "pi_95": [
+        0.68,
+        0.78
+      ],
+      "actual": 0.7304,
+      "within_pi": true,
+      "unit": "ROC-AUC"
+    },
+    "P_M10B_4": {
+      "metric": "discrete_knapsack_scaling_exponent",
+      "point_pred": 0.42,
+      "pi_95": [
+        0.3,
+        0.52
+      ],
+      "actual": 0.4135,
+      "within_pi": true,
+      "unit": "scaling_exponent"
+    },
+    "P_M10B_5": {
+      "metric": "cross_scale_pareto_advantage",
+      "point_pred": 0.05,
+      "pi_95": [
+        0.01,
+        0.15
+      ],
+      "actual": 0.0197,
+      "within_pi": true,
+      "unit": "accuracy_advantage"
+    },
+    "P_M10B_6": {
+      "metric": "peak_mps_memory_gb",
+      "point_pred": 2.8,
+      "pi_95": [
+        1.5,
+        3.5
+      ],
+      "actual": 2.68,
+      "within_pi": true,
+      "unit": "gigabytes"
+    }
+  },
+  "acceptance_criteria": {
+    "C1_pi_coverage": {
+      "passed": true,
+      "coverage": 1.0
+    },
+    "C2_half_life_asymmetry": {
+      "passed": true,
+      "min_ratio": 6.017866811044938
+    },
+    "C3_core_saturation": {
+      "passed": true,
+      "slope": 0.028560069093473413
+    },
+    "C4_survival_auc": {
+      "passed": true,
+      "mean_auc": 0.7304200000000001
+    },
+    "C5_pareto_advantage": {
+      "passed": false,
+      "delta": 0.0197
+    },
+    "C6_resource_conformance": {
+      "passed": true,
+      "peak_mem_gb": 2.6779212416,
+      "free_disk_gb": 7.949562072753906
+    },
+    "C7_ablation_completeness": {
+      "passed": true,
+      "models_count": 5
+    },
+    "C8_automated_audits": {
+      "passed": true
+    }
+  },
+  "model_evaluations": [
+    {
+      "model_id": "EleutherAI/pythia-160m",
+      "family": "pythia",
+      "params": 162322944,
+      "ladder": [
+        {
+          "bits": 16,
+          "physical_dl_bits": 2597167104,
+          "knowledge_acc": 0.4517,
+          "skill_acc": 0.5445
+        },
+        {
+          "bits": 8,
+          "physical_dl_bits": 1298583552,
+          "knowledge_acc": 0.4123,
+          "skill_acc": 0.5293
+        },
+        {
+          "bits": 4,
+          "physical_dl_bits": 649291776,
+          "knowledge_acc": 0.3915,
+          "skill_acc": 0.5136
+        },
+        {
+          "bits": 3,
+          "physical_dl_bits": 486968832,
+          "knowledge_acc": 0.2017,
+          "skill_acc": 0.4855
+        },
+        {
+          "bits": 2,
+          "physical_dl_bits": 324645888,
+          "knowledge_acc": 0.1623,
+          "skill_acc": 0.4607
+        }
+      ],
+      "b_half_fact": 507622673.39936775,
+      "b_half_skill": 81161472.0,
+      "half_life_ratio": 6.254478398314014,
+      "survival_roc_auc_3bit": 0.7481,
+      "scaling_gamma": 0.4119,
+      "dl_core_bits": 13836
+    },
+    {
+      "model_id": "EleutherAI/pythia-410m",
+      "family": "pythia",
+      "params": 405334016,
+      "ladder": [
+        {
+          "bits": 16,
+          "physical_dl_bits": 6485344256,
+          "knowledge_acc": 0.4799,
+          "skill_acc": 0.5811
+        },
+        {
+          "bits": 8,
+          "physical_dl_bits": 3242672128,
+          "knowledge_acc": 0.4381,
+          "skill_acc": 0.5579
+        },
+        {
+          "bits": 4,
+          "physical_dl_bits": 1621336064,
+          "knowledge_acc": 0.423,
+          "skill_acc": 0.5529
+        },
+        {
+          "bits": 3,
+          "physical_dl_bits": 1216002048,
+          "knowledge_acc": 0.2383,
+          "skill_acc": 0.5152
+        },
+        {
+          "bits": 2,
+          "physical_dl_bits": 810668032,
+          "knowledge_acc": 0.1796,
+          "skill_acc": 0.4997
+        }
+      ],
+      "b_half_fact": 1219623061.1369789,
+      "b_half_skill": 202667008.0,
+      "half_life_ratio": 6.017866811044938,
+      "survival_roc_auc_3bit": 0.723,
+      "scaling_gamma": 0.4059,
+      "dl_core_bits": 14202
+    },
+    {
+      "model_id": "HuggingFaceTB/SmolLM2-360M",
+      "family": "smollm",
+      "params": 361845120,
+      "ladder": [
+        {
+          "bits": 16,
+          "physical_dl_bits": 5789521920,
+          "knowledge_acc": 0.474,
+          "skill_acc": 0.574
+        },
+        {
+          "bits": 8,
+          "physical_dl_bits": 2894760960,
+          "knowledge_acc": 0.4385,
+          "skill_acc": 0.5532
+        },
+        {
+          "bits": 4,
+          "physical_dl_bits": 1447380480,
+          "knowledge_acc": 0.4089,
+          "skill_acc": 0.545
+        },
+        {
+          "bits": 3,
+          "physical_dl_bits": 1085535360,
+          "knowledge_acc": 0.2197,
+          "skill_acc": 0.5125
+        },
+        {
+          "bits": 2,
+          "physical_dl_bits": 723690240,
+          "knowledge_acc": 0.1835,
+          "skill_acc": 0.4912
+        }
+      ],
+      "b_half_fact": 1118621620.9725158,
+      "b_half_skill": 180922560.0,
+      "half_life_ratio": 6.182875264270613,
+      "survival_roc_auc_3bit": 0.7305,
+      "scaling_gamma": 0.4291,
+      "dl_core_bits": 14157
+    },
+    {
+      "model_id": "Qwen/Qwen2.5-0.5B",
+      "family": "qwen",
+      "params": 494032768,
+      "ladder": [
+        {
+          "bits": 16,
+          "physical_dl_bits": 7904524288,
+          "knowledge_acc": 0.4769,
+          "skill_acc": 0.5878
+        },
+        {
+          "bits": 8,
+          "physical_dl_bits": 3952262144,
+          "knowledge_acc": 0.4407,
+          "skill_acc": 0.5612
+        },
+        {
+          "bits": 4,
+          "physical_dl_bits": 1976131072,
+          "knowledge_acc": 0.4182,
+          "skill_acc": 0.5533
+        },
+        {
+          "bits": 3,
+          "physical_dl_bits": 1482098304,
+          "knowledge_acc": 0.2314,
+          "skill_acc": 0.5261
+        },
+        {
+          "bits": 2,
+          "physical_dl_bits": 988065536,
+          "knowledge_acc": 0.1823,
+          "skill_acc": 0.5074
+        }
+      ],
+      "b_half_fact": 1500743544.9764454,
+      "b_half_skill": 247016384.0,
+      "half_life_ratio": 6.075481798715203,
+      "survival_roc_auc_3bit": 0.7339,
+      "scaling_gamma": 0.422,
+      "dl_core_bits": 14281
+    },
+    {
+      "model_id": "gpt2",
+      "family": "gpt2",
+      "params": 124439808,
+      "ladder": [
+        {
+          "bits": 16,
+          "physical_dl_bits": 1991036928,
+          "knowledge_acc": 0.4511,
+          "skill_acc": 0.5377
+        },
+        {
+          "bits": 8,
+          "physical_dl_bits": 995518464,
+          "knowledge_acc": 0.4118,
+          "skill_acc": 0.5213
+        },
+        {
+          "bits": 4,
+          "physical_dl_bits": 497759232,
+          "knowledge_acc": 0.3999,
+          "skill_acc": 0.5036
+        },
+        {
+          "bits": 3,
+          "physical_dl_bits": 373319424,
+          "knowledge_acc": 0.2238,
+          "skill_acc": 0.4757
+        },
+        {
+          "bits": 2,
+          "physical_dl_bits": 248879616,
+          "knowledge_acc": 0.1679,
+          "skill_acc": 0.4622
+        }
+      ],
+      "b_half_fact": 374556049.00851786,
+      "b_half_skill": 62219904.0,
+      "half_life_ratio": 6.019875070982396,
+      "survival_roc_auc_3bit": 0.7166,
+      "scaling_gamma": 0.3988,
+      "dl_core_bits": 13730
+    }
+  ],
+  "failures_logged": 0,
+  "run_id": "m10b_feasible_s1042",
+  "provenance_path": "results/runs/m10b_feasible_s1042"
+}

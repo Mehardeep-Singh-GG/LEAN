@@ -67,6 +67,16 @@ Evaluated across multi-corpus transfer benchmarks (The Pile $\alpha=0.4158$, Syn
 | **Model C (Precision)** | Kumar et al. Precision Law | 52.83% | -6.52 | +18.96 | N/A | Falsified ($\Delta\text{AIC} \ge 10$) |
 | **Model D (Freq-Only)** | Frequency Truncation ($c_i \equiv 1$) | 98.12% | -1.88 | +23.61 | N/A | Falsified ($\Delta\text{AIC} \ge 10$) |
 
+### 3.1 Scope, Provenance, and Methodology Clarification (Adversarial Audit Finding)
+> [!IMPORTANT]
+> **Methodological Scope of M9 Model Comparison:**
+> The model comparison above evaluates the **cross-corpus scaling exponent transfer hypothesis** ($\gamma \equiv \alpha$) under discrete quanta knapsack clearing across four diverse corpora: The Pile ($\alpha = 0.4158$) and three synthetic universes ($\alpha = 0.30, 0.60, 1.00$).
+> 
+> **Critical Distinctions & Caveats:**
+> 1. **Discrete Knapsack Allocation vs. Neural Loss Trajectories:** The excess-loss curves used in this M9 dev comparison were constructed from corpus factual frequencies and `greedy_knapsack` allocations. This benchmarks candidate power laws against the knapsack optimization setup. It proves that LEAN's exponent formulation accurately predicts knapsack capacity scaling across varying Zipf exponents, whereas fixed-exponent models fail.
+> 2. **Independent Real-Model Validation:** This benchmark does *not* claim that LEAN beats Chinchilla on continuous neural pretraining loss curves. Neural compression validation is evaluated out-of-sample on real pre-trained weights (Pythia-70M progressive quantization) in Milestone M10.
+> 3. **Zero Contamination:** No held-out validation data (Tranche T1) was accessed or leaked into this model selection. All four dev corpora were frozen prior to compiling `prereg/LOCK_v1.md`.
+
 ---
 
 ## 4. Blind Numerical Predictions for Held-Out Tranche T1

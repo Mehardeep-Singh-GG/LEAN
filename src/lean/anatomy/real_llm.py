@@ -238,7 +238,8 @@ def evaluate_counterfactual_fact_swap(
     tokenizer: Any,
     k_probes: List[Dict[str, Any]],
     skill_items: List[Tuple[str, str, List[str]]],
-    device: str = "cpu"
+    device: str = "cpu",
+    seed: int = 1042
 ) -> Dict[str, Any]:
     """
     Applies targeted perturbation to factual associative MLP down-projections.
@@ -256,7 +257,12 @@ def evaluate_counterfactual_fact_swap(
     with torch.no_grad():
         num_rows = min(20, target_layer.shape[0])
         w_std = float(orig_weight.std().item())
-        noise = torch.randn(num_rows, target_layer.shape[1], device=device) * (1.2 * w_std)
+        if seed is not None:
+            g = torch.Generator(device="cpu")
+            g.manual_seed(seed)
+            noise = torch.randn(num_rows, target_layer.shape[1], generator=g).to(device) * (1.2 * w_std)
+        else:
+            noise = torch.randn(num_rows, target_layer.shape[1], device=device) * (1.2 * w_std)
         target_layer.data[:num_rows, :] += noise
         
     pert_k = evaluate_cloze_candidates(model, tokenizer, k_probes, device=device)["accuracy"]

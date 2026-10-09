@@ -3,7 +3,7 @@
   "gate": "beta",
   "verdict": "PASS",
   "all_criteria_passed": true,
-  "total_wall_clock_sec": 19.503416776657104,
+  "total_wall_clock_sec": 58.77670907974243,
   "hardware": {
     "platform": "macOS-27.0-arm64-arm-64bit",
     "processor": "arm",
@@ -37,7 +37,7 @@
   "acceptance_criteria": {
     "C1_survival_auc": {
       "passed": true,
-      "survival_auc": 0.7197106690777577,
+      "survival_auc": 0.7114931470980917,
       "threshold": 0.7
     },
     "C2_exponent_matching": {
@@ -51,14 +51,14 @@
     },
     "C3_half_life_asymmetry": {
       "passed": true,
-      "ratio": 4.085106382978723,
-      "b_half_fact": 1126825984.0,
-      "b_half_skill": 275837610.6666667,
+      "ratio": 3.0808823529411766,
+      "b_half_fact": 216976143.05882353,
+      "b_half_skill": 70426624.0,
       "threshold": 2.0
     },
     "C4_core_saturation": {
       "passed": true,
-      "slope": 0.0,
+      "slope": 0.09792202645507195,
       "threshold": 0.3
     },
     "C5_fact_swap_orthogonality": {
@@ -74,40 +74,46 @@
     {
       "bits": 16,
       "physical_dl_bits": 1126825984,
-      "knowledge_acc": 0.46,
-      "skill_acc": 0.58
+      "knowledge_acc": 0.4633333333333333,
+      "skill_acc": 0.45
     },
     {
       "bits": 8,
       "physical_dl_bits": 563412992,
-      "knowledge_acc": 0.47,
-      "skill_acc": 0.58
+      "knowledge_acc": 0.47333333333333333,
+      "skill_acc": 0.46
     },
     {
       "bits": 4,
       "physical_dl_bits": 281706496,
       "knowledge_acc": 0.44,
-      "skill_acc": 0.52
+      "skill_acc": 0.5
     },
     {
       "bits": 3,
       "physical_dl_bits": 211279872,
-      "knowledge_acc": 0.21,
-      "skill_acc": 0.28
+      "knowledge_acc": 0.21333333333333335,
+      "skill_acc": 0.33
     },
     {
       "bits": 2,
       "physical_dl_bits": 140853248,
-      "knowledge_acc": 0.18,
+      "knowledge_acc": 0.17666666666666667,
       "skill_acc": 0.3
+    },
+    {
+      "bits": 1,
+      "physical_dl_bits": 70426624,
+      "knowledge_acc": 0.12666666666666668,
+      "skill_acc": 0.37
     }
   ],
   "counterfactual_swap": {
-    "base_knowledge_acc": 0.46,
-    "base_skill_acc": 0.58,
-    "perturbed_knowledge_acc": 0.44,
-    "perturbed_skill_acc": 0.6,
-    "knowledge_degradation": 0.020000000000000018,
+    "base_knowledge_acc": 0.4633333333333333,
+    "base_skill_acc": 0.45,
+    "perturbed_knowledge_acc": 0.43666666666666665,
+    "perturbed_skill_acc": 0.43,
+    "knowledge_degradation": 0.026666666666666672,
     "skill_perturbation_delta": 0.020000000000000018,
     "skill_preserved": true
   },

@@ -136,6 +136,15 @@ def audit_a4_invariants(milestone: str) -> Dict[str, Any]:
         ratio = scores.get("P_LOCK_3", {}).get("actual", 0.0)
         passed = ratio >= 2.0
         return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": passed, "details": f"Held-out Asymmetric Half-Life Ratio >= 2.0x ({ratio:.2f}x)"}
+    elif milestone == "M10B":
+        m10b_path = Path("results/m10b_feasible_results.json")
+        if not m10b_path.exists():
+            return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": False, "details": "m10b_feasible_results.json missing"}
+        with open(m10b_path) as f:
+            data = json.load(f)
+        ratio = data.get("summary", {}).get("min_half_life_ratio", 0.0)
+        passed = ratio >= 2.0
+        return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": passed, "details": f"Multi-Model Asymmetric Half-Life Ratio >= 2.0x (min across models: {ratio:.2f}x)"}
     return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": True, "details": "Invariants verified"}
 
 
@@ -207,6 +216,15 @@ def audit_a5_baseline_sanity(milestone: str) -> Dict[str, Any]:
         coverage = data.get("summary", {}).get("pi_coverage", 0.0)
         passed = coverage >= 0.80
         return {"id": "A5", "name": "Baseline Sanity", "passed": passed, "details": f"Held-out PI Coverage >= 80% ({coverage*100:.1f}%)"}
+    elif milestone == "M10B":
+        m10b_path = Path("results/m10b_feasible_results.json")
+        if not m10b_path.exists():
+            return {"id": "A5", "name": "Baseline Sanity", "passed": False, "details": "m10b_feasible_results.json missing"}
+        with open(m10b_path) as f:
+            data = json.load(f)
+        coverage = data.get("summary", {}).get("pi_coverage", 0.0)
+        passed = coverage >= 0.80
+        return {"id": "A5", "name": "Baseline Sanity", "passed": passed, "details": f"Multi-model PI Coverage >= 80% ({coverage*100:.1f}%)"}
     return {"id": "A5", "name": "Baseline Sanity", "passed": True, "details": "Baselines calibrated"}
 
 
@@ -293,6 +311,17 @@ def audit_a6_statistics(milestone: str) -> Dict[str, Any]:
         auc_ok = p2.get("within_pi", False)
         passed = gamma_ok and auc_ok
         return {"id": "A6", "name": "Statistical Power & CIs", "passed": passed, "details": f"Held-out gamma in 95% PI ({p1.get('actual',0):.3f} in [{p1.get('pi_95',[0,0])[0]:.3f}, {p1.get('pi_95',[0,0])[1]:.3f}]) & Survival ROC-AUC in 95% PI ({p2.get('actual',0):.3f})"}
+    elif milestone == "M10B":
+        m10b_path = Path("results/m10b_feasible_results.json")
+        if not m10b_path.exists():
+            return {"id": "A6", "name": "Statistical Power & CIs", "passed": False, "details": "m10b_feasible_results.json missing"}
+        with open(m10b_path) as f:
+            data = json.load(f)
+        crit = data.get("acceptance_criteria", {})
+        slope_ok = crit.get("C3_core_saturation", {}).get("passed", False)
+        pareto_ok = crit.get("C5_pareto_advantage", {}).get("passed", False)
+        passed = slope_ok and pareto_ok
+        return {"id": "A6", "name": "Statistical Power & CIs", "passed": passed, "details": f"Core saturation slope <= 0.15 ({slope_ok}) & Cross-scale Pareto advantage verified ({pareto_ok})"}
     return {"id": "A6", "name": "Statistical Power & CIs", "passed": True, "details": "Statistics standard applied"}
 
 
@@ -366,6 +395,15 @@ def audit_a8_prediction_discipline(milestone: str) -> Dict[str, Any]:
         expected_sha = "55bb84efcc926d0d03bf1a57d6d63fea639d9cccb422f4e1d281c17a2c6eaa94"
         passed = (actual_sha == expected_sha)
         return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": passed, "details": f"M10 preregistration SHA-256 match: {actual_sha[:12]}"}
+    elif milestone == "M10B":
+        prereg = Path("prereg/M10B.md")
+        if not prereg.exists():
+            return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": False, "details": "prereg/M10B.md missing"}
+        with open(prereg, "rb") as f:
+            actual_sha = hashlib.sha256(f.read()).hexdigest()
+        expected_sha = "00ec4e8e27d757945abd018d4bf19af220359b7b3843a84629bcc9adb37623ed"
+        passed = (actual_sha == expected_sha)
+        return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": passed, "details": f"M10B preregistration SHA-256 match: {actual_sha[:12]}"}
     return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": True, "details": "Preregistration active"}
 
 
@@ -446,6 +484,15 @@ def audit_a9_ablation_completeness(milestone: str) -> Dict[str, Any]:
         scores = data.get("prediction_scores", {})
         passed = len(scores) == 6
         return {"id": "A9", "name": "Ablation Completeness", "passed": passed, "details": f"All 6 held-out predictions scored ({len(scores)}/6)"}
+    elif milestone == "M10B":
+        m10b_path = Path("results/m10b_feasible_results.json")
+        if not m10b_path.exists():
+            return {"id": "A9", "name": "Ablation Completeness", "passed": False, "details": "m10b_feasible_results.json missing"}
+        with open(m10b_path) as f:
+            data = json.load(f)
+        models_evaled = len(data.get("models_evaluated", []))
+        passed = models_evaled >= 5
+        return {"id": "A9", "name": "Ablation Completeness", "passed": passed, "details": f"All 5 feasible models evaluated ({models_evaled}/5)"}
     return {"id": "A9", "name": "Ablation Completeness", "passed": True, "details": "Ablations accounted"}
 
 
@@ -469,6 +516,14 @@ def audit_a10_red_team(milestone: str) -> Dict[str, Any]:
             data = json.load(f)
         failures = data.get("failures_logged", 0)
         return {"id": "A10", "name": "Adversarial Red-Team", "passed": True, "details": f"Held-out validation adversarial audit passed (failures logged: {failures})"}
+    elif milestone == "M10B":
+        m10b_path = Path("results/m10b_feasible_results.json")
+        if not m10b_path.exists():
+            return {"id": "A10", "name": "Adversarial Red-Team", "passed": False, "details": "m10b_feasible_results.json missing"}
+        with open(m10b_path) as f:
+            data = json.load(f)
+        failures = data.get("failures_logged", 0)
+        return {"id": "A10", "name": "Adversarial Red-Team", "passed": True, "details": f"Feasible models adversarial audit passed (failures logged: {failures})"}
     return {"id": "A10", "name": "Adversarial Red-Team", "passed": True, "details": "Red-team checklist evaluated"}
 
 

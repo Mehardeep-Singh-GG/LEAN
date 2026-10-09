@@ -90,7 +90,7 @@ def generate_knowledge_probes(total_facts: int = 3000, seed: int = 42) -> List[D
     """
     Generate at least 3,000 balanced knowledge cloze probes with pretraining frequency annotations.
     """
-    random.seed(seed)
+    rng = random.Random(seed)
     probes = []
     
     # Paraphrase templates for consistency checking
@@ -111,8 +111,10 @@ def generate_knowledge_probes(total_facts: int = 3000, seed: int = 42) -> List[D
     fact_id = 0
     
     for rel_name, template, facts in RELATIONS_DB:
+        facts_perm = list(facts)
+        rng.shuffle(facts_perm)
         for i in range(count_per_rel):
-            sub, obj, base_freq = facts[i % len(facts)]
+            sub, obj, base_freq = facts_perm[i % len(facts_perm)]
             # Add synthetic noise to frequency simulating Zipfian dispersion
             freq = int(base_freq * (1.0 + 0.1 * (i // len(facts))))
             

@@ -504,6 +504,52 @@ flowchart TD
 
 ---
 
+## M10B: Multi-Model Feasible-Scale Validation (Tranche T1-Feasible)
+
+**Objective:** Test the universality and cross-architecture validity of the Priced-Quanta Equation v1 across **all locally feasible pretrained models** ($\le 500\text{M}$ parameters) on Apple Silicon M2 (8 GB Unified Memory) with zero mock data and God-tier audit rigor.
+
+### Target Model Suite (Local Hardware Feasible $\le 500\text{M}$):
+1. **`EleutherAI/pythia-160m`** (162M params): Intra-family scaling test (The Pile pretraining).
+2. **`EleutherAI/pythia-410m`** (405M params): Cross-scale intra-family test (The Pile pretraining).
+3. **`HuggingFaceTB/SmolLM2-360M`** (360M params): Modern compact LLaMA-style architecture with GQA (SmolLM-Corpus pretraining).
+4. **`Qwen/Qwen2.5-0.5B`** (490M params): High-density multilingual sub-1B architecture (Qwen pretraining).
+5. **`gpt2`** (124M params): Historical standard baseline architecture (WebText pretraining).
+
+### Core Theoretical Hypotheses:
+- **H1 (Universal Asymmetric Half-Life Law):** Across all architectures and tokenizers, procedural reasoning skills strictly outlive factual associations under progressive quantization:
+  $$B_{1/2}^{\text{fact}} / B_{1/2}^{\text{skill}} \ge 2.0\times$$
+- **H2 (Thinking Core Boundedness Across Parameter Scale):** The physical description length of the algorithmic thinking core $\text{DL}_{\text{core}}$ saturates with parameter count $N$, exhibiting a scale sensitivity slope $\partial \ln \text{DL}_{\text{core}} / \partial \ln N \le 0.15$.
+- **H3 (Cross-Scale Pareto Advantage P6):** A larger model compressed to 2-bit or 3-bit strictly Pareto-dominates an uncompressed smaller model of identical total physical bit capacity in procedural reasoning accuracy ($\Delta \text{Acc}_{\text{skill}} > 0$).
+- **H4 (Critical Factual Cliff Invariance):** The discrete knapsack clearing price $\tau(B)$ induces a sharp factual memory drop-off specifically within the 3-bit to 2-bit transition rung ($b \in [2.0, 3.5]$ bits/param) across all families.
+- **H5 (Memory & Disk Conservation on Apple Silicon):** Layer-wise sequential evaluation, FP16/INT8 streaming quantization, and aggressive garbage collection (`gc.collect()`, `torch.mps.empty_cache()`) maintain peak memory consumption $\le 3.5\text{ GB}$ and disk footprint within the available 9.0 GB quota.
+
+### Steps:
+- **10B.1** Preregistration Lock: Freeze hypotheses, falsification boundaries, and 95% Prediction Intervals in `prereg/M10B.md` under SHA-256 cryptographic sealing.
+- **10B.2** Memory-Guarded Sequential Pipeline: Implement sequential download, layer-wise quantization ladder (FP16 $\to$ 8-bit $\to$ 4-bit $\to$ 3-bit $\to$ 2-bit RTN), evaluation, and local cache eviction to respect 8 GB RAM and 9.0 GB free disk space.
+- **10B.3** Factual vs. Skill Probe Evaluation: Run candidate-conditioned cloze probes ($N=100$ per model) and standardized procedural reasoning batteries ($N=50$ per model) across all 5 rungs.
+- **10B.4** Cross-Family Exponent & Survival Calibration: Fit empirical excess loss scaling $\gamma$ and fact survival ROC-AUC at the critical 3-bit boundary across all 5 models.
+- **10B.5** Cross-Scale Pareto Probing (P6): Evaluate Pythia-410M (at 2-bit $\approx 810\text{ Mb}$) vs Pythia-70M (at FP16 $\approx 1,126\text{ Mb}$) and SmolLM2-360M (at 2-bit) vs GPT-2 (at FP16).
+- **10B.6** Automated God-Tier Audit (A1–A12): Execute the full 12-check verification suite with zero manual intervention or synthetic fallback clamps.
+
+### Pre-Mortem & Safeguards:
+- *Risk:* MPS Out-of-Memory during 410M / 0.5B evaluation.  
+  *Fix:* Execute linear layers sequentially; unload model checkpoints between rungs; call `torch.mps.empty_cache()` after each layer.
+- *Risk:* Disk full error (available disk space is 9.0 GB).  
+  *Fix:* Sequential model processing: download and evaluate one model family at a time, removing or purging downloaded blobs if free disk space dips below 3.0 GB.
+- *Risk:* Differing tokenizers distorting factual cloze accuracy.  
+  *Fix:* Calibrate candidate log-likelihood ranking conditioned on each model's native vocabulary and tokenizer.
+
+### Acceptance Criteria:
+- **C1 (Prediction Interval Coverage):** $\ge 80.0\%$ of cross-model predictions fall inside their preregistered 95% PI.
+- **C2 (Universal Half-Life Asymmetry):** Empirical ratio $B_{1/2}^{\text{fact}} / B_{1/2}^{\text{skill}} \ge 2.0\times$ across all 5 evaluated models.
+- **C3 (Thinking Core Saturation):** Cross-model regression slope $\partial \ln \text{DL}_{\text{core}} / \partial \ln N \le 0.150$.
+- **C4 (Cross-Scale Pareto Advantage):** Quantized larger models beat equal-budget uncompressed smaller models ($\Delta \text{Acc} \ge +0.020$).
+- **C5 (Zero Data Leakage / Vault Integrity):** Vault test splits intact with matching cryptographic hashes.
+- **C6 (Compute & Resource Honesty):** Peak memory $\le 3.5\text{ GB}$, disk buffer $\ge 2.0\text{ GB}$, all wall-clock times faithfully captured.
+- **C7 (God-Tier Automated Audit):** All 12 automated checks A1–A12 pass with 0 blocking failures.
+
+---
+
 ## M11: Theory → Technology (Knapsack-Aware Compression + Thinking Core)
 
 **Objective:** use the equation to build something better than the state of the art.

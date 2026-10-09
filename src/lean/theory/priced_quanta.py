@@ -217,10 +217,24 @@ def fit_power_law_exponent(
     }
 
 
-def compute_half_life(budgets: List[float], accuracies: List[float]) -> float:
+def compute_half_life(
+    budgets: List[float],
+    accuracies: List[float],
+    relative: bool = True
+) -> float:
     """
     Computes the 50% retention capacity half-life B_{1/2} from a compression ladder.
-    Interpolates the bit budget where accuracy crosses 0.50 (50%).
+    
+    If relative=True (default):
+        Target threshold is 0.50 * baseline_acc (where baseline_acc is uncompressed accuracy at highest budget).
+    If relative=False:
+        Target threshold is 0.50 absolute.
+        
+    Interpolates the bit budget where accuracy crosses the threshold.
+    If accuracy stays above threshold across all budgets (skills remain resilient),
+    returns the lowest budget as an upper bound (B_{1/2} <= B_min).
+    If accuracy is below threshold across all budgets,
+    returns the highest budget (B_{1/2} >= B_max).
     """
     b_arr = np.array(budgets, dtype=np.float64)
     acc_arr = np.array(accuracies, dtype=np.float64)
@@ -230,21 +244,103 @@ def compute_half_life(budgets: List[float], accuracies: List[float]) -> float:
     b_sorted = b_arr[order]
     acc_sorted = acc_arr[order]
     
-    if np.all(acc_sorted >= 0.50):
-        return float(b_sorted[0])  # Survives down to lowest budget
-    if np.all(acc_sorted < 0.50):
+    # Uncompressed baseline is at the highest budget
+    a0 = float(acc_sorted[-1])
+    target = (0.50 * a0) if (relative and a0 > 0) else 0.50
+    
+    if np.all(acc_sorted >= target):
+        return float(b_sorted[0])  # Survives down to lowest budget (upper bound)
+    if np.all(acc_sorted < target):
         return float(b_sorted[-1]) # Degrades above highest budget
         
     # Interpolate crossing point
     for i in range(len(b_sorted) - 1):
-        if (acc_sorted[i] <= 0.50 and acc_sorted[i+1] >= 0.50) or (acc_sorted[i] >= 0.50 and acc_sorted[i+1] <= 0.50):
+        if (acc_sorted[i] <= target and acc_sorted[i+1] >= target) or (acc_sorted[i] >= target and acc_sorted[i+1] <= target):
             denom = acc_sorted[i+1] - acc_sorted[i]
             if abs(denom) < 1e-6:
                 return float(b_sorted[i])
-            frac = (0.50 - acc_sorted[i]) / denom
+            frac = (target - acc_sorted[i]) / denom
             return float(b_sorted[i] + frac * (b_sorted[i+1] - b_sorted[i]))
             
     return float(np.median(b_sorted))
+
+
+def compute_detailed_half_life(
+    budgets: List[float],
+    accuracies: List[float],
+    relative: bool = True,
+    chance_floor: float = 0.0
+) -> Dict[str, Any]:
+    """
+    Computes rigorous retention half-life B_{1/2} with status, chance floor, and bounds.
+    
+    If chance_floor > 0:
+        Evaluates excess retention over chance:
+        target = chance_floor + 0.50 * (a0 - chance_floor)
+    """
+    b_arr = np.array(budgets, dtype=np.float64)
+    acc_arr = np.array(accuracies, dtype=np.float64)
+    order = np.argsort(b_arr)
+    b_sorted = b_arr[order]
+    acc_sorted = acc_arr[order]
+    a0 = float(acc_sorted[-1])
+    
+    if chance_floor > 0 and a0 > chance_floor:
+        target = float(chance_floor + 0.50 * (a0 - chance_floor))
+    elif relative and a0 > 0:
+        target = float(0.50 * a0)
+    else:
+        target = 0.50
+        
+    crossed = False
+    b_half = None
+    is_upper_bound = False
+    
+    if np.all(acc_sorted >= target):
+        b_half = float(b_sorted[0])
+        is_upper_bound = True
+        crossed = False
+    elif np.all(acc_sorted < target):
+        b_half = float(b_sorted[-1])
+        crossed = False
+    else:
+        for i in range(len(b_sorted) - 1):
+            if (acc_sorted[i] <= target and acc_sorted[i+1] >= target) or (acc_sorted[i] >= target and acc_sorted[i+1] <= target):
+                denom = acc_sorted[i+1] - acc_sorted[i]
+                if abs(denom) < 1e-6:
+                    b_half = float(b_sorted[i])
+                else:
+                    frac = (target - acc_sorted[i]) / denom
+                    b_half = float(b_sorted[i] + frac * (b_sorted[i+1] - b_sorted[i]))
+                crossed = True
+                break
+        if b_half is None:
+            b_half = float(np.median(b_sorted))
+            
+    # Linear extrapolation if uncrossed and staying above target
+    extrapolated_b_half = None
+    if not crossed and is_upper_bound and len(b_sorted) >= 2:
+        idx_other = None
+        for j in range(1, len(b_sorted)):
+            if abs(acc_sorted[j] - acc_sorted[0]) > 1e-4:
+                idx_other = j
+                break
+        if idx_other is not None:
+            slope = (acc_sorted[idx_other] - acc_sorted[0]) / (b_sorted[idx_other] - b_sorted[0])
+            if abs(slope) > 1e-15:
+                delta_b = (target - acc_sorted[0]) / slope
+                min_floor = float(b_sorted[0] * 0.25)
+                extrapolated_b_half = float(max(min_floor, b_sorted[0] + delta_b))
+                
+    return {
+        "b_half": float(b_half),
+        "crossed": crossed,
+        "is_upper_bound": is_upper_bound,
+        "target_accuracy": float(target),
+        "baseline_accuracy": float(a0),
+        "chance_floor": float(chance_floor),
+        "extrapolated_b_half": extrapolated_b_half
+    }
 
 
 class PricedQuantaTheory:
