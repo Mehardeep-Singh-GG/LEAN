@@ -48,7 +48,8 @@ class ThinkingCore(nn.Module):
         # Procedural skill circuits proportional to RASP complexity K(s)
         self.skill_circuits = nn.ModuleDict()
         for s_id in self.skill_ids:
-            rasp_toks = SKILL_METADATA.get(s_id, {}).get("rasp_tokens", 32)
+            meta = next((v for k, v in SKILL_METADATA.items() if v.get("id") == s_id or k == s_id), {})
+            rasp_toks = meta.get("rasp_tokens", 32)
             d_s = max(4, int(math.ceil(rasp_toks / 8.0)))
             self.skill_circuits[s_id] = nn.Sequential(
                 nn.Linear(d_model, d_s, bias=False),

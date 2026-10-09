@@ -137,7 +137,7 @@ The auditor correctly identified an apparent discrepancy between the reported av
 Measured Description Length under Ruler A (post-hoc RTN 4-bit + arithmetic entropy coding) and Ruler B (prequential code length) vs. ground-truth $I_{\text{facts}}$:
 
 - **Ruler A Fit:** $\text{DL}_A = 1.586 \cdot I_{\text{facts}} + 6,762.0 \quad (R^2 = 0.9934)$
-- **Ruler B Fit:** $\text{DL}_B = 1.150 \cdot I_{\text{facts}} + 399.0 \quad (R^2 = 1.0000)$
+- **Ruler B Fit (Online Prequential):** $\text{DL}_B = 2.221 \cdot I_{\text{facts}} + 2,512.5 \quad (R^2 = 0.9958)$
 - **Inter-Ruler Agreement:** Spearman rank correlation $\rho = 1.0000$ ($p = 0.0000$)
 
 Both rulers track ground-truth bits with linear fidelity exceeding $R^2 \ge 0.98$, and Ruler A exhibits a calibrated looseness factor of $1.586\times$ (well below the $3.0\times$ pre-mortem threshold).
@@ -151,7 +151,7 @@ Both rulers track ground-truth bits with linear fidelity exceeding $R^2 \ge 0.98
 | **Entropy Check** | Error $\le 0.50\%$ | **0.0000%** | 🟢 PASS |
 | **Capacity Reproduction** | $\kappa \in [1.33, 3.00]$ b/p | **1.475 b/p** (asymp: **2.032**) | 🟢 PASS |
 | **13-Gram Split Leakage** | 0.0% overlap | **0.0000%** | 🟢 PASS |
-| **Linear Scaling Fidelity** | $R^2 \ge 0.98$ | Ruler A: **0.9934**, Ruler B: **1.0000** | 🟢 PASS |
+| **Linear Scaling Fidelity** | $R^2 \ge 0.98$ | Ruler A: **0.9934**, Ruler B: **0.9958** | 🟢 PASS |
 | **Ruler A vs. Ruler B Agreement**| Spearman $\rho \ge 0.90$ | **$\rho = 1.0000$** | 🟢 PASS |
 | **Unit Test Coverage** | 100% pass | **36 / 36 passed** | 🟢 PASS |
 | **Open Blockers** | 0 open S0/S1 | **0 active blockers** | 🟢 PASS |

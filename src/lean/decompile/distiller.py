@@ -17,7 +17,12 @@ import torch
 from src.lean.synthetic.skills import SkillGenerator, SKILL_METADATA
 from src.lean.decompile.rasp import RASP_LIBRARY, RASPProgram
 from src.lean.measure.dl import dl_entropy_coded_tensor
-from src.lean.decompile.symbolic import recover_modular_addition_symbolic, recover_dyck2_symbolic
+from src.lean.decompile.symbolic import (
+    recover_modular_addition_symbolic,
+    recover_dyck2_symbolic,
+    train_s6_neural_module,
+    train_s7_neural_module
+)
 
 
 def parse_skill_input_output(skill_id: str, prompt: str, target: str) -> Tuple[Any, Any]:
@@ -173,20 +178,18 @@ def decompile_all_skills(
     """
     skill_ids = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9"]
     
-    # Default empirical neural DL measurements from Ruler A (M4 & M5 calibrations)
-    # Neural circuits scale roughly proportional to program complexity: ~5.5 - 7.0 bits/token
+    # Measure empirical neural DL dynamically using Ruler A on live ThinkingCore circuits
     if neural_dl_map is None:
-        neural_dl_map = {
-            "S1": 184.0,   # Copy (28 tokens -> 184 b, c_alg ~ 6.57)
-            "S2": 236.0,   # Reverse (36 tokens -> 236 b, c_alg ~ 6.56)
-            "S3": 420.0,   # Sort (64 tokens -> 420 b, c_alg ~ 6.56)
-            "S4": 272.0,   # Histogram (42 tokens -> 272 b, c_alg ~ 6.48)
-            "S5": 348.0,   # KVLookup (52 tokens -> 348 b, c_alg ~ 6.69)
-            "S6": 312.0,   # ModAdd (48 tokens -> 312 b, c_alg ~ 6.50)
-            "S7": 384.0,   # Dyck2 (58 tokens -> 384 b, c_alg ~ 6.62)
-            "S8": 504.0,   # TwoHopContext (76 tokens -> 504 b, c_alg ~ 6.63)
-            "S9": 624.0,   # TwoHopFacts (94 tokens -> 624 b, c_alg ~ 6.64)
-        }
+        from src.lean.wrmf.models import ThinkingCore
+        from src.lean.wrmf.loss import compute_module_physical_dl
+        
+        # Instantiate real ThinkingCore containing procedural circuits for all 9 skills
+        core = ThinkingCore(d_model=16, vocab_size=64, skill_ids=skill_ids)
+        neural_dl_map = {}
+        for sid in skill_ids:
+            circ = core.skill_circuits[sid]
+            # Exact physical Description Length under Ruler A (4-bit RTN + sparse entropy coding)
+            neural_dl_map[sid] = float(compute_module_physical_dl(circ))
 
     skill_summaries = {}
     c_alg_values = []
@@ -223,16 +226,18 @@ def decompile_all_skills(
     c_alg_std = float(np.std(c_alg_values))
     c_alg_cv = c_alg_std / c_alg_mean if c_alg_mean > 0 else 0.0
 
-    # Symbolic recoveries
+    # Symbolic recoveries on live trained PyTorch neural networks
     # S6: Modular addition symbolic recovery
+    s6_net = train_s6_neural_module(p=97)
     s6_sym = recover_modular_addition_symbolic(
-        neural_func=lambda a, b: (a + b) % 97,
+        neural_func=s6_net.predict,
         p=97
     )
-    # S7: Dyck-2 symbolic recovery
+    # S7: Dyck-2 balanced bracket symbolic recovery
+    s7_net = train_s7_neural_module()
     dyck_test_seqs = ["()", "(())", "[()]", "([([])])", ")(", "([)]", "((", ""]
     s7_sym = recover_dyck2_symbolic(
-        neural_func=lambda seq: "VALID" if seq in ["()", "(())", "[()]", "([([])])", ""] else "INVALID",
+        neural_func=s7_net.predict,
         test_sequences=dyck_test_seqs
     )
 

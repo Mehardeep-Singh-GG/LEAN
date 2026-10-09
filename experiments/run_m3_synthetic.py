@@ -30,6 +30,10 @@ import hashlib
 from pathlib import Path
 from typing import Dict, List, Tuple, Any
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
 import torch
 import numpy as np
 import pandas as pd
@@ -50,6 +54,7 @@ from src.lean.synthetic.models import (
 )
 from src.lean.synthetic.capacity import run_capacity_experiment
 from src.lean.measure.dl import compute_model_dl
+from src.lean.measure.ruler_b import calculate_prequential_code_length
 from src.lean.measure.tracker import RunContext, get_hardware_info, get_git_sha
 
 
@@ -240,10 +245,37 @@ def run_m3_synthetic_suite(seeds: List[int] = [42, 43, 44]) -> Dict[str, Any]:
         r_item = next(r for c in capacity_runs if c["seed"] == 42 for r in c["runs"] if r["k_entities"] == K)
         dl_a_bits = r_item["dl_bits"]
         
-        # Ruler B: Prequential code length (empirical cumulative bits)
-        # Sum of negative log likelihoods over data schedule + initial model bits
-        # Scales proportionally to knowledge content plus data transmission
-        dl_b_bits = int(fact_bits * 1.15 + 400.0)
+        # Ruler B: Real Prequential code length (empirical cumulative bits)
+        # Measured via online sequential training with AdamW and NLL transmission bits
+        rel_to_id = {rel: idx for idx, rel in enumerate(w.attribute_names)}
+        all_vals = []
+        for vals in ATTRIBUTE_VOCABS.values():
+            all_vals.extend(vals)
+        unique_vals = sorted(list(set(all_vals)))
+        val_to_id = {v: idx for idx, v in enumerate(unique_vals)}
+
+        triples = []
+        for ent_idx, ent in enumerate(w.entities):
+            for rel in w.attribute_names:
+                triples.append((ent_idx, rel_to_id[rel], val_to_id[w.facts[ent][rel]]))
+
+        train_x = torch.tensor([[t[0], t[1]] for t in triples], dtype=torch.long)
+        train_y = torch.tensor([t[2] for t in triples], dtype=torch.long)
+
+        class PreqMemWrapper(torch.nn.Module):
+            def __init__(self, num_ent, d_model):
+                super().__init__()
+                self.mem = AssociativeMemoryBank(num_ent, len(w.attribute_names), len(unique_vals), d_model)
+            def forward(self, x):
+                return self.mem(x[:, 0], x[:, 1])
+
+        d_m = r_item.get("d_embed", 8)
+        preq_res = calculate_prequential_code_length(
+            lambda: PreqMemWrapper(K, d_m),
+            train_x, train_y,
+            num_blocks=4, epochs_per_block=25, lr=0.02, prior_param_bits=200
+        )
+        dl_b_bits = int(round(preq_res["total_prequential_bits"]))
         
         dl_scaling_points.append({
             "k_entities": K,

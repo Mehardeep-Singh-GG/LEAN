@@ -16,7 +16,12 @@ import torch
 
 from src.lean.decompile.rasp import RASP_LIBRARY, exec_s1_copy, exec_s2_reverse, exec_s3_sort
 from src.lean.decompile.transformer_program import TransformerProgram, DiscreteAttentionHead
-from src.lean.decompile.symbolic import recover_modular_addition_symbolic, recover_dyck2_symbolic
+from src.lean.decompile.symbolic import (
+    recover_modular_addition_symbolic,
+    recover_dyck2_symbolic,
+    train_s6_neural_module,
+    train_s7_neural_module
+)
 from src.lean.decompile.distiller import decompile_all_skills, evaluate_skill_decompilation
 
 
@@ -101,16 +106,18 @@ def test_c_alg_constancy_and_cv():
 
 
 def test_symbolic_recovery_s6_s7():
-    """Criterion C4: Verify exact symbolic closed-form recovery for S6 and S7."""
-    # S6: Modular Addition
-    s6 = recover_modular_addition_symbolic(lambda a, b: (a + b) % 97, p=97)
+    """Criterion C4: Verify exact symbolic closed-form recovery for S6 and S7 on live PyTorch networks."""
+    # S6: Modular Addition live neural network
+    net_s6 = train_s6_neural_module(p=97)
+    s6 = recover_modular_addition_symbolic(net_s6.predict, p=97)
     assert s6["exact_agreement"], f"S6 symbolic recovery failed: {s6}"
     assert s6["symbolic_formula"] == "(a + b) % 97"
     
-    # S7: Dyck-2 Balanced Brackets
+    # S7: Dyck-2 Balanced Brackets live neural network
+    net_s7 = train_s7_neural_module()
     test_seqs = ["()", "(())", "[]", "([])", ")(", "([)]"]
     s7 = recover_dyck2_symbolic(
-        lambda seq: "VALID" if seq in ["()", "(())", "[]", "([])"] else "INVALID",
+        net_s7.predict,
         test_sequences=test_seqs
     )
     assert s7["exact_agreement"], f"S7 symbolic recovery failed: {s7}"
