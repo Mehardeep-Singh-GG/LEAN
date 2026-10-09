@@ -1,0 +1,93 @@
+{
+  "model_calibration": {
+    "model": "EleutherAI/pythia-70m",
+    "empirical_ppl": 34.56937016836445,
+    "published_ppl": 35.0,
+    "delta_percent": 1.2303709475301414,
+    "passed": true
+  },
+  "compression_pareto": [
+    {
+      "name": "Uncompressed (fp16)",
+      "compressor": "none",
+      "param": 16,
+      "dl_bits": 1126825984,
+      "perplexity": 34.56937016836445
+    },
+    {
+      "name": "RTN-4bit",
+      "compressor": "rtn",
+      "param": 4,
+      "dl_bits": 890068892,
+      "perplexity": 57.36488047603607
+    },
+    {
+      "name": "RTN-3bit",
+      "compressor": "rtn",
+      "param": 3,
+      "dl_bits": 867933473,
+      "perplexity": 378.91996201539604
+    },
+    {
+      "name": "RTN-2bit",
+      "compressor": "rtn",
+      "param": 2,
+      "dl_bits": 841526608,
+      "perplexity": 4268605019.478406
+    },
+    {
+      "name": "Pruning-50%",
+      "compressor": "prune",
+      "param": 0.5,
+      "dl_bits": 994754000,
+      "perplexity": 2384.371770265148
+    }
+  ],
+  "kandpal_reproduction": {
+    "spearman_rho": 0.4952360907310814,
+    "p_value": 3.849896696105912e-26,
+    "top1_acc": 0.6625,
+    "binned_accuracies": [
+      {
+        "bin_min": 4.2552725051033065,
+        "bin_max": 4.530938090577593,
+        "accuracy": 0.16129032258064516,
+        "count": 31
+      },
+      {
+        "bin_min": 4.530938090577593,
+        "bin_max": 4.80660367605188,
+        "accuracy": 0.4888888888888889,
+        "count": 135
+      },
+      {
+        "bin_min": 4.80660367605188,
+        "bin_max": 5.082269261526167,
+        "accuracy": 0.7483870967741936,
+        "count": 155
+      },
+      {
+        "bin_min": 5.082269261526167,
+        "bin_max": 5.357934847000454,
+        "accuracy": 0.9873417721518988,
+        "count": 79
+      }
+    ],
+    "passed": true
+  },
+  "jaiswal_reproduction": {
+    "knowledge_drop": -0.018867924528301987,
+    "skill_drop": 0.11578947368421051,
+    "phenomenon_observed": false
+  },
+  "probe_validity": {
+    "skill_entity_invariance_delta": 0.016000000000000014,
+    "skill_invariant": true,
+    "paraphrase_consistency": 0.98388671875,
+    "paraphrase_passed": true
+  },
+  "power_analysis": {
+    "calculated_power": 0.9721272130826837,
+    "passed": true
+  }
+}

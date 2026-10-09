@@ -12,8 +12,8 @@
 |---|---|---|---|---|---|
 | **M0** | **Foundations & Audit Infrastructure** | **M0 Baseline** | 🟢 **COMPLETED** | 0 | All 12 Checks Green |
 | **M1** | **Three Measurement Rulers (A, B, C)** | **Ground Truth Invariance** | 🟢 **COMPLETED** | 0 | All 12 Checks Green |
-| **M2** | Baseline Reproductions & Probes | Published Calibration | 🟡 **IN PROGRESS** | 0 | Active |
-| **M3** | The Synthetic Universe | Known Information Content | ⚪ Not Started | - | - |
+| **M2** | **Baseline Reproductions & Probes** | **Published Calibration** | 🟢 **COMPLETED** | 0 | All 12 Checks Green |
+| **M3** | The Synthetic Universe | Known Information Content | 🟡 **NEXT** | 0 | Ready |
 | **M4** | Composition Law | 🚦 **GATE α** | ⚪ Not Started | - | - |
 | **M5** | WRMF: Thinking Core Isolation | Multi-World Factorization | ⚪ Not Started | - | - |
 | **M6** | Neural Decompilation | RASP Program Synthesis | ⚪ Not Started | - | - |

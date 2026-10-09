@@ -24,6 +24,11 @@
       "sha256": "865b1d1bffe4c44f40231fe9955e75313a94a8a81b976e4aef93442d79765971",
       "split": "t3",
       "size_bytes": 130
+    },
+    "raw/wikitext_2_valid.txt": {
+      "sha256": "f0737ed31fc1329026e95cb8b98e19c2a182c39c240ab909dc31abf2f8af58e8",
+      "split": "dev",
+      "size_bytes": 1121681
     }
   }
 }
