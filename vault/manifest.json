@@ -1,0 +1,29 @@
+{
+  "files": {
+    "raw/calibration.txt": {
+      "sha256": "3e1fb71ebf4550324c3cde3bbf09dd25607c92ea6dd5329769659b73034768fc",
+      "split": "calibration",
+      "size_bytes": 455
+    },
+    "raw/dev.txt": {
+      "sha256": "b35ccd8035578f2b40187b268c3e0d0864652b3cdbf22b641f8bbda0a0f69889",
+      "split": "dev",
+      "size_bytes": 327
+    },
+    "locked/t1_test.txt": {
+      "sha256": "d9259b2a1939ed7becccbb37105036b19f8d2694dba8966c6d22153f6df3ac4c",
+      "split": "t1",
+      "size_bytes": 228
+    },
+    "locked/t2_test.txt": {
+      "sha256": "349c8c5da493ae8b38e08a86bbb0208377f71adb38d7474e3da951022ed4dde6",
+      "split": "t2",
+      "size_bytes": 120
+    },
+    "locked/t3_test.txt": {
+      "sha256": "865b1d1bffe4c44f40231fe9955e75313a94a8a81b976e4aef93442d79765971",
+      "split": "t3",
+      "size_bytes": 130
+    }
+  }
+}

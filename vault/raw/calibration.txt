@@ -1,0 +1,4 @@
+The concept of description length in statistical learning theory provides a framework for measuring model complexity.
+A neural network parameterization can be viewed as an encoding of regularities found in the training distribution.
+Algorithmic components, such as sequence reversal, induction heads, and copy mechanisms, constitute reusable subroutines.
+These computational subroutines exhibit high execution frequency across diverse linguistic domains.

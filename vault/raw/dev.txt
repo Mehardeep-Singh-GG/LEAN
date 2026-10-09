@@ -1,0 +1,3 @@
+In transformer architectures, attention mechanisms route information dynamically between token representations.
+Multi-layer perceptron blocks store factual associations as key-value associative memories.
+When subjected to parameter quantization, factual recall exhibits sharp degradation before procedural reasoning collapses.

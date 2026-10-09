@@ -1,0 +1,3 @@
+Held-out test tranche 1 evaluation split: Qwen2.5 and SmolLM2 benchmark texts.
+This text is cryptographically protected by the Project LEAN vault guard.
+Premature evaluation before formal preregistration is strictly prohibited.
