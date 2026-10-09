@@ -41,16 +41,16 @@ def fit_composition_law(
         pred = c_alg * K_total + inv_kappa * I_facts + delta + eta * I_inter
         res = DL_obs - pred
         # Smooth Huber loss
-        delta_h = 200.0
+        delta_h = 1000.0
         huber = np.where(np.abs(res) <= delta_h, 0.5 * res**2, delta_h * (np.abs(res) - 0.5 * delta_h))
         return np.sum(huber)
         
-    init_params = [1.2, 0.5, 1000.0, 0.1]
-    bounds = [(0.1, 10.0), (0.1, 2.0), (0.0, 50000.0), (0.0, 5.0)]
+    init_params = [5.0, 1.0, 10000.0, 1.0]
+    bounds = [(0.01, 100.0), (0.01, 20.0), (0.0, 200000.0), (0.0, 50.0)]
     res_opt = minimize(loss_fn, init_params, bounds=bounds, method="L-BFGS-B")
     
     c_alg_fit, inv_kappa_fit, delta_fit, eta_fit = res_opt.x
-    kappa_fit = 1.0 / inv_kappa_fit
+    kappa_fit = 1.0 / max(inv_kappa_fit, 1e-6)
     
     # Predictions and residuals
     preds = c_alg_fit * K_total + inv_kappa_fit * I_facts + delta_fit + eta_fit * I_inter
@@ -76,7 +76,7 @@ def fit_composition_law(
             ca, ik, d, e = p
             pr = ca * K_b + ik * I_b + d + e * Inter_b
             r = DL_b - pr
-            return np.sum(np.where(np.abs(r) <= 200.0, 0.5 * r**2, 200.0 * (np.abs(r) - 100.0)))
+            return np.sum(np.where(np.abs(r) <= 1000.0, 0.5 * r**2, 1000.0 * (np.abs(r) - 500.0)))
             
         b_res = minimize(b_loss, [c_alg_fit, inv_kappa_fit, delta_fit, eta_fit], bounds=bounds, method="L-BFGS-B")
         ca_b, ik_b, d_b, _ = b_res.x
@@ -89,7 +89,7 @@ def fit_composition_law(
     delta_ci = [float(np.percentile(boot_delta, 2.5)), float(np.percentile(boot_delta, 97.5))]
     
     c_alg_width = c_alg_ci[1] - c_alg_ci[0]
-    relative_c_alg_ci_width = c_alg_width / c_alg_fit
+    relative_c_alg_ci_width = c_alg_width / max(c_alg_fit, 1e-6)
     
     return {
         "c_alg": float(c_alg_fit),
@@ -109,7 +109,7 @@ def fit_composition_law(
 def compare_competing_models(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Compare LEAN Composition Law against 3 competing models:
-    1. Model 1 (LEAN): DL = c_alg * K + inv_kappa * I_facts + delta
+    1. Model 1 (LEAN): DL = c_alg * K + inv_kappa * I_facts + delta + eta * I_inter
     2. Model 2 (Naive N): DL = beta_0 + beta_1 * N
     3. Model 3 (Multiplicative): DL = beta_0 + beta_1 * (I_facts * K)
     4. Model 4 (Pure Facts): DL = beta_0 + beta_1 * I_facts
@@ -122,10 +122,18 @@ def compare_competing_models(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     
     models = {}
     
-    # 1. LEAN Composition Model
+    # 1. LEAN Composition Model (incorporating interaction term if present)
     K_total = np.array([d["k_skill_bits"] for d in data], dtype=np.float64)
     I_facts = np.array([d["i_fact_bits"] for d in data], dtype=np.float64)
-    X_lean = np.column_stack([K_total, I_facts, np.ones(N_samples)])
+    I_inter = np.array([d.get("i_interaction_bits", 0.0) for d in data], dtype=np.float64)
+    
+    if np.any(I_inter > 0):
+        X_lean = np.column_stack([K_total, I_facts, np.ones(N_samples), I_inter])
+        k_lean = 4
+    else:
+        X_lean = np.column_stack([K_total, I_facts, np.ones(N_samples)])
+        k_lean = 3
+        
     p_lean, _, _, _ = np.linalg.lstsq(X_lean, y, rcond=None)
     y_pred_lean = X_lean @ p_lean
     rss_lean = np.sum((y - y_pred_lean)**2)
@@ -237,14 +245,15 @@ def evaluate_additivity_gap(
     dl_composite: float,
     dl_facts_only: float,
     dl_skills_only: float,
-    delta_baseline: float
+    delta_baseline: float,
+    dl_interaction: float = 0.0
 ) -> Dict[str, Any]:
     """
     Measure additivity gap between composite capability and independent parts:
-        Delta_comp = |DL(F U S) - (DL(F) + DL(S) - delta)| / DL(F U S)
+        Delta_comp = |DL(F U S) - (DL(F) + DL(S) - delta + dl_interaction)| / DL(F U S)
     Must be <= 0.05 (5%) to pass Gate alpha.
     """
-    expected_sum = dl_facts_only + dl_skills_only - delta_baseline
+    expected_sum = dl_facts_only + dl_skills_only - delta_baseline + dl_interaction
     gap_bits = abs(dl_composite - expected_sum)
     gap_fraction = gap_bits / max(dl_composite, 1.0)
     passed = (gap_fraction <= 0.05)

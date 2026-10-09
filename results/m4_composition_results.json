@@ -1,8 +1,8 @@
 {
   "milestone": "M4",
   "gate": "alpha",
-  "timestamp": "2026-10-09 13:34:17 UTC",
-  "git_sha": "ffc536aa1c873d265f38b7813ef552e33a76ccfd",
+  "timestamp": "2026-10-09 13:51:05 UTC",
+  "git_sha": "760fb87ccb74507d7700fddc4950bcde54d046f7",
   "prereg_hash": "6224953cfcf2f1b0a31a1f957c6b912bb90d2d55f004e49b6080ca1d42c223f1",
   "prereg_passed": true,
   "device": "mps",
@@ -24,18 +24,18 @@
     "ram_bytes": 8589934592,
     "ram_gb": 8.0
   },
-  "duration_sec": 2.9512860774993896,
+  "duration_sec": 57.57577610015869,
   "gate_alpha_passed": true,
   "gate_alpha_checks": {
     "C1_additivity_gap": {
       "name": "Additivity Gap <= 5%",
-      "achieved": 2.878308939275745,
+      "achieved": 2.506024096385542,
       "threshold": 5.0,
       "passed": true
     },
     "C2_loocv_r2": {
       "name": "Leave-One-Out Cross-Validation R^2 >= 0.90",
-      "achieved": 0.9999164031587129,
+      "achieved": 0.9950613781013359,
       "threshold": 0.9,
       "passed": true
     },
@@ -46,19 +46,19 @@
     },
     "C4_skill_saturation": {
       "name": "Skill Saturation Exponent gamma upper CI <= 0.30",
-      "achieved": 0.007209509070836397,
+      "achieved": 0.15347635926234338,
       "threshold": 0.3,
       "passed": true
     },
     "C5_c_alg_precision": {
       "name": "c_alg 95% Bootstrap CI Relative Width <= 30%",
-      "achieved": 1.7240428921979984,
+      "achieved": 10.247146751095674,
       "threshold": 30.0,
       "passed": true
     },
     "C6_dual_ruler_concordance": {
       "name": "Dual Ruler Spearman rho >= 0.90",
-      "achieved": 0.997777160322312,
+      "achieved": 0.9873853848291193,
       "threshold": 0.9,
       "passed": true
     },
@@ -69,65 +69,65 @@
     }
   },
   "fit_results": {
-    "c_alg": 1.420770132806663,
+    "c_alg": 6.847823177531395,
     "c_alg_95_ci": [
-      1.4101040564503358,
-      1.434598742939461
+      6.589829330576767,
+      7.291535820833952
     ],
-    "c_alg_relative_ci_width": 0.017240428921979984,
-    "kappa": 0.5101055818724837,
+    "c_alg_relative_ci_width": 0.10247146751095673,
+    "kappa": 0.5215519300258038,
     "kappa_95_ci": [
-      0.5098411713951686,
-      0.5103840860181597
+      0.515395315467968,
+      0.5302912679903157
     ],
-    "delta": 2649.752905208052,
+    "delta": 10498.533764638776,
     "delta_95_ci": [
-      2640.5688336970875,
-      2659.5226636463562
+      10183.947512791789,
+      10741.96841927916
     ],
-    "eta": 0.8223120409202866,
-    "r_squared": 0.9999961338317532,
-    "ss_res": 18771.077851815746,
-    "ss_tot": 4855214945.123952
+    "eta": 2.8537791221813698,
+    "r_squared": 0.9956393956440652,
+    "ss_res": 27606813.172189802,
+    "ss_tot": 6330960325.4
   },
   "model_comparison": {
     "model_1_lean": {
       "name": "LEAN Composition Law (c_alg * K + I_facts / kappa + delta)",
-      "rss": 351700.021436184,
-      "r2_in_sample": 0.9999275624199111,
-      "r2_loocv": 0.9999164031587129,
-      "aic": 526.5713590314101,
-      "bic": 532.8543927180764
+      "rss": 27502980.711696662,
+      "r2_in_sample": 0.9956557963882108,
+      "r2_loocv": 0.9950613781013359,
+      "aic": 788.1276230434333,
+      "bic": 794.4106567300996
     },
     "model_2_naive": {
       "name": "Naive Scaling (beta_0 + beta_1 * N)",
-      "rss": 36879590.48577734,
-      "r2_in_sample": 0.9924041281585658,
-      "r2_loocv": 0.9918925351944206,
-      "aic": 803.7294574242457,
-      "bic": 807.9181465486898,
-      "delta_aic": 277.15809839283554,
-      "delta_bic": 275.06375383061345
+      "rss": 149973268.91283953,
+      "r2_in_sample": 0.9763111342980397,
+      "r2_loocv": 0.9748358595296585,
+      "aic": 887.8973840025936,
+      "bic": 892.0860731270378,
+      "delta_aic": 99.7697609591603,
+      "delta_bic": 97.6754163969382
     },
     "model_3_multiplicative": {
       "name": "Multiplicative Entanglement (beta_0 + beta_1 * (I * K))",
-      "rss": 2968530112.7685,
-      "r2_in_sample": 0.38858935261975014,
-      "r2_loocv": 0.3559757895938358,
-      "aic": 1067.0192916102417,
-      "bic": 1071.2079807346859,
-      "delta_aic": 540.4479325788316,
-      "delta_bic": 538.3535880166095
+      "rss": 2188705975.233964,
+      "r2_in_sample": 0.6542853117476015,
+      "r2_loocv": 0.6331046729151844,
+      "aic": 1048.7339059015835,
+      "bic": 1052.9225950260277,
+      "delta_aic": 260.60628285815017,
+      "delta_bic": 258.5119382959281
     },
     "model_4_pure_facts": {
       "name": "Pure Facts / No Skill Term (beta_0 + beta_1 * I_facts)",
-      "rss": 75482936.02625892,
-      "r2_in_sample": 0.9844532246503184,
-      "r2_loocv": 0.983363289400673,
-      "aic": 846.7043568133093,
-      "bic": 850.8930459377535,
-      "delta_aic": 320.13299778189923,
-      "delta_bic": 318.03865321967714
+      "rss": 1716646397.3066664,
+      "r2_in_sample": 0.7288489724979905,
+      "r2_loocv": 0.7097828719588364,
+      "aic": 1034.1576335960776,
+      "bic": 1038.3463227205218,
+      "delta_aic": 246.03001055264428,
+      "delta_bic": 243.9356659904222
     },
     "lean_beats_all": true
   },
@@ -135,126 +135,138 @@
     {
       "skill": "S1_Copy",
       "facts": "F1",
-      "dl_composite": 8833.191272837706,
-      "dl_facts_only": 8664.32529020858,
-      "dl_skills_only": 2802.0428759927613,
-      "gap_percent": 0.1698711366597702,
+      "dl_composite": 17707.666666666668,
+      "dl_facts_only": 16735.0,
+      "dl_skills_only": 11433.0,
+      "dl_interaction": 0.0,
+      "gap_percent": 1.0635694520264223,
       "passed": true
     },
     {
       "skill": "S1_Copy",
       "facts": "F2",
-      "dl_composite": 14841.665460173155,
-      "dl_facts_only": 14685.899439178478,
-      "dl_skills_only": 2802.0428759927613,
-      "gap_percent": 0.012836031031452465,
+      "dl_composite": 22029.666666666668,
+      "dl_facts_only": 20787.333333333332,
+      "dl_skills_only": 11433.0,
+      "dl_interaction": 0.0,
+      "gap_percent": 2.0790146620466503,
       "passed": true
     },
     {
       "skill": "S1_Copy",
       "facts": "F3",
-      "dl_composite": 26897.643367338478,
-      "dl_facts_only": 26743.614842293406,
-      "dl_skills_only": 2802.0428759927613,
-      "gap_percent": 0.0006230465329645497,
+      "dl_composite": 35201.666666666664,
+      "dl_facts_only": 33795.333333333336,
+      "dl_skills_only": 11433.0,
+      "dl_interaction": 0.0,
+      "gap_percent": 1.7669617915818174,
       "passed": true
     },
     {
       "skill": "S3_Three",
       "facts": "F1",
-      "dl_composite": 9407.464743499246,
-      "dl_facts_only": 8664.32529020858,
-      "dl_skills_only": 3380.2450403272087,
-      "gap_percent": 0.11773999741266462,
+      "dl_composite": 20583.666666666668,
+      "dl_facts_only": 16735.0,
+      "dl_skills_only": 14137.333333333334,
+      "dl_interaction": 0.0,
+      "gap_percent": 1.748959531019723,
       "passed": true
     },
     {
       "skill": "S3_Three",
       "facts": "F2",
-      "dl_composite": 15422.955327269614,
-      "dl_facts_only": 14685.899439178478,
-      "dl_skills_only": 3380.2450403272087,
-      "gap_percent": 0.03237241786750361,
+      "dl_composite": 24900.0,
+      "dl_facts_only": 20787.333333333332,
+      "dl_skills_only": 14137.333333333334,
+      "dl_interaction": 0.0,
+      "gap_percent": 2.506024096385542,
       "passed": true
     },
     {
       "skill": "S3_Three",
       "facts": "F3",
-      "dl_composite": 27478.338588588133,
-      "dl_facts_only": 26743.614842293406,
-      "dl_skills_only": 3380.2450403272087,
-      "gap_percent": 0.009682687841833413,
+      "dl_composite": 38072.666666666664,
+      "dl_facts_only": 33795.333333333336,
+      "dl_skills_only": 14137.333333333334,
+      "dl_interaction": 0.0,
+      "gap_percent": 2.071477350330045,
       "passed": true
     },
     {
       "skill": "S6_Six",
       "facts": "F1",
-      "dl_composite": 10214.648289477236,
-      "dl_facts_only": 8664.32529020858,
-      "dl_skills_only": 4204.504312884396,
-      "gap_percent": 0.058733082761009824,
+      "dl_composite": 24559.333333333332,
+      "dl_facts_only": 16735.0,
+      "dl_skills_only": 18151.666666666668,
+      "dl_interaction": 0.0,
+      "gap_percent": 1.30839599337655,
       "passed": true
     },
     {
       "skill": "S6_Six",
       "facts": "F2",
-      "dl_composite": 16230.173761446504,
-      "dl_facts_only": 14685.899439178478,
-      "dl_skills_only": 4204.504312884396,
-      "gap_percent": 0.07423244514394649,
+      "dl_composite": 28859.333333333332,
+      "dl_facts_only": 20787.333333333332,
+      "dl_skills_only": 18151.666666666668,
+      "dl_interaction": 0.0,
+      "gap_percent": 1.9716325163436312,
       "passed": true
     },
     {
       "skill": "S6_Six",
       "facts": "F3",
-      "dl_composite": 28267.258428762085,
-      "dl_facts_only": 26743.614842293406,
-      "dl_skills_only": 4204.504312884396,
-      "gap_percent": 0.11560650890830781,
+      "dl_composite": 41987.333333333336,
+      "dl_facts_only": 33795.333333333336,
+      "dl_skills_only": 18151.666666666668,
+      "dl_interaction": 0.0,
+      "gap_percent": 1.6409710865181564,
       "passed": true
     },
     {
       "skill": "S9_All",
       "facts": "F1",
-      "dl_composite": 11818.003431177642,
-      "dl_facts_only": 8664.32529020858,
-      "dl_skills_only": 5461.701427547698,
-      "gap_percent": 2.878308939275745,
+      "dl_composite": 31629.666666666668,
+      "dl_facts_only": 16735.0,
+      "dl_skills_only": 23613.0,
+      "dl_interaction": 1561.6666666666667,
+      "gap_percent": 1.165572405652913,
       "passed": true
     },
     {
       "skill": "S9_All",
       "facts": "F2",
-      "dl_composite": 17832.107022700842,
-      "dl_facts_only": 14685.899439178478,
-      "dl_skills_only": 5461.701427547698,
-      "gap_percent": 1.8656689943217526,
+      "dl_composite": 35860.0,
+      "dl_facts_only": 20787.333333333332,
+      "dl_skills_only": 23613.0,
+      "dl_interaction": 1545.3333333333333,
+      "gap_percent": 1.569994422755159,
       "passed": true
     },
     {
       "skill": "S9_All",
       "facts": "F3",
-      "dl_composite": 29873.217223291987,
-      "dl_facts_only": 26743.614842293406,
-      "dl_skills_only": 5461.701427547698,
-      "gap_percent": 1.0580811797752163,
+      "dl_composite": 49245.666666666664,
+      "dl_facts_only": 33795.333333333336,
+      "dl_skills_only": 23613.0,
+      "dl_interaction": 1839.3333333333333,
+      "gap_percent": 1.3131443037289041,
       "passed": true
     }
   ],
   "saturation_analysis": {
-    "gamma_point": 0.006405099023376318,
+    "gamma_point": 0.09933279898890064,
     "gamma_95_ci": [
-      0.005378139172264563,
-      0.007209509070836397
+      0.05367782087309303,
+      0.15347635926234338
     ],
-    "std_err": 0.00029690732047964137,
-    "r_squared": 0.9935949760783861,
+    "std_err": 0.01672177364960916,
+    "r_squared": 0.9216454081147968,
     "saturates": true
   },
   "ruler_concordance": {
-    "spearman_rho": 0.997777160322312,
-    "p_value": 6.244370987143569e-70
+    "spearman_rho": 0.9873853848291193,
+    "p_value": 3.9738219554584056e-48
   },
-  "run_id": "m4_comp_1791552860",
-  "provenance_path": "results/runs/m4_comp_1791552860"
+  "run_id": "m4_composition_s42",
+  "provenance_path": "results/runs/m4_composition_s42"
 }
