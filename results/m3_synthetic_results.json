@@ -1,0 +1,367 @@
+{
+  "milestone": "M3",
+  "timestamp": "2026-10-09 13:33:09 UTC",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "device": "mps",
+  "hardware": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "processor": "arm",
+    "machine": "arm64",
+    "python_version": "3.11.17 (main, Oct  3 2026, 00:54:14) [Clang 22.1.3 ]",
+    "torch_version": "2.14.1",
+    "mps_available": true,
+    "mps_built": true,
+    "cuda_available": false,
+    "apple_silicon_chip": "Apple M2",
+    "ram_bytes": 8589934592,
+    "ram_gb": 8.0
+  },
+  "git_sha": "ffc536aa1c873d265f38b7813ef552e33a76ccfd",
+  "entropy_verification": {
+    "passed": true,
+    "scales": [
+      {
+        "k_entities": 64,
+        "theoretical_bits": 1536.0,
+        "empirical_bits": 1536.0,
+        "relative_error": 0.0,
+        "within_point_five_percent": true
+      },
+      {
+        "k_entities": 128,
+        "theoretical_bits": 3072.0,
+        "empirical_bits": 3072.0,
+        "relative_error": 0.0,
+        "within_point_five_percent": true
+      },
+      {
+        "k_entities": 256,
+        "theoretical_bits": 6144.0,
+        "empirical_bits": 6144.0,
+        "relative_error": 0.0,
+        "within_point_five_percent": true
+      },
+      {
+        "k_entities": 512,
+        "theoretical_bits": 12288.0,
+        "empirical_bits": 12288.0,
+        "relative_error": 0.0,
+        "within_point_five_percent": true
+      },
+      {
+        "k_entities": 1024,
+        "theoretical_bits": 24576.0,
+        "empirical_bits": 24576.0,
+        "relative_error": 0.0,
+        "within_point_five_percent": true
+      }
+    ]
+  },
+  "zipf_verification": [
+    {
+      "target_alpha": 0.3,
+      "target_zipf_exponent": 1.3,
+      "empirical_slope": 1.3000000000000005,
+      "empirical_alpha": 0.3000000000000005,
+      "r_squared": 1.0
+    },
+    {
+      "target_alpha": 0.6,
+      "target_zipf_exponent": 1.6,
+      "empirical_slope": 1.6000000000000003,
+      "empirical_alpha": 0.6000000000000003,
+      "r_squared": 1.0
+    },
+    {
+      "target_alpha": 1.0,
+      "target_zipf_exponent": 2.0,
+      "empirical_slope": 2.000000000000001,
+      "empirical_alpha": 1.0000000000000009,
+      "r_squared": 1.0
+    }
+  ],
+  "skill_library": {
+    "skills": [
+      {
+        "skill_id": "S1",
+        "name": "Sequence Copying",
+        "rasp_tokens": 28,
+        "k_bits": 112.0,
+        "sample_prompt": "COPY U D A X I ->",
+        "sample_target": "U D A X I"
+      },
+      {
+        "skill_id": "S2",
+        "name": "Sequence Inversion",
+        "rasp_tokens": 36,
+        "k_bits": 144.0,
+        "sample_prompt": "REVERSE H H E X D ->",
+        "sample_target": "D X E H H"
+      },
+      {
+        "skill_id": "S3",
+        "name": "Sequence Sort",
+        "rasp_tokens": 64,
+        "k_bits": 256.0,
+        "sample_prompt": "SORT 8 1 9 6 0 ->",
+        "sample_target": "0 1 6 8 9"
+      },
+      {
+        "skill_id": "S4",
+        "name": "Target Token Histogram",
+        "rasp_tokens": 42,
+        "k_bits": 168.0,
+        "sample_prompt": "COUNT D IN A A B B A B D B ->",
+        "sample_target": "1"
+      },
+      {
+        "skill_id": "S5",
+        "name": "In-Context Key-Value Lookup",
+        "rasp_tokens": 52,
+        "k_bits": 208.0,
+        "sample_prompt": "LOOKUP k0:v85 k1:v45 k2:v10 k3:v30 QUERY k3 ->",
+        "sample_target": "v30"
+      },
+      {
+        "skill_id": "S6",
+        "name": "Modular Addition (mod 97)",
+        "rasp_tokens": 48,
+        "k_bits": 192.0,
+        "sample_prompt": "ADD_MOD97 43 + 35 ->",
+        "sample_target": "78"
+      },
+      {
+        "skill_id": "S7",
+        "name": "Dyck-2 Balanced Brackets",
+        "rasp_tokens": 58,
+        "k_bits": 232.0,
+        "sample_prompt": "DYCK2 [(())] ->",
+        "sample_target": "VALID"
+      },
+      {
+        "skill_id": "S8",
+        "name": "Two-Hop In-Context Composition",
+        "rasp_tokens": 76,
+        "k_bits": 304.0,
+        "sample_prompt": "CHAIN n4->n2 ; n2->n1 QUERY n4 ->",
+        "sample_target": "n1"
+      },
+      {
+        "skill_id": "S9",
+        "name": "Two-Hop Stored Fact Interaction",
+        "rasp_tokens": 94,
+        "k_bits": 376.0,
+        "sample_prompt": "INTERACTION ENT_0001 REL origin_galaxy THEN containment_field ->",
+        "sample_target": "Andromeda_Magnetic_Toroid"
+      }
+    ],
+    "total_skills": 9,
+    "total_rasp_tokens": 498,
+    "total_skill_bits": 1992.0
+  },
+  "leakage_audit": {
+    "n": 13,
+    "train_ngrams_count": 0,
+    "eval_ngrams_count": 0,
+    "overlap_count": 0,
+    "overlap_rate": 0.0,
+    "continuous_13gram_overlap_count": 0,
+    "passed": true,
+    "sample_overlaps": []
+  },
+  "capacity_calibration": {
+    "passed": true,
+    "mean_kappa": 1.475253621323888,
+    "bootstrap_95_ci": [
+      1.475253621323888,
+      1.475253621323888
+    ],
+    "asymptotic_kappa": 0.6772486772486772,
+    "asymptotic_95_ci": [
+      0.0,
+      2.0317460317460316
+    ],
+    "runs": [
+      {
+        "seed": 42,
+        "mean_kappa": 1.4752536213238883,
+        "within_target": true,
+        "runs": [
+          {
+            "k_entities": 128,
+            "theoretical_fact_bits": 3072.0,
+            "n_params": 2588,
+            "d_embed": 7,
+            "accuracy": 1.0,
+            "converged": true,
+            "dl_bits": 12092,
+            "kappa_bits_per_param": 1.187017001545595,
+            "dl_efficiency": 0.2540522659609659,
+            "epochs_trained": 305,
+            "wall_clock_sec": 0.23780512809753418
+          },
+          {
+            "k_entities": 256,
+            "theoretical_fact_bits": 6144.0,
+            "n_params": 3484,
+            "d_embed": 7,
+            "accuracy": 1.0,
+            "converged": true,
+            "dl_bits": 15816,
+            "kappa_bits_per_param": 1.7634902411021813,
+            "dl_efficiency": 0.3884673748103187,
+            "epochs_trained": 350,
+            "wall_clock_sec": 0.26255011558532715
+          },
+          {
+            "k_entities": 512,
+            "theoretical_fact_bits": 12288.0,
+            "n_params": 6048,
+            "d_embed": 8,
+            "accuracy": 0.9798176884651184,
+            "converged": false,
+            "dl_bits": 26476,
+            "kappa_bits_per_param": 0.0,
+            "dl_efficiency": 0.4641184468953014,
+            "epochs_trained": 350,
+            "wall_clock_sec": 0.35872387886047363
+          }
+        ]
+      },
+      {
+        "seed": 43,
+        "mean_kappa": 1.4752536213238883,
+        "within_target": true,
+        "runs": [
+          {
+            "k_entities": 128,
+            "theoretical_fact_bits": 3072.0,
+            "n_params": 2588,
+            "d_embed": 7,
+            "accuracy": 1.0,
+            "converged": true,
+            "dl_bits": 12092,
+            "kappa_bits_per_param": 1.187017001545595,
+            "dl_efficiency": 0.2540522659609659,
+            "epochs_trained": 303,
+            "wall_clock_sec": 0.16040587425231934
+          },
+          {
+            "k_entities": 256,
+            "theoretical_fact_bits": 6144.0,
+            "n_params": 3484,
+            "d_embed": 7,
+            "accuracy": 0.9993489384651184,
+            "converged": true,
+            "dl_bits": 15816,
+            "kappa_bits_per_param": 1.7634902411021813,
+            "dl_efficiency": 0.3884673748103187,
+            "epochs_trained": 350,
+            "wall_clock_sec": 0.2424919605255127
+          },
+          {
+            "k_entities": 512,
+            "theoretical_fact_bits": 12288.0,
+            "n_params": 6048,
+            "d_embed": 8,
+            "accuracy": 0.9850260615348816,
+            "converged": false,
+            "dl_bits": 26476,
+            "kappa_bits_per_param": 2.0317460317460316,
+            "dl_efficiency": 0.4641184468953014,
+            "epochs_trained": 350,
+            "wall_clock_sec": 0.3469219207763672
+          }
+        ]
+      },
+      {
+        "seed": 44,
+        "mean_kappa": 1.4752536213238883,
+        "within_target": true,
+        "runs": [
+          {
+            "k_entities": 128,
+            "theoretical_fact_bits": 3072.0,
+            "n_params": 2588,
+            "d_embed": 7,
+            "accuracy": 1.0,
+            "converged": true,
+            "dl_bits": 12092,
+            "kappa_bits_per_param": 1.187017001545595,
+            "dl_efficiency": 0.2540522659609659,
+            "epochs_trained": 293,
+            "wall_clock_sec": 0.14523887634277344
+          },
+          {
+            "k_entities": 256,
+            "theoretical_fact_bits": 6144.0,
+            "n_params": 3484,
+            "d_embed": 7,
+            "accuracy": 1.0,
+            "converged": true,
+            "dl_bits": 15816,
+            "kappa_bits_per_param": 1.7634902411021813,
+            "dl_efficiency": 0.3884673748103187,
+            "epochs_trained": 350,
+            "wall_clock_sec": 0.2378242015838623
+          },
+          {
+            "k_entities": 512,
+            "theoretical_fact_bits": 12288.0,
+            "n_params": 6048,
+            "d_embed": 8,
+            "accuracy": 0.9772135615348816,
+            "converged": false,
+            "dl_bits": 26476,
+            "kappa_bits_per_param": 0.0,
+            "dl_efficiency": 0.4641184468953014,
+            "epochs_trained": 350,
+            "wall_clock_sec": 0.3478987216949463
+          }
+        ]
+      }
+    ]
+  },
+  "ruler_scaling": {
+    "passed": true,
+    "points": [
+      {
+        "k_entities": 128,
+        "fact_bits": 3072.0,
+        "dl_ruler_a_bits": 12092,
+        "dl_ruler_b_bits": 3932
+      },
+      {
+        "k_entities": 256,
+        "fact_bits": 6144.0,
+        "dl_ruler_a_bits": 15816,
+        "dl_ruler_b_bits": 7465
+      },
+      {
+        "k_entities": 512,
+        "fact_bits": 12288.0,
+        "dl_ruler_a_bits": 26476,
+        "dl_ruler_b_bits": 14531
+      }
+    ],
+    "ruler_a": {
+      "slope": 1.5856584821428572,
+      "intercept": 6762.0,
+      "r_squared": 0.993388898483237
+    },
+    "ruler_b": {
+      "slope": 1.1500651041666665,
+      "intercept": 399.0,
+      "r_squared": 1.0
+    },
+    "spearman_rho": 1.0,
+    "spearman_p": 0.0
+  },
+  "wall_clock_seconds": 3.1978492736816406,
+  "run_id": "m3_synth_1791552792",
+  "provenance_path": "results/runs/m3_synth_1791552792"
+}

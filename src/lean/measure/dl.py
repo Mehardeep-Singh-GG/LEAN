@@ -153,3 +153,37 @@ class ModelDescriptionLengthAccountant:
         
     def bits_per_parameter(self, original_numel: int) -> float:
         return self.total_bits() / float(original_numel)
+
+
+def compute_model_dl(model: nn.Module, method: str = "rtn_4bit", group_size: int = 128) -> Dict[str, Any]:
+    """
+    Convenience function to compute complete description length for an arbitrary PyTorch model.
+    """
+    accountant = ModelDescriptionLengthAccountant()
+    total_params = 0
+    
+    for name, param in model.named_parameters():
+        numel = param.numel()
+        total_params += numel
+        if method == "rtn_4bit" and param.dim() >= 2:
+            accountant.add_quantized_layer(name, numel, bit_width=4, group_size=group_size)
+        elif method == "rtn_8bit" and param.dim() >= 2:
+            accountant.add_quantized_layer(name, numel, bit_width=8, group_size=group_size)
+        else:
+            accountant.add_dense_layer(name, param, bit_width=16)
+            
+    total_bits = accountant.total_bits()
+    return {
+        "method": method,
+        "total_dl_bits": total_bits,
+        "total_bytes": accountant.total_bytes(),
+        "total_megabytes": accountant.total_megabytes(),
+        "total_parameters": total_params,
+        "bits_per_param": total_bits / max(1, total_params),
+        "layers": accountant.layer_breakdown
+    }
+
+
+def format_dl_breakdown(report: Dict[str, Any]) -> str:
+    """Format DL report into a clean string."""
+    return f"DL ({report['method']}): {report['total_dl_bits']} bits ({report['total_megabytes']:.3f} MiB, {report['bits_per_param']:.2f} b/p)"

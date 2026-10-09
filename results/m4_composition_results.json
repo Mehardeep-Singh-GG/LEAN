@@ -1,0 +1,260 @@
+{
+  "milestone": "M4",
+  "gate": "alpha",
+  "timestamp": "2026-10-09 13:34:17 UTC",
+  "git_sha": "ffc536aa1c873d265f38b7813ef552e33a76ccfd",
+  "prereg_hash": "6224953cfcf2f1b0a31a1f957c6b912bb90d2d55f004e49b6080ca1d42c223f1",
+  "prereg_passed": true,
+  "device": "mps",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "hardware": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "processor": "arm",
+    "machine": "arm64",
+    "python_version": "3.11.17 (main, Oct  3 2026, 00:54:14) [Clang 22.1.3 ]",
+    "torch_version": "2.14.1",
+    "mps_available": true,
+    "mps_built": true,
+    "cuda_available": false,
+    "apple_silicon_chip": "Apple M2",
+    "ram_bytes": 8589934592,
+    "ram_gb": 8.0
+  },
+  "duration_sec": 2.9512860774993896,
+  "gate_alpha_passed": true,
+  "gate_alpha_checks": {
+    "C1_additivity_gap": {
+      "name": "Additivity Gap <= 5%",
+      "achieved": 2.878308939275745,
+      "threshold": 5.0,
+      "passed": true
+    },
+    "C2_loocv_r2": {
+      "name": "Leave-One-Out Cross-Validation R^2 >= 0.90",
+      "achieved": 0.9999164031587129,
+      "threshold": 0.9,
+      "passed": true
+    },
+    "C3_competing_models": {
+      "name": "AIC/BIC Decisive Superiority over Alternatives",
+      "achieved": "Delta AIC > 10 vs all alternatives",
+      "passed": true
+    },
+    "C4_skill_saturation": {
+      "name": "Skill Saturation Exponent gamma upper CI <= 0.30",
+      "achieved": 0.007209509070836397,
+      "threshold": 0.3,
+      "passed": true
+    },
+    "C5_c_alg_precision": {
+      "name": "c_alg 95% Bootstrap CI Relative Width <= 30%",
+      "achieved": 1.7240428921979984,
+      "threshold": 30.0,
+      "passed": true
+    },
+    "C6_dual_ruler_concordance": {
+      "name": "Dual Ruler Spearman rho >= 0.90",
+      "achieved": 0.997777160322312,
+      "threshold": 0.9,
+      "passed": true
+    },
+    "C7_invariant_lower_bound": {
+      "name": "DL >= I_facts Invariant",
+      "achieved": "All DL >= I_facts",
+      "passed": true
+    }
+  },
+  "fit_results": {
+    "c_alg": 1.420770132806663,
+    "c_alg_95_ci": [
+      1.4101040564503358,
+      1.434598742939461
+    ],
+    "c_alg_relative_ci_width": 0.017240428921979984,
+    "kappa": 0.5101055818724837,
+    "kappa_95_ci": [
+      0.5098411713951686,
+      0.5103840860181597
+    ],
+    "delta": 2649.752905208052,
+    "delta_95_ci": [
+      2640.5688336970875,
+      2659.5226636463562
+    ],
+    "eta": 0.8223120409202866,
+    "r_squared": 0.9999961338317532,
+    "ss_res": 18771.077851815746,
+    "ss_tot": 4855214945.123952
+  },
+  "model_comparison": {
+    "model_1_lean": {
+      "name": "LEAN Composition Law (c_alg * K + I_facts / kappa + delta)",
+      "rss": 351700.021436184,
+      "r2_in_sample": 0.9999275624199111,
+      "r2_loocv": 0.9999164031587129,
+      "aic": 526.5713590314101,
+      "bic": 532.8543927180764
+    },
+    "model_2_naive": {
+      "name": "Naive Scaling (beta_0 + beta_1 * N)",
+      "rss": 36879590.48577734,
+      "r2_in_sample": 0.9924041281585658,
+      "r2_loocv": 0.9918925351944206,
+      "aic": 803.7294574242457,
+      "bic": 807.9181465486898,
+      "delta_aic": 277.15809839283554,
+      "delta_bic": 275.06375383061345
+    },
+    "model_3_multiplicative": {
+      "name": "Multiplicative Entanglement (beta_0 + beta_1 * (I * K))",
+      "rss": 2968530112.7685,
+      "r2_in_sample": 0.38858935261975014,
+      "r2_loocv": 0.3559757895938358,
+      "aic": 1067.0192916102417,
+      "bic": 1071.2079807346859,
+      "delta_aic": 540.4479325788316,
+      "delta_bic": 538.3535880166095
+    },
+    "model_4_pure_facts": {
+      "name": "Pure Facts / No Skill Term (beta_0 + beta_1 * I_facts)",
+      "rss": 75482936.02625892,
+      "r2_in_sample": 0.9844532246503184,
+      "r2_loocv": 0.983363289400673,
+      "aic": 846.7043568133093,
+      "bic": 850.8930459377535,
+      "delta_aic": 320.13299778189923,
+      "delta_bic": 318.03865321967714
+    },
+    "lean_beats_all": true
+  },
+  "additivity_evaluations": [
+    {
+      "skill": "S1_Copy",
+      "facts": "F1",
+      "dl_composite": 8833.191272837706,
+      "dl_facts_only": 8664.32529020858,
+      "dl_skills_only": 2802.0428759927613,
+      "gap_percent": 0.1698711366597702,
+      "passed": true
+    },
+    {
+      "skill": "S1_Copy",
+      "facts": "F2",
+      "dl_composite": 14841.665460173155,
+      "dl_facts_only": 14685.899439178478,
+      "dl_skills_only": 2802.0428759927613,
+      "gap_percent": 0.012836031031452465,
+      "passed": true
+    },
+    {
+      "skill": "S1_Copy",
+      "facts": "F3",
+      "dl_composite": 26897.643367338478,
+      "dl_facts_only": 26743.614842293406,
+      "dl_skills_only": 2802.0428759927613,
+      "gap_percent": 0.0006230465329645497,
+      "passed": true
+    },
+    {
+      "skill": "S3_Three",
+      "facts": "F1",
+      "dl_composite": 9407.464743499246,
+      "dl_facts_only": 8664.32529020858,
+      "dl_skills_only": 3380.2450403272087,
+      "gap_percent": 0.11773999741266462,
+      "passed": true
+    },
+    {
+      "skill": "S3_Three",
+      "facts": "F2",
+      "dl_composite": 15422.955327269614,
+      "dl_facts_only": 14685.899439178478,
+      "dl_skills_only": 3380.2450403272087,
+      "gap_percent": 0.03237241786750361,
+      "passed": true
+    },
+    {
+      "skill": "S3_Three",
+      "facts": "F3",
+      "dl_composite": 27478.338588588133,
+      "dl_facts_only": 26743.614842293406,
+      "dl_skills_only": 3380.2450403272087,
+      "gap_percent": 0.009682687841833413,
+      "passed": true
+    },
+    {
+      "skill": "S6_Six",
+      "facts": "F1",
+      "dl_composite": 10214.648289477236,
+      "dl_facts_only": 8664.32529020858,
+      "dl_skills_only": 4204.504312884396,
+      "gap_percent": 0.058733082761009824,
+      "passed": true
+    },
+    {
+      "skill": "S6_Six",
+      "facts": "F2",
+      "dl_composite": 16230.173761446504,
+      "dl_facts_only": 14685.899439178478,
+      "dl_skills_only": 4204.504312884396,
+      "gap_percent": 0.07423244514394649,
+      "passed": true
+    },
+    {
+      "skill": "S6_Six",
+      "facts": "F3",
+      "dl_composite": 28267.258428762085,
+      "dl_facts_only": 26743.614842293406,
+      "dl_skills_only": 4204.504312884396,
+      "gap_percent": 0.11560650890830781,
+      "passed": true
+    },
+    {
+      "skill": "S9_All",
+      "facts": "F1",
+      "dl_composite": 11818.003431177642,
+      "dl_facts_only": 8664.32529020858,
+      "dl_skills_only": 5461.701427547698,
+      "gap_percent": 2.878308939275745,
+      "passed": true
+    },
+    {
+      "skill": "S9_All",
+      "facts": "F2",
+      "dl_composite": 17832.107022700842,
+      "dl_facts_only": 14685.899439178478,
+      "dl_skills_only": 5461.701427547698,
+      "gap_percent": 1.8656689943217526,
+      "passed": true
+    },
+    {
+      "skill": "S9_All",
+      "facts": "F3",
+      "dl_composite": 29873.217223291987,
+      "dl_facts_only": 26743.614842293406,
+      "dl_skills_only": 5461.701427547698,
+      "gap_percent": 1.0580811797752163,
+      "passed": true
+    }
+  ],
+  "saturation_analysis": {
+    "gamma_point": 0.006405099023376318,
+    "gamma_95_ci": [
+      0.005378139172264563,
+      0.007209509070836397
+    ],
+    "std_err": 0.00029690732047964137,
+    "r_squared": 0.9935949760783861,
+    "saturates": true
+  },
+  "ruler_concordance": {
+    "spearman_rho": 0.997777160322312,
+    "p_value": 6.244370987143569e-70
+  },
+  "run_id": "m4_comp_1791552860",
+  "provenance_path": "results/runs/m4_comp_1791552860"
+}
