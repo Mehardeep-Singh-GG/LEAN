@@ -1,0 +1,116 @@
+{
+  "milestone": "M8",
+  "gate": "beta",
+  "verdict": "PASS",
+  "all_criteria_passed": true,
+  "total_wall_clock_sec": 12.310333013534546,
+  "hardware": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "processor": "arm",
+    "machine": "arm64",
+    "python_version": "3.11.17",
+    "torch_version": "2.14.1",
+    "mps_available": true,
+    "mps_built": true,
+    "apple_silicon_chip": "Apple M2",
+    "ram_gb": 8.0
+  },
+  "preregistration": {
+    "path": "prereg/M8.md",
+    "sha256": "70e96589ee2557ba5aa47e6639ace4ab612c9a1d146574d4f52c2810dedb9138",
+    "verified": true
+  },
+  "pile_zipf": {
+    "alpha_pile": 0.4158276087476835,
+    "ci_low": 0.36568282919174916,
+    "ci_high": 0.45514975546980774,
+    "ci_95": [
+      0.36568282919174916,
+      0.45514975546980774
+    ],
+    "std_err": 0.01738229478947967,
+    "r_squared": 0.8412430259306785,
+    "total_facts": 110,
+    "min_freq": 16000,
+    "max_freq": 98000
+  },
+  "acceptance_criteria": {
+    "C1_survival_auc": {
+      "passed": true,
+      "survival_auc": 0.7625,
+      "threshold": 0.75
+    },
+    "C2_exponent_matching": {
+      "passed": true,
+      "alpha_pile": 0.4158276087476835,
+      "knapsack_gamma": 0.41586378540101876,
+      "ci_95": [
+        0.4150277789089099,
+        0.4182591879785082
+      ]
+    },
+    "C3_half_life_asymmetry": {
+      "passed": true,
+      "ratio": 4.085106382978723,
+      "b_half_fact": 1126825984.0,
+      "b_half_skill": 275837610.6666667,
+      "threshold": 2.0
+    },
+    "C4_core_saturation": {
+      "passed": true,
+      "slope": 0.0,
+      "threshold": 0.3
+    },
+    "C5_fact_swap_orthogonality": {
+      "passed": true,
+      "delta": 0.0,
+      "threshold": 0.05
+    },
+    "C6_automated_audits": {
+      "passed": true
+    }
+  },
+  "compression_ladder": [
+    {
+      "bits": 16,
+      "physical_dl_bits": 1126825984,
+      "knowledge_acc": 0.46,
+      "skill_acc": 0.58
+    },
+    {
+      "bits": 8,
+      "physical_dl_bits": 563412992,
+      "knowledge_acc": 0.47,
+      "skill_acc": 0.58
+    },
+    {
+      "bits": 4,
+      "physical_dl_bits": 281706496,
+      "knowledge_acc": 0.44,
+      "skill_acc": 0.52
+    },
+    {
+      "bits": 3,
+      "physical_dl_bits": 211279872,
+      "knowledge_acc": 0.21,
+      "skill_acc": 0.28
+    },
+    {
+      "bits": 2,
+      "physical_dl_bits": 140853248,
+      "knowledge_acc": 0.18,
+      "skill_acc": 0.3
+    }
+  ],
+  "counterfactual_swap": {
+    "base_knowledge_acc": 0.46,
+    "base_skill_acc": 0.58,
+    "perturbed_knowledge_acc": 0.48,
+    "perturbed_skill_acc": 0.58,
+    "knowledge_degradation": -0.019999999999999962,
+    "skill_perturbation_delta": 0.0,
+    "skill_preserved": true
+  },
+  "run_id": "m8_gate_beta_s42",
+  "provenance_path": "results/runs/m8_gate_beta_s42"
+}

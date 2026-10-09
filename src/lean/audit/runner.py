@@ -88,6 +88,32 @@ def audit_a4_invariants(milestone: str) -> Dict[str, Any]:
             data = json.load(f)
         c6_ok = data.get("acceptance_criteria", {}).get("C6_ruler_c_accounting", {}).get("passed", False)
         return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": c6_ok, "details": "Ruler C exact token-bit accounting compliant"}
+    elif milestone == "M7":
+        m7_path = Path("results/m7_theory_results.json")
+        if not m7_path.exists():
+            return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": False, "details": "m7_theory_results.json missing"}
+        with open(m7_path) as f:
+            data = json.load(f)
+        crit = data.get("acceptance_criteria", {})
+        c3_ok = crit.get("C3_half_life_asymmetry", {}).get("passed", False)
+        c4_ok = crit.get("C4_knapsack_gap", {}).get("passed", False)
+        ratio = crit.get("C3_half_life_asymmetry", {}).get("ratio", 0.0)
+        gap = crit.get("C4_knapsack_gap", {}).get("relative_gap", 0.0)
+        passed = c3_ok and c4_ok
+        return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": passed, "details": f"Knapsack gap <= 1.0% ({gap*100:.2f}%) & Asymmetric Half-life >= 2.0x ({ratio:.2f}x)"}
+    elif milestone == "M8":
+        m8_path = Path("results/m8_gate_beta_results.json")
+        if not m8_path.exists():
+            return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": False, "details": "m8_gate_beta_results.json missing"}
+        with open(m8_path) as f:
+            data = json.load(f)
+        crit = data.get("acceptance_criteria", {})
+        c3_ok = crit.get("C3_half_life_asymmetry", {}).get("passed", False)
+        c5_ok = crit.get("C5_fact_swap_orthogonality", {}).get("passed", False)
+        ratio = crit.get("C3_half_life_asymmetry", {}).get("ratio", 0.0)
+        delta = crit.get("C5_fact_swap_orthogonality", {}).get("delta", 0.0)
+        passed = c3_ok and c5_ok
+        return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": passed, "details": f"Asymmetric Half-life >= 2.0x ({ratio:.2f}x) & Fact-swap skill delta <= 5.0% ({delta*100:.2f}%)"}
     return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": True, "details": "Invariants verified"}
 
 
@@ -122,6 +148,25 @@ def audit_a5_baseline_sanity(milestone: str) -> Dict[str, Any]:
         c4 = data.get("acceptance_criteria", {}).get("C4_symbolic_recovery", {})
         passed = c4.get("passed", False)
         return {"id": "A5", "name": "Baseline Sanity", "passed": passed, "details": f"Symbolic recovery exact match: S6 ({c4.get('s6_match')}), S7 ({c4.get('s7_match')})"}
+    elif milestone == "M7":
+        m7_path = Path("results/m7_theory_results.json")
+        if not m7_path.exists():
+            return {"id": "A5", "name": "Baseline Sanity", "passed": False, "details": "m7_theory_results.json missing"}
+        with open(m7_path) as f:
+            data = json.load(f)
+        gap_info = data.get("knapsack_gap", {})
+        passed = gap_info.get("within_one_percent", False)
+        return {"id": "A5", "name": "Baseline Sanity", "passed": passed, "details": f"Exact IP ({gap_info.get('v_exact', 0):.1f}) vs Greedy Knapsack ({gap_info.get('v_greedy', 0):.1f}) within 1.0%"}
+    elif milestone == "M8":
+        m8_path = Path("results/m8_gate_beta_results.json")
+        if not m8_path.exists():
+            return {"id": "A5", "name": "Baseline Sanity", "passed": False, "details": "m8_gate_beta_results.json missing"}
+        with open(m8_path) as f:
+            data = json.load(f)
+        ladder = data.get("compression_ladder", [])
+        fp16_acc = ladder[0].get("knowledge_acc", 0.0) if ladder else 0.0
+        passed = (0.40 <= fp16_acc <= 0.60)
+        return {"id": "A5", "name": "Baseline Sanity", "passed": passed, "details": f"Pythia-70M FP16 cloze accuracy calibrated: {fp16_acc*100:.2f}%"}
     return {"id": "A5", "name": "Baseline Sanity", "passed": True, "details": "Baselines calibrated"}
 
 
@@ -162,6 +207,30 @@ def audit_a6_statistics(milestone: str) -> Dict[str, Any]:
         cv = crit.get("C2_c_alg_constancy", {}).get("cv", 0.0)
         passed = c1 and c2
         return {"id": "A6", "name": "Statistical Power & CIs", "passed": passed, "details": f">=6 skills >=99% fidelity ({c1}) & c_alg CV <= 30% (CV={cv*100:.1f}%)"}
+    elif milestone == "M7":
+        m7_path = Path("results/m7_theory_results.json")
+        if not m7_path.exists():
+            return {"id": "A6", "name": "Statistical Power & CIs", "passed": False, "details": "m7_theory_results.json missing"}
+        with open(m7_path) as f:
+            data = json.load(f)
+        crit = data.get("acceptance_criteria", {})
+        c1 = crit.get("C1_exponent_matching", {}).get("passed", False)
+        c2 = crit.get("C2_survival_auc", {}).get("passed", False)
+        auc = crit.get("C2_survival_auc", {}).get("mean_auc", 0.0)
+        passed = c1 and c2
+        return {"id": "A6", "name": "Statistical Power & CIs", "passed": passed, "details": f"Exponent matching 95% CIs ({c1}) & Survival ROC-AUC >= 0.80 (mean={auc:.4f})"}
+    elif milestone == "M8":
+        m8_path = Path("results/m8_gate_beta_results.json")
+        if not m8_path.exists():
+            return {"id": "A6", "name": "Statistical Power & CIs", "passed": False, "details": "m8_gate_beta_results.json missing"}
+        with open(m8_path) as f:
+            data = json.load(f)
+        crit = data.get("acceptance_criteria", {})
+        c1 = crit.get("C1_survival_auc", {}).get("passed", False)
+        c2 = crit.get("C2_exponent_matching", {}).get("passed", False)
+        auc = crit.get("C1_survival_auc", {}).get("survival_auc", 0.0)
+        passed = c1 and c2
+        return {"id": "A6", "name": "Statistical Power & CIs", "passed": passed, "details": f"Knapsack scaling matches alpha_Pile ({c2}) & Survival ROC-AUC >= 0.75 (AUC={auc:.4f})"}
     return {"id": "A6", "name": "Statistical Power & CIs", "passed": True, "details": "Statistics standard applied"}
 
 
@@ -199,6 +268,24 @@ def audit_a8_prediction_discipline(milestone: str) -> Dict[str, Any]:
         expected_sha = "0c3d7592e876e5777ff2c235994e6c9586bc006a58120608c9aa845c87087cbc"
         passed = (actual_sha == expected_sha)
         return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": passed, "details": f"Preregistration SHA-256 match: {actual_sha[:12]}"}
+    elif milestone == "M7":
+        prereg = Path("prereg/M7.md")
+        if not prereg.exists():
+            return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": False, "details": "prereg/M7.md missing"}
+        with open(prereg, "rb") as f:
+            actual_sha = hashlib.sha256(f.read()).hexdigest()
+        expected_sha = "0f61cd400a67f5be66d38a55e65501c8ac251cba3fef6eff6648a064494e1adc"
+        passed = (actual_sha == expected_sha)
+        return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": passed, "details": f"Preregistration SHA-256 match: {actual_sha[:12]}"}
+    elif milestone == "M8":
+        prereg = Path("prereg/M8.md")
+        if not prereg.exists():
+            return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": False, "details": "prereg/M8.md missing"}
+        with open(prereg, "rb") as f:
+            actual_sha = hashlib.sha256(f.read()).hexdigest()
+        expected_sha = "70e96589ee2557ba5aa47e6639ace4ab612c9a1d146574d4f52c2810dedb9138"
+        passed = (actual_sha == expected_sha)
+        return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": passed, "details": f"Preregistration SHA-256 match: {actual_sha[:12]}"}
     return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": True, "details": "Preregistration active"}
 
 
@@ -234,6 +321,30 @@ def audit_a9_ablation_completeness(milestone: str) -> Dict[str, Any]:
         c5 = crit.get("C5_multi_seed_stability", {}).get("passed", False)
         passed = c3 and c5
         return {"id": "A9", "name": "Ablation Completeness", "passed": passed, "details": f"All 9 listings verified ({c3}) & Multi-seed evaluated ({c5})"}
+    elif milestone == "M7":
+        m7_path = Path("results/m7_theory_results.json")
+        if not m7_path.exists():
+            return {"id": "A9", "name": "Ablation Completeness", "passed": False, "details": "m7_theory_results.json missing"}
+        with open(m7_path) as f:
+            data = json.load(f)
+        crit = data.get("acceptance_criteria", {})
+        c5_ok = crit.get("C5_multi_seed_stability", {}).get("passed", False)
+        alphas = data.get("alpha_evaluations", {})
+        all_alphas = all(a in alphas for a in ["alpha_0.3", "alpha_0.6", "alpha_1.0"])
+        passed = c5_ok and all_alphas
+        return {"id": "A9", "name": "Ablation Completeness", "passed": passed, "details": f"All 3 Zipf alphas evaluated ({all_alphas}) & Multi-seed evaluated ({c5_ok})"}
+    elif milestone == "M8":
+        m8_path = Path("results/m8_gate_beta_results.json")
+        if not m8_path.exists():
+            return {"id": "A9", "name": "Ablation Completeness", "passed": False, "details": "m8_gate_beta_results.json missing"}
+        with open(m8_path) as f:
+            data = json.load(f)
+        crit = data.get("acceptance_criteria", {})
+        c4_ok = crit.get("C4_core_saturation", {}).get("passed", False)
+        ladder = data.get("compression_ladder", [])
+        has_rungs = len(ladder) >= 5
+        passed = c4_ok and has_rungs
+        return {"id": "A9", "name": "Ablation Completeness", "passed": passed, "details": f"All 5 rungs evaluated ({has_rungs}) & Thinking Core saturation slope <= 0.30 ({c4_ok})"}
     return {"id": "A9", "name": "Ablation Completeness", "passed": True, "details": "Ablations accounted"}
 
 
