@@ -2,7 +2,7 @@
   "milestone": "M7",
   "verdict": "PASS",
   "all_criteria_passed": true,
-  "total_wall_clock_sec": 8.16835904121399,
+  "total_wall_clock_sec": 7.8697710037231445,
   "hardware": {
     "platform": "macOS-27.0-arm64-arm-64bit",
     "processor": "arm",
@@ -16,7 +16,7 @@
   },
   "preregistration": {
     "path": "prereg/M7.md",
-    "sha256": "0f61cd400a67f5be66d38a55e65501c8ac251cba3fef6eff6648a064494e1adc",
+    "sha256": "8e48adf1f24caa463a4d44b1b0893f156cd529684cc7ff509a3f1369dc965c98",
     "verified": true
   },
   "acceptance_criteria": {
@@ -25,54 +25,54 @@
       "alphas": {
         "alpha_0.3": {
           "target_alpha": 0.3,
-          "mean_gamma": 0.30003617665333526,
-          "std_gamma": 0.0006503831652135214,
+          "mean_gamma": 0.35889632305656005,
+          "std_gamma": 0.00011654027339795977,
           "gamma_ci_95": [
-            0.2991921151512685,
-            0.3007746999444645
+            0.35873227480107683,
+            0.3589920796418457
           ],
           "exponent_matches": true,
-          "mean_survival_auc": 0.8689332127468582,
+          "mean_survival_auc": 0.8750331508627749,
           "auc_passed": true,
-          "mean_b_half_fact": 4551.268007574889
+          "mean_b_half_fact": 16398.07635486822
         },
         "alpha_0.6": {
           "target_alpha": 0.6,
-          "mean_gamma": 0.6000361766533353,
-          "std_gamma": 0.0006503831652134882,
+          "mean_gamma": 0.6049850176602397,
+          "std_gamma": 8.150922289166665e-05,
           "gamma_ci_95": [
-            0.5991921151512687,
-            0.6007746999444646
+            0.6048705633559496,
+            0.6050541102789452
           ],
           "exponent_matches": true,
-          "mean_survival_auc": 0.8713287774852541,
+          "mean_survival_auc": 0.8582128320666597,
           "auc_passed": true,
-          "mean_b_half_fact": 4510.242694330801
+          "mean_b_half_fact": 16298.810479023508
         },
         "alpha_1.0": {
           "target_alpha": 1.0,
-          "mean_gamma": 1.0000361766533354,
-          "std_gamma": 0.0006503831652135364,
+          "mean_gamma": 0.9762828035293313,
+          "std_gamma": 7.529492991919342e-05,
           "gamma_ci_95": [
-            0.9991921151512685,
-            1.0007746999444647
+            0.9761810181478001,
+            0.9763607848115557
           ],
           "exponent_matches": true,
-          "mean_survival_auc": 0.8840342441981286,
+          "mean_survival_auc": 0.8776837289629302,
           "auc_passed": true,
-          "mean_b_half_fact": 4521.066044491878
+          "mean_b_half_fact": 16370.163947404764
         }
       }
     },
     "C2_survival_auc": {
       "passed": true,
-      "mean_auc": 0.8747654114767469
+      "mean_auc": 0.8703099039641216
     },
     "C3_half_life_asymmetry": {
       "passed": true,
-      "ratio": 16.036418468731735,
-      "b_half_fact": 4510.242694330801,
-      "b_half_skill": 281.25
+      "ratio": 7.055272179499414,
+      "b_half_fact": 16298.810479023508,
+      "b_half_skill": 2310.1604111579354
     },
     "C4_knapsack_gap": {
       "passed": true,
@@ -95,42 +95,42 @@
   "alpha_evaluations": {
     "alpha_0.3": {
       "target_alpha": 0.3,
-      "mean_gamma": 0.30003617665333526,
-      "std_gamma": 0.0006503831652135214,
+      "mean_gamma": 0.35889632305656005,
+      "std_gamma": 0.00011654027339795977,
       "gamma_ci_95": [
-        0.2991921151512685,
-        0.3007746999444645
+        0.35873227480107683,
+        0.3589920796418457
       ],
       "exponent_matches": true,
-      "mean_survival_auc": 0.8689332127468582,
+      "mean_survival_auc": 0.8750331508627749,
       "auc_passed": true,
-      "mean_b_half_fact": 4551.268007574889
+      "mean_b_half_fact": 16398.07635486822
     },
     "alpha_0.6": {
       "target_alpha": 0.6,
-      "mean_gamma": 0.6000361766533353,
-      "std_gamma": 0.0006503831652134882,
+      "mean_gamma": 0.6049850176602397,
+      "std_gamma": 8.150922289166665e-05,
       "gamma_ci_95": [
-        0.5991921151512687,
-        0.6007746999444646
+        0.6048705633559496,
+        0.6050541102789452
       ],
       "exponent_matches": true,
-      "mean_survival_auc": 0.8713287774852541,
+      "mean_survival_auc": 0.8582128320666597,
       "auc_passed": true,
-      "mean_b_half_fact": 4510.242694330801
+      "mean_b_half_fact": 16298.810479023508
     },
     "alpha_1.0": {
       "target_alpha": 1.0,
-      "mean_gamma": 1.0000361766533354,
-      "std_gamma": 0.0006503831652135364,
+      "mean_gamma": 0.9762828035293313,
+      "std_gamma": 7.529492991919342e-05,
       "gamma_ci_95": [
-        0.9991921151512685,
-        1.0007746999444647
+        0.9761810181478001,
+        0.9763607848115557
       ],
       "exponent_matches": true,
-      "mean_survival_auc": 0.8840342441981286,
+      "mean_survival_auc": 0.8776837289629302,
       "auc_passed": true,
-      "mean_b_half_fact": 4521.066044491878
+      "mean_b_half_fact": 16370.163947404764
     }
   },
   "run_id": "m7_theory_s42",

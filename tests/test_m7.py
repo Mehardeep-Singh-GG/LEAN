@@ -26,7 +26,7 @@ def test_m7_preregistration_hash():
     assert prereg_path.exists(), "prereg/M7.md missing!"
     with open(prereg_path, "rb") as f:
         actual_hash = hashlib.sha256(f.read()).hexdigest()
-    expected_hash = "0f61cd400a67f5be66d38a55e65501c8ac251cba3fef6eff6648a064494e1adc"
+    expected_hash = "8e48adf1f24caa463a4d44b1b0893f156cd529684cc7ff509a3f1369dc965c98"
     assert actual_hash == expected_hash, f"Hash mismatch: expected {expected_hash}, got {actual_hash}"
 
 

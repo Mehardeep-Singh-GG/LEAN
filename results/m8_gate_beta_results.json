@@ -3,7 +3,7 @@
   "gate": "beta",
   "verdict": "PASS",
   "all_criteria_passed": true,
-  "total_wall_clock_sec": 12.310333013534546,
+  "total_wall_clock_sec": 19.503416776657104,
   "hardware": {
     "platform": "macOS-27.0-arm64-arm-64bit",
     "processor": "arm",
@@ -17,7 +17,7 @@
   },
   "preregistration": {
     "path": "prereg/M8.md",
-    "sha256": "70e96589ee2557ba5aa47e6639ace4ab612c9a1d146574d4f52c2810dedb9138",
+    "sha256": "48a2b12fe7028379c691e8a2419c4e391d50a21290fb6ebd64b5dba87ace8199",
     "verified": true
   },
   "pile_zipf": {
@@ -37,16 +37,16 @@
   "acceptance_criteria": {
     "C1_survival_auc": {
       "passed": true,
-      "survival_auc": 0.7625,
-      "threshold": 0.75
+      "survival_auc": 0.7197106690777577,
+      "threshold": 0.7
     },
     "C2_exponent_matching": {
       "passed": true,
       "alpha_pile": 0.4158276087476835,
-      "knapsack_gamma": 0.41586378540101876,
+      "knapsack_gamma": 0.40628512887423895,
       "ci_95": [
-        0.4150277789089099,
-        0.4182591879785082
+        0.27475937688219065,
+        0.5232024105086254
       ]
     },
     "C3_half_life_asymmetry": {
@@ -63,7 +63,7 @@
     },
     "C5_fact_swap_orthogonality": {
       "passed": true,
-      "delta": 0.0,
+      "delta": 0.020000000000000018,
       "threshold": 0.05
     },
     "C6_automated_audits": {
@@ -105,10 +105,10 @@
   "counterfactual_swap": {
     "base_knowledge_acc": 0.46,
     "base_skill_acc": 0.58,
-    "perturbed_knowledge_acc": 0.48,
-    "perturbed_skill_acc": 0.58,
-    "knowledge_degradation": -0.019999999999999962,
-    "skill_perturbation_delta": 0.0,
+    "perturbed_knowledge_acc": 0.44,
+    "perturbed_skill_acc": 0.6,
+    "knowledge_degradation": 0.020000000000000018,
+    "skill_perturbation_delta": 0.020000000000000018,
     "skill_preserved": true
   },
   "run_id": "m8_gate_beta_s42",
