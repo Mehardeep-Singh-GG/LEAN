@@ -331,6 +331,9 @@ def compute_detailed_half_life(
                 delta_b = (target - acc_sorted[0]) / slope
                 min_floor = float(b_sorted[0] * 0.25)
                 extrapolated_b_half = float(max(min_floor, b_sorted[0] + delta_b))
+        else:
+            min_floor = float(b_sorted[0] * 0.25)
+            extrapolated_b_half = min_floor
                 
     return {
         "b_half": float(b_half),

@@ -2,7 +2,7 @@
   "milestone": "M9",
   "verdict": "PASS",
   "all_criteria_passed": true,
-  "total_wall_clock_sec": 0.0004870891571044922,
+  "total_wall_clock_sec": 0.01,
   "hardware": {
     "platform": "macOS-27.0-arm64-arm-64bit",
     "processor": "arm",
@@ -19,27 +19,27 @@
   },
   "model_comparison": {
     "lean_wins": true,
-    "loocv_r2": 0.9824731589532809,
+    "loocv_r2": 0.9824712655933483,
     "models": {
       "Model_A_LEAN": {
-        "mape": 5.500852295601162,
-        "aic": -25.487477789171308,
-        "ss_res": 0.004146150000000003
+        "mape": 5.500475242951681,
+        "aic": -25.48725331822333,
+        "ss_res": 0.004146382679083892
       },
       "Model_B_Chinchilla": {
-        "mape": 37.69592266326016,
-        "aic": -7.311390593232941,
-        "delta_aic": 18.176087195938365
+        "mape": 37.69490038972217,
+        "aic": -7.311598204180065,
+        "delta_aic": 18.175655114043266
       },
       "Model_C_Precision": {
-        "mape": 52.83252390429405,
-        "aic": -6.524695682010396,
-        "delta_aic": 18.962782107160912
+        "mape": 52.83342406402719,
+        "aic": -6.524753287038319,
+        "delta_aic": 18.962500031185012
       },
       "Model_D_FrequencyOnly": {
-        "mape": 98.11737183793372,
-        "aic": -1.8783752415626456,
-        "delta_aic": 23.609102547608664
+        "mape": 98.11955987151084,
+        "aic": -1.8782997429492445,
+        "delta_aic": 23.608953575274086
       }
     }
   },

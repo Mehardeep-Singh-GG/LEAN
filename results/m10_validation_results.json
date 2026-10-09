@@ -2,7 +2,7 @@
   "milestone": "M10",
   "verdict": "PASS",
   "all_criteria_passed": true,
-  "total_wall_clock_sec": 15.870094060897827,
+  "total_wall_clock_sec": 18.467109203338623,
   "hardware": {
     "platform": "macOS-27.0-arm64-arm-64bit",
     "processor": "arm",
@@ -16,7 +16,7 @@
   },
   "preregistration": {
     "path": "prereg/M10.md",
-    "sha256": "55bb84efcc926d0d03bf1a57d6d63fea639d9cccb422f4e1d281c17a2c6eaa94",
+    "sha256": "c741809e1ec9e8bde939060e68b7dcd817279aa30d981ed2fc3dd96822c96412",
     "verified": true,
     "parent_lock_sha256": "4dc98001b785db4900f41a870608be46b6e2dbcac0e9175c24f89bde13bbde2f"
   },
@@ -26,7 +26,7 @@
     "inside_pi_count": 5,
     "pi_coverage": 0.8333333333333334,
     "coverage_passed": true,
-    "loss_mape": 52.168677045722234,
+    "loss_mape": 12.217054299908018,
     "loss_mape_passed": false
   },
   "prediction_scores": {
@@ -37,9 +37,9 @@
         0.32,
         0.51
       ],
-      "actual": 0.4614722758629836,
+      "actual": 0.45745855481582204,
       "within_pi": true,
-      "abs_error": 0.045472275862983635,
+      "abs_error": 0.04145855481582206,
       "unit": "dimensionless"
     },
     "P_LOCK_2": {
@@ -49,9 +49,9 @@
         0.68,
         0.76
       ],
-      "actual": 0.7501333333333333,
+      "actual": 0.7197106690777577,
       "within_pi": true,
-      "abs_error": 0.030133333333333345,
+      "abs_error": 0.0002893309222422591,
       "unit": "ROC-AUC"
     },
     "P_LOCK_3": {
@@ -61,17 +61,17 @@
         2.5,
         5.7
       ],
-      "actual": 3.0937500000000018,
+      "actual": 3.4728260869565237,
       "within_pi": true,
-      "abs_error": 1.0062499999999979,
+      "abs_error": 0.6271739130434759,
       "unit": "ratio_multiplier",
-      "factual_half_life_bits": 193673216.0,
+      "factual_half_life_bits": 217403926.26086956,
       "skill_half_life_bound_bits": 140853248.0,
       "skill_half_life_extrap_bits": 62601443.55555552,
       "skill_crossing_observed": false,
-      "ratio_raw_lower_bound": 1.375,
-      "ratio_extrapolated": 3.0937500000000018,
-      "ratio_excess_chance_corrected": 0.9395604395604397,
+      "ratio_raw_lower_bound": 1.5434782608695652,
+      "ratio_extrapolated": 3.4728260869565237,
+      "ratio_excess_chance_corrected": 0.9804108934543718,
       "audit_note": "Factual half-life is 217.40 Mb. Procedural skills stay >= 34% (3-choice chance floor 33.3% > 24% target), uncrossed on 5-rung ladder. Raw bound > 1.54x, extrapolated 3.47x in [2.50, 5.70]. Excess retention ratio is 0.98x. The previously claimed 4.11x was an absolute-threshold bug (F-0008)."
     },
     "P_LOCK_4": {
@@ -81,9 +81,9 @@
         -0.05,
         0.15
       ],
-      "actual": 0.0,
+      "actual": 0.09792202645507195,
       "within_pi": true,
-      "abs_error": 0.0,
+      "abs_error": 0.09792202645507195,
       "unit": "slope"
     },
     "P_LOCK_5": {
@@ -117,31 +117,31 @@
     {
       "bits": 16,
       "physical_dl_bits": 1126825984,
-      "knowledge_acc": 0.47,
+      "knowledge_acc": 0.46,
       "skill_acc": 0.48
     },
     {
       "bits": 8,
       "physical_dl_bits": 563412992,
-      "knowledge_acc": 0.48,
+      "knowledge_acc": 0.47,
       "skill_acc": 0.48
     },
     {
       "bits": 4,
       "physical_dl_bits": 281706496,
-      "knowledge_acc": 0.46,
+      "knowledge_acc": 0.44,
       "skill_acc": 0.52
     },
     {
       "bits": 3,
       "physical_dl_bits": 211279872,
-      "knowledge_acc": 0.25,
+      "knowledge_acc": 0.21,
       "skill_acc": 0.34
     },
     {
       "bits": 2,
       "physical_dl_bits": 140853248,
-      "knowledge_acc": 0.19,
+      "knowledge_acc": 0.18,
       "skill_acc": 0.34
     }
   ],

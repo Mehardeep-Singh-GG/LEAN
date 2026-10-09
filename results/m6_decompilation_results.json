@@ -2,7 +2,7 @@
   "milestone": "M6",
   "verdict": "PASS",
   "all_criteria_passed": true,
-  "total_wall_clock_sec": 2.243525743484497,
+  "total_wall_clock_sec": 2.123769998550415,
   "hardware": {
     "platform": "macOS-27.0-arm64-arm-64bit",
     "processor": "arm",
@@ -27,11 +27,11 @@
     },
     "C2_c_alg_constancy": {
       "passed": true,
-      "mean": 28.445389830563542,
-      "std": 4.134790851159915,
-      "cv": 0.14535890967882717,
-      "ci_low": 25.863623735432213,
-      "ci_high": 31.28049973149792
+      "mean": 27.266579153505006,
+      "std": 3.6952710815994783,
+      "cv": 0.13552382426837972,
+      "ci_low": 24.906343147133498,
+      "ci_high": 29.74850928656651
     },
     "C3_program_listings": {
       "passed": true,
@@ -61,8 +61,8 @@
       ],
       "k_rasp_tokens": 28,
       "k_rasp_bits": 168.0,
-      "dl_neural_bits": 1027.0,
-      "c_alg": 36.67857142857143,
+      "dl_neural_bits": 946.0,
+      "c_alg": 33.785714285714285,
       "decompiled_successfully": true,
       "program_code": "def copy(seq):\n    idx = indices\n    return aggregate(select(idx, idx, ==), seq)"
     },
@@ -77,8 +77,8 @@
       ],
       "k_rasp_tokens": 36,
       "k_rasp_bits": 216.0,
-      "dl_neural_bits": 1179.0,
-      "c_alg": 32.75,
+      "dl_neural_bits": 1134.0,
+      "c_alg": 31.5,
       "decompiled_successfully": true,
       "program_code": "def reverse(seq, length):\n    rev_idx = length - 1 - indices\n    return aggregate(select(rev_idx, indices, ==), seq)"
     },
@@ -93,8 +93,8 @@
       ],
       "k_rasp_tokens": 64,
       "k_rasp_bits": 384.0,
-      "dl_neural_bits": 1594.0,
-      "c_alg": 24.90625,
+      "dl_neural_bits": 1502.0,
+      "c_alg": 23.46875,
       "decompiled_successfully": true,
       "program_code": "def sort(seq):\n    smaller = select(seq, seq, <)\n    ranks = selector_width(smaller)\n    return aggregate(select(ranks, indices, ==), seq)"
     },
@@ -109,8 +109,8 @@
       ],
       "k_rasp_tokens": 42,
       "k_rasp_bits": 252.0,
-      "dl_neural_bits": 1310.0,
-      "c_alg": 31.19047619047619,
+      "dl_neural_bits": 1262.0,
+      "c_alg": 30.047619047619047,
       "decompiled_successfully": true,
       "program_code": "def histogram(seq, query):\n    matches = select(seq, query, ==)\n    return selector_width(matches)"
     },
@@ -125,8 +125,8 @@
       ],
       "k_rasp_tokens": 52,
       "k_rasp_bits": 312.0,
-      "dl_neural_bits": 1467.0,
-      "c_alg": 28.21153846153846,
+      "dl_neural_bits": 1432.0,
+      "c_alg": 27.53846153846154,
       "decompiled_successfully": true,
       "program_code": "def kv_lookup(keys, values, query):\n    match = select(keys, query, ==)\n    return aggregate(match, values)"
     },
@@ -141,8 +141,8 @@
       ],
       "k_rasp_tokens": 48,
       "k_rasp_bits": 288.0,
-      "dl_neural_bits": 1308.0,
-      "c_alg": 27.25,
+      "dl_neural_bits": 1287.0,
+      "c_alg": 26.8125,
       "decompiled_successfully": true,
       "program_code": "def mod_add(a, b, p=97):\n    sum_val = a + b\n    return sum_val - p if sum_val >= p else sum_val"
     },
@@ -157,8 +157,8 @@
       ],
       "k_rasp_tokens": 58,
       "k_rasp_bits": 348.0,
-      "dl_neural_bits": 1594.0,
-      "c_alg": 27.482758620689655,
+      "dl_neural_bits": 1529.0,
+      "c_alg": 26.362068965517242,
       "decompiled_successfully": true,
       "program_code": "def dyck2_valid(brackets):\n    depth = cumsum(open_brackets - close_brackets)\n    return (depth >= 0) and (depth[-1] == 0) and match_pairs(brackets)"
     },
@@ -173,8 +173,8 @@
       ],
       "k_rasp_tokens": 76,
       "k_rasp_bits": 456.0,
-      "dl_neural_bits": 1869.0,
-      "c_alg": 24.592105263157894,
+      "dl_neural_bits": 1816.0,
+      "c_alg": 23.894736842105264,
       "decompiled_successfully": true,
       "program_code": "def two_hop_context(pairs, x_query):\n    y = aggregate(select(keys, x_query, ==), values)\n    z = aggregate(select(keys, y, ==), values)\n    return z"
     },
@@ -189,19 +189,19 @@
       ],
       "k_rasp_tokens": 94,
       "k_rasp_bits": 564.0,
-      "dl_neural_bits": 2157.0,
-      "c_alg": 22.9468085106383,
+      "dl_neural_bits": 2067.0,
+      "c_alg": 21.98936170212766,
       "decompiled_successfully": true,
       "program_code": "def two_hop_facts(stored_kb, entity, r1, r2):\n    mid = kb_lookup(stored_kb, entity, r1)\n    target = kb_lookup(stored_kb, mid, r2)\n    return target"
     }
   },
   "c_alg_stats": {
-    "mean": 28.445389830563542,
-    "std": 4.134790851159915,
-    "cv": 0.14535890967882717,
+    "mean": 27.266579153505006,
+    "std": 3.6952710815994783,
+    "cv": 0.13552382426837972,
     "ci_95": [
-      25.863623735432213,
-      31.28049973149792
+      24.906343147133498,
+      29.74850928656651
     ]
   },
   "run_id": "m6_decompilation_s42",

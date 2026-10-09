@@ -1,0 +1,42 @@
+{
+  "model_id": "HuggingFaceTB/SmolLM2-360M",
+  "params": 361821120,
+  "ladder": [
+    {
+      "bits": 16,
+      "physical_dl_bits": 5789137920,
+      "knowledge_acc": 0.84,
+      "skill_acc": 0.4
+    },
+    {
+      "bits": 8,
+      "physical_dl_bits": 2894568960,
+      "knowledge_acc": 0.84,
+      "skill_acc": 0.4
+    },
+    {
+      "bits": 4,
+      "physical_dl_bits": 1447284480,
+      "knowledge_acc": 0.82,
+      "skill_acc": 0.4
+    },
+    {
+      "bits": 3,
+      "physical_dl_bits": 1085463360,
+      "knowledge_acc": 0.4,
+      "skill_acc": 0.4
+    },
+    {
+      "bits": 2,
+      "physical_dl_bits": 723642240,
+      "knowledge_acc": 0.14,
+      "skill_acc": 0.4
+    }
+  ],
+  "b_half_fact": 1102692937.142857,
+  "b_half_skill": 180910560.0,
+  "half_life_ratio": 6.095238095238095,
+  "survival_roc_auc_3bit": 0.6245833333333334,
+  "scaling_gamma": 0.8192722786156696,
+  "dl_core_bits": 14157
+}

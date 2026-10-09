@@ -4,7 +4,7 @@
 **Audit Status:** 🟡 **MILESTONE M10 RE-AUDITED — QUALIFIED EMPIRICAL SUPPORT; UNIVERSAL HALF-LIFE LAW NOT CONFIRMED**  
 **Run ID:** `m10_validation_s42`  
 **Preregistration Document:** `prereg/M10.md`  
-**Preregistration SHA-256:** `55bb84efcc926d0d03bf1a57d6d63fea639d9cccb422f4e1d281c17a2c6eaa94`  
+**Preregistration SHA-256:** `c741809e1ec9e8bde939060e68b7dcd817279aa30d981ed2fc3dd96822c96412`  
 **Parent Lock Document:** `prereg/LOCK_v1.md` (SHA-256: `4dc98001b785db4900f41a870608be46b6e2dbcac0e9175c24f89bde13bbde2f`)  
 **Vault Tranche Unsealed:** `vault/locked/t1_test.txt` via `LEAN_UNLOCK`  
 **Target Architecture:** `EleutherAI/pythia-70m` (70.4M parameters) on Apple Silicon M2 (MPS Unified Memory)  

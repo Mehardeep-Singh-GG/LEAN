@@ -201,7 +201,7 @@ def run_real_llm_compression_ladder(
         if bits < 16:
             orig_weights = {}
             for name, param in model.named_parameters():
-                if "dense" in name or "proj" in name or "linear" in name:
+                if len(param.shape) == 2 and "embed" not in name and "lm_head" not in name and "wte" not in name and "wpe" not in name:
                     orig_weights[name] = param.data.clone()
                     q, _ = quantize_tensor_rtn(param.data, bits=bits, group_size=128)
                     param.data = q.to(device)

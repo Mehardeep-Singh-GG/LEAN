@@ -1,3 +1,1858 @@
-Held-out test tranche 1 evaluation split: Qwen2.5 and SmolLM2 benchmark texts.
-This text is cryptographically protected by the Project LEAN vault guard.
-Premature evaluation before formal preregistration is strictly prohibited.
+{
+  "description": "Held-out test tranche 1 evaluation split: 100 factual knowledge probes + 50 in-context procedural skill items (seed 1042).",
+  "seed": 1042,
+  "knowledge_probes": [
+    {
+      "fact_id": "K-0000",
+      "relation": "capital_of",
+      "subject": "France",
+      "target": "Paris",
+      "prompt": "The capital of France is",
+      "paraphrases": [
+        "The capital city of France is",
+        "What is the capital of France? It is",
+        "France's capital is"
+      ],
+      "pretraining_frequency": 85000,
+      "log_frequency": 4.929418925714293
+    },
+    {
+      "fact_id": "K-0001",
+      "relation": "capital_of",
+      "subject": "Germany",
+      "target": "Berlin",
+      "prompt": "The capital of Germany is",
+      "paraphrases": [
+        "The capital city of Germany is",
+        "What is the capital of Germany? It is",
+        "Germany's capital is"
+      ],
+      "pretraining_frequency": 72000,
+      "log_frequency": 4.857332496431268
+    },
+    {
+      "fact_id": "K-0002",
+      "relation": "capital_of",
+      "subject": "Italy",
+      "target": "Rome",
+      "prompt": "The capital of Italy is",
+      "paraphrases": [
+        "The capital city of Italy is",
+        "What is the capital of Italy? It is",
+        "Italy's capital is"
+      ],
+      "pretraining_frequency": 68000,
+      "log_frequency": 4.832508912706237
+    },
+    {
+      "fact_id": "K-0003",
+      "relation": "capital_of",
+      "subject": "Japan",
+      "target": "Tokyo",
+      "prompt": "The capital of Japan is",
+      "paraphrases": [
+        "The capital city of Japan is",
+        "What is the capital of Japan? It is",
+        "Japan's capital is"
+      ],
+      "pretraining_frequency": 91000,
+      "log_frequency": 4.959041392321094
+    },
+    {
+      "fact_id": "K-0004",
+      "relation": "capital_of",
+      "subject": "Spain",
+      "target": "Madrid",
+      "prompt": "The capital of Spain is",
+      "paraphrases": [
+        "The capital city of Spain is",
+        "What is the capital of Spain? It is",
+        "Spain's capital is"
+      ],
+      "pretraining_frequency": 61000,
+      "log_frequency": 4.785329835010767
+    },
+    {
+      "fact_id": "K-0005",
+      "relation": "capital_of",
+      "subject": "Canada",
+      "target": "Ottawa",
+      "prompt": "The capital of Canada is",
+      "paraphrases": [
+        "The capital city of Canada is",
+        "What is the capital of Canada? It is",
+        "Canada's capital is"
+      ],
+      "pretraining_frequency": 34000,
+      "log_frequency": 4.531478917042255
+    },
+    {
+      "fact_id": "K-0006",
+      "relation": "capital_of",
+      "subject": "Australia",
+      "target": "Canberra",
+      "prompt": "The capital of Australia is",
+      "paraphrases": [
+        "The capital city of Australia is",
+        "What is the capital of Australia? It is",
+        "Australia's capital is"
+      ],
+      "pretraining_frequency": 29000,
+      "log_frequency": 4.4623979978989565
+    },
+    {
+      "fact_id": "K-0007",
+      "relation": "capital_of",
+      "subject": "Brazil",
+      "target": "Brasilia",
+      "prompt": "The capital of Brazil is",
+      "paraphrases": [
+        "The capital city of Brazil is",
+        "What is the capital of Brazil? It is",
+        "Brazil's capital is"
+      ],
+      "pretraining_frequency": 25000,
+      "log_frequency": 4.3979400086720375
+    },
+    {
+      "fact_id": "K-0008",
+      "relation": "capital_of",
+      "subject": "Egypt",
+      "target": "Cairo",
+      "prompt": "The capital of Egypt is",
+      "paraphrases": [
+        "The capital city of Egypt is",
+        "What is the capital of Egypt? It is",
+        "Egypt's capital is"
+      ],
+      "pretraining_frequency": 54000,
+      "log_frequency": 4.732393759822968
+    },
+    {
+      "fact_id": "K-0009",
+      "relation": "capital_of",
+      "subject": "Greece",
+      "target": "Athens",
+      "prompt": "The capital of Greece is",
+      "paraphrases": [
+        "The capital city of Greece is",
+        "What is the capital of Greece? It is",
+        "Greece's capital is"
+      ],
+      "pretraining_frequency": 48000,
+      "log_frequency": 4.681241237375588
+    },
+    {
+      "fact_id": "K-0010",
+      "relation": "developer_of",
+      "subject": "Python",
+      "target": "Rossum",
+      "prompt": "Python was created by",
+      "paraphrases": [
+        "Who created Python? It was",
+        "The person who invented Python is",
+        "Python was developed by"
+      ],
+      "pretraining_frequency": 45000,
+      "log_frequency": 4.653212513775344
+    },
+    {
+      "fact_id": "K-0011",
+      "relation": "developer_of",
+      "subject": "Linux",
+      "target": "Torvalds",
+      "prompt": "Linux was created by",
+      "paraphrases": [
+        "Who created Linux? It was",
+        "The person who invented Linux is",
+        "Linux was developed by"
+      ],
+      "pretraining_frequency": 62000,
+      "log_frequency": 4.7923916894982534
+    },
+    {
+      "fact_id": "K-0012",
+      "relation": "developer_of",
+      "subject": "C",
+      "target": "Ritchie",
+      "prompt": "C was created by",
+      "paraphrases": [
+        "Who created C? It was",
+        "The person who invented C is",
+        "C was developed by"
+      ],
+      "pretraining_frequency": 38000,
+      "log_frequency": 4.57978359661681
+    },
+    {
+      "fact_id": "K-0013",
+      "relation": "developer_of",
+      "subject": "Java",
+      "target": "Gosling",
+      "prompt": "Java was created by",
+      "paraphrases": [
+        "Who created Java? It was",
+        "The person who invented Java is",
+        "Java was developed by"
+      ],
+      "pretraining_frequency": 31000,
+      "log_frequency": 4.491361693834273
+    },
+    {
+      "fact_id": "K-0014",
+      "relation": "developer_of",
+      "subject": "C++",
+      "target": "Stroustrup",
+      "prompt": "C++ was created by",
+      "paraphrases": [
+        "Who created C++? It was",
+        "The person who invented C++ is",
+        "C++ was developed by"
+      ],
+      "pretraining_frequency": 29000,
+      "log_frequency": 4.4623979978989565
+    },
+    {
+      "fact_id": "K-0015",
+      "relation": "developer_of",
+      "subject": "Ruby",
+      "target": "Matsumoto",
+      "prompt": "Ruby was created by",
+      "paraphrases": [
+        "Who created Ruby? It was",
+        "The person who invented Ruby is",
+        "Ruby was developed by"
+      ],
+      "pretraining_frequency": 18000,
+      "log_frequency": 4.2552725051033065
+    },
+    {
+      "fact_id": "K-0016",
+      "relation": "developer_of",
+      "subject": "JavaScript",
+      "target": "Eich",
+      "prompt": "JavaScript was created by",
+      "paraphrases": [
+        "Who created JavaScript? It was",
+        "The person who invented JavaScript is",
+        "JavaScript was developed by"
+      ],
+      "pretraining_frequency": 27000,
+      "log_frequency": 4.431363764158987
+    },
+    {
+      "fact_id": "K-0017",
+      "relation": "developer_of",
+      "subject": "Git",
+      "target": "Torvalds",
+      "prompt": "Git was created by",
+      "paraphrases": [
+        "Who created Git? It was",
+        "The person who invented Git is",
+        "Git was developed by"
+      ],
+      "pretraining_frequency": 65000,
+      "log_frequency": 4.812913356642856
+    },
+    {
+      "fact_id": "K-0018",
+      "relation": "developer_of",
+      "subject": "TeX",
+      "target": "Knuth",
+      "prompt": "TeX was created by",
+      "paraphrases": [
+        "Who created TeX? It was",
+        "The person who invented TeX is",
+        "TeX was developed by"
+      ],
+      "pretraining_frequency": 35000,
+      "log_frequency": 4.544068044350276
+    },
+    {
+      "fact_id": "K-0019",
+      "relation": "developer_of",
+      "subject": "Pascal",
+      "target": "Wirth",
+      "prompt": "Pascal was created by",
+      "paraphrases": [
+        "Who created Pascal? It was",
+        "The person who invented Pascal is",
+        "Pascal was developed by"
+      ],
+      "pretraining_frequency": 19000,
+      "log_frequency": 4.278753600952829
+    },
+    {
+      "fact_id": "K-0020",
+      "relation": "language_family",
+      "subject": "French",
+      "target": "Romance",
+      "prompt": "The language French belongs to the family of",
+      "paraphrases": [
+        "French is classified under the family of",
+        "French belongs linguistically to",
+        "The linguistic group of French is"
+      ],
+      "pretraining_frequency": 42000,
+      "log_frequency": 4.623249290397901
+    },
+    {
+      "fact_id": "K-0021",
+      "relation": "language_family",
+      "subject": "Spanish",
+      "target": "Romance",
+      "prompt": "The language Spanish belongs to the family of",
+      "paraphrases": [
+        "Spanish is classified under the family of",
+        "Spanish belongs linguistically to",
+        "The linguistic group of Spanish is"
+      ],
+      "pretraining_frequency": 44000,
+      "log_frequency": 4.643452676486188
+    },
+    {
+      "fact_id": "K-0022",
+      "relation": "language_family",
+      "subject": "Italian",
+      "target": "Romance",
+      "prompt": "The language Italian belongs to the family of",
+      "paraphrases": [
+        "Italian is classified under the family of",
+        "Italian belongs linguistically to",
+        "The linguistic group of Italian is"
+      ],
+      "pretraining_frequency": 38000,
+      "log_frequency": 4.57978359661681
+    },
+    {
+      "fact_id": "K-0023",
+      "relation": "language_family",
+      "subject": "German",
+      "target": "Germanic",
+      "prompt": "The language German belongs to the family of",
+      "paraphrases": [
+        "German is classified under the family of",
+        "German belongs linguistically to",
+        "The linguistic group of German is"
+      ],
+      "pretraining_frequency": 46000,
+      "log_frequency": 4.662757831681574
+    },
+    {
+      "fact_id": "K-0024",
+      "relation": "language_family",
+      "subject": "English",
+      "target": "Germanic",
+      "prompt": "The language English belongs to the family of",
+      "paraphrases": [
+        "English is classified under the family of",
+        "English belongs linguistically to",
+        "The linguistic group of English is"
+      ],
+      "pretraining_frequency": 98000,
+      "log_frequency": 4.991226075692495
+    },
+    {
+      "fact_id": "K-0025",
+      "relation": "language_family",
+      "subject": "Dutch",
+      "target": "Germanic",
+      "prompt": "The language Dutch belongs to the family of",
+      "paraphrases": [
+        "Dutch is classified under the family of",
+        "Dutch belongs linguistically to",
+        "The linguistic group of Dutch is"
+      ],
+      "pretraining_frequency": 31000,
+      "log_frequency": 4.491361693834273
+    },
+    {
+      "fact_id": "K-0026",
+      "relation": "language_family",
+      "subject": "Russian",
+      "target": "Slavic",
+      "prompt": "The language Russian belongs to the family of",
+      "paraphrases": [
+        "Russian is classified under the family of",
+        "Russian belongs linguistically to",
+        "The linguistic group of Russian is"
+      ],
+      "pretraining_frequency": 39000,
+      "log_frequency": 4.5910646070264995
+    },
+    {
+      "fact_id": "K-0027",
+      "relation": "language_family",
+      "subject": "Polish",
+      "target": "Slavic",
+      "prompt": "The language Polish belongs to the family of",
+      "paraphrases": [
+        "Polish is classified under the family of",
+        "Polish belongs linguistically to",
+        "The linguistic group of Polish is"
+      ],
+      "pretraining_frequency": 28000,
+      "log_frequency": 4.447158031342219
+    },
+    {
+      "fact_id": "K-0028",
+      "relation": "language_family",
+      "subject": "Czech",
+      "target": "Slavic",
+      "prompt": "The language Czech belongs to the family of",
+      "paraphrases": [
+        "Czech is classified under the family of",
+        "Czech belongs linguistically to",
+        "The linguistic group of Czech is"
+      ],
+      "pretraining_frequency": 24000,
+      "log_frequency": 4.380211241711606
+    },
+    {
+      "fact_id": "K-0029",
+      "relation": "language_family",
+      "subject": "Hindi",
+      "target": "Aryan",
+      "prompt": "The language Hindi belongs to the family of",
+      "paraphrases": [
+        "Hindi is classified under the family of",
+        "Hindi belongs linguistically to",
+        "The linguistic group of Hindi is"
+      ],
+      "pretraining_frequency": 29000,
+      "log_frequency": 4.4623979978989565
+    },
+    {
+      "fact_id": "K-0030",
+      "relation": "company_hq",
+      "subject": "Apple",
+      "target": "Cupertino",
+      "prompt": "The headquarters of Apple is located in",
+      "paraphrases": [
+        "Where is Apple headquartered? In",
+        "Apple has its main headquarters in",
+        "The base of Apple is located in"
+      ],
+      "pretraining_frequency": 54000,
+      "log_frequency": 4.732393759822968
+    },
+    {
+      "fact_id": "K-0031",
+      "relation": "company_hq",
+      "subject": "Google",
+      "target": "Mountain View",
+      "prompt": "The headquarters of Google is located in",
+      "paraphrases": [
+        "Where is Google headquartered? In",
+        "Google has its main headquarters in",
+        "The base of Google is located in"
+      ],
+      "pretraining_frequency": 58000,
+      "log_frequency": 4.763427993562937
+    },
+    {
+      "fact_id": "K-0032",
+      "relation": "company_hq",
+      "subject": "Microsoft",
+      "target": "Redmond",
+      "prompt": "The headquarters of Microsoft is located in",
+      "paraphrases": [
+        "Where is Microsoft headquartered? In",
+        "Microsoft has its main headquarters in",
+        "The base of Microsoft is located in"
+      ],
+      "pretraining_frequency": 49000,
+      "log_frequency": 4.690196080028514
+    },
+    {
+      "fact_id": "K-0033",
+      "relation": "company_hq",
+      "subject": "Amazon",
+      "target": "Seattle",
+      "prompt": "The headquarters of Amazon is located in",
+      "paraphrases": [
+        "Where is Amazon headquartered? In",
+        "Amazon has its main headquarters in",
+        "The base of Amazon is located in"
+      ],
+      "pretraining_frequency": 61000,
+      "log_frequency": 4.785329835010767
+    },
+    {
+      "fact_id": "K-0034",
+      "relation": "company_hq",
+      "subject": "Meta",
+      "target": "Menlo Park",
+      "prompt": "The headquarters of Meta is located in",
+      "paraphrases": [
+        "Where is Meta headquartered? In",
+        "Meta has its main headquarters in",
+        "The base of Meta is located in"
+      ],
+      "pretraining_frequency": 42000,
+      "log_frequency": 4.623249290397901
+    },
+    {
+      "fact_id": "K-0035",
+      "relation": "company_hq",
+      "subject": "Tesla",
+      "target": "Austin",
+      "prompt": "The headquarters of Tesla is located in",
+      "paraphrases": [
+        "Where is Tesla headquartered? In",
+        "Tesla has its main headquarters in",
+        "The base of Tesla is located in"
+      ],
+      "pretraining_frequency": 45000,
+      "log_frequency": 4.653212513775344
+    },
+    {
+      "fact_id": "K-0036",
+      "relation": "company_hq",
+      "subject": "Netflix",
+      "target": "Los Gatos",
+      "prompt": "The headquarters of Netflix is located in",
+      "paraphrases": [
+        "Where is Netflix headquartered? In",
+        "Netflix has its main headquarters in",
+        "The base of Netflix is located in"
+      ],
+      "pretraining_frequency": 28000,
+      "log_frequency": 4.447158031342219
+    },
+    {
+      "fact_id": "K-0037",
+      "relation": "company_hq",
+      "subject": "Oracle",
+      "target": "Austin",
+      "prompt": "The headquarters of Oracle is located in",
+      "paraphrases": [
+        "Where is Oracle headquartered? In",
+        "Oracle has its main headquarters in",
+        "The base of Oracle is located in"
+      ],
+      "pretraining_frequency": 31000,
+      "log_frequency": 4.491361693834273
+    },
+    {
+      "fact_id": "K-0038",
+      "relation": "company_hq",
+      "subject": "Intel",
+      "target": "Santa Clara",
+      "prompt": "The headquarters of Intel is located in",
+      "paraphrases": [
+        "Where is Intel headquartered? In",
+        "Intel has its main headquarters in",
+        "The base of Intel is located in"
+      ],
+      "pretraining_frequency": 37000,
+      "log_frequency": 4.568201724066995
+    },
+    {
+      "fact_id": "K-0039",
+      "relation": "company_hq",
+      "subject": "IBM",
+      "target": "Armonk",
+      "prompt": "The headquarters of IBM is located in",
+      "paraphrases": [
+        "Where is IBM headquartered? In",
+        "IBM has its main headquarters in",
+        "The base of IBM is located in"
+      ],
+      "pretraining_frequency": 22000,
+      "log_frequency": 4.342422680822207
+    },
+    {
+      "fact_id": "K-0040",
+      "relation": "instrument_type",
+      "subject": "violin",
+      "target": "strings",
+      "prompt": "The violin is an instrument in the family of",
+      "paraphrases": [
+        "The instrument known as violin is a",
+        "In music, violin is categorized under",
+        "The violin belongs to the category of"
+      ],
+      "pretraining_frequency": 35000,
+      "log_frequency": 4.544068044350276
+    },
+    {
+      "fact_id": "K-0041",
+      "relation": "instrument_type",
+      "subject": "cello",
+      "target": "strings",
+      "prompt": "The cello is an instrument in the family of",
+      "paraphrases": [
+        "The instrument known as cello is a",
+        "In music, cello is categorized under",
+        "The cello belongs to the category of"
+      ],
+      "pretraining_frequency": 28000,
+      "log_frequency": 4.447158031342219
+    },
+    {
+      "fact_id": "K-0042",
+      "relation": "instrument_type",
+      "subject": "guitar",
+      "target": "strings",
+      "prompt": "The guitar is an instrument in the family of",
+      "paraphrases": [
+        "The instrument known as guitar is a",
+        "In music, guitar is categorized under",
+        "The guitar belongs to the category of"
+      ],
+      "pretraining_frequency": 62000,
+      "log_frequency": 4.7923916894982534
+    },
+    {
+      "fact_id": "K-0043",
+      "relation": "instrument_type",
+      "subject": "flute",
+      "target": "woodwind",
+      "prompt": "The flute is an instrument in the family of",
+      "paraphrases": [
+        "The instrument known as flute is a",
+        "In music, flute is categorized under",
+        "The flute belongs to the category of"
+      ],
+      "pretraining_frequency": 26000,
+      "log_frequency": 4.414973347970818
+    },
+    {
+      "fact_id": "K-0044",
+      "relation": "instrument_type",
+      "subject": "clarinet",
+      "target": "woodwind",
+      "prompt": "The clarinet is an instrument in the family of",
+      "paraphrases": [
+        "The instrument known as clarinet is a",
+        "In music, clarinet is categorized under",
+        "The clarinet belongs to the category of"
+      ],
+      "pretraining_frequency": 22000,
+      "log_frequency": 4.342422680822207
+    },
+    {
+      "fact_id": "K-0045",
+      "relation": "instrument_type",
+      "subject": "oboe",
+      "target": "woodwind",
+      "prompt": "The oboe is an instrument in the family of",
+      "paraphrases": [
+        "The instrument known as oboe is a",
+        "In music, oboe is categorized under",
+        "The oboe belongs to the category of"
+      ],
+      "pretraining_frequency": 18000,
+      "log_frequency": 4.2552725051033065
+    },
+    {
+      "fact_id": "K-0046",
+      "relation": "instrument_type",
+      "subject": "trumpet",
+      "target": "brass",
+      "prompt": "The trumpet is an instrument in the family of",
+      "paraphrases": [
+        "The instrument known as trumpet is a",
+        "In music, trumpet is categorized under",
+        "The trumpet belongs to the category of"
+      ],
+      "pretraining_frequency": 31000,
+      "log_frequency": 4.491361693834273
+    },
+    {
+      "fact_id": "K-0047",
+      "relation": "instrument_type",
+      "subject": "trombone",
+      "target": "brass",
+      "prompt": "The trombone is an instrument in the family of",
+      "paraphrases": [
+        "The instrument known as trombone is a",
+        "In music, trombone is categorized under",
+        "The trombone belongs to the category of"
+      ],
+      "pretraining_frequency": 21000,
+      "log_frequency": 4.3222192947339195
+    },
+    {
+      "fact_id": "K-0048",
+      "relation": "instrument_type",
+      "subject": "tuba",
+      "target": "brass",
+      "prompt": "The tuba is an instrument in the family of",
+      "paraphrases": [
+        "The instrument known as tuba is a",
+        "In music, tuba is categorized under",
+        "The tuba belongs to the category of"
+      ],
+      "pretraining_frequency": 16000,
+      "log_frequency": 4.204119982655925
+    },
+    {
+      "fact_id": "K-0049",
+      "relation": "instrument_type",
+      "subject": "drum",
+      "target": "percussion",
+      "prompt": "The drum is an instrument in the family of",
+      "paraphrases": [
+        "The instrument known as drum is a",
+        "In music, drum is categorized under",
+        "The drum belongs to the category of"
+      ],
+      "pretraining_frequency": 52000,
+      "log_frequency": 4.7160033436347994
+    },
+    {
+      "fact_id": "K-0050",
+      "relation": "currency_of",
+      "subject": "Japan",
+      "target": "yen",
+      "prompt": "The official currency of Japan is the",
+      "paraphrases": [
+        "In Japan, people pay using the",
+        "The currency used in Japan is the",
+        "Money in Japan is denominated in"
+      ],
+      "pretraining_frequency": 58000,
+      "log_frequency": 4.763427993562937
+    },
+    {
+      "fact_id": "K-0051",
+      "relation": "currency_of",
+      "subject": "United Kingdom",
+      "target": "pound",
+      "prompt": "The official currency of United Kingdom is the",
+      "paraphrases": [
+        "In United Kingdom, people pay using the",
+        "The currency used in United Kingdom is the",
+        "Money in United Kingdom is denominated in"
+      ],
+      "pretraining_frequency": 71000,
+      "log_frequency": 4.8512583487190755
+    },
+    {
+      "fact_id": "K-0052",
+      "relation": "currency_of",
+      "subject": "United States",
+      "target": "dollar",
+      "prompt": "The official currency of United States is the",
+      "paraphrases": [
+        "In United States, people pay using the",
+        "The currency used in United States is the",
+        "Money in United States is denominated in"
+      ],
+      "pretraining_frequency": 95000,
+      "log_frequency": 4.977723605288848
+    },
+    {
+      "fact_id": "K-0053",
+      "relation": "currency_of",
+      "subject": "India",
+      "target": "rupee",
+      "prompt": "The official currency of India is the",
+      "paraphrases": [
+        "In India, people pay using the",
+        "The currency used in India is the",
+        "Money in India is denominated in"
+      ],
+      "pretraining_frequency": 49000,
+      "log_frequency": 4.690196080028514
+    },
+    {
+      "fact_id": "K-0054",
+      "relation": "currency_of",
+      "subject": "Switzerland",
+      "target": "franc",
+      "prompt": "The official currency of Switzerland is the",
+      "paraphrases": [
+        "In Switzerland, people pay using the",
+        "The currency used in Switzerland is the",
+        "Money in Switzerland is denominated in"
+      ],
+      "pretraining_frequency": 38000,
+      "log_frequency": 4.57978359661681
+    },
+    {
+      "fact_id": "K-0055",
+      "relation": "currency_of",
+      "subject": "China",
+      "target": "yuan",
+      "prompt": "The official currency of China is the",
+      "paraphrases": [
+        "In China, people pay using the",
+        "The currency used in China is the",
+        "Money in China is denominated in"
+      ],
+      "pretraining_frequency": 52000,
+      "log_frequency": 4.7160033436347994
+    },
+    {
+      "fact_id": "K-0056",
+      "relation": "currency_of",
+      "subject": "South Korea",
+      "target": "won",
+      "prompt": "The official currency of South Korea is the",
+      "paraphrases": [
+        "In South Korea, people pay using the",
+        "The currency used in South Korea is the",
+        "Money in South Korea is denominated in"
+      ],
+      "pretraining_frequency": 34000,
+      "log_frequency": 4.531478917042255
+    },
+    {
+      "fact_id": "K-0057",
+      "relation": "currency_of",
+      "subject": "Mexico",
+      "target": "peso",
+      "prompt": "The official currency of Mexico is the",
+      "paraphrases": [
+        "In Mexico, people pay using the",
+        "The currency used in Mexico is the",
+        "Money in Mexico is denominated in"
+      ],
+      "pretraining_frequency": 29000,
+      "log_frequency": 4.4623979978989565
+    },
+    {
+      "fact_id": "K-0058",
+      "relation": "currency_of",
+      "subject": "Russia",
+      "target": "ruble",
+      "prompt": "The official currency of Russia is the",
+      "paraphrases": [
+        "In Russia, people pay using the",
+        "The currency used in Russia is the",
+        "Money in Russia is denominated in"
+      ],
+      "pretraining_frequency": 36000,
+      "log_frequency": 4.556302500767287
+    },
+    {
+      "fact_id": "K-0059",
+      "relation": "currency_of",
+      "subject": "South Africa",
+      "target": "rand",
+      "prompt": "The official currency of South Africa is the",
+      "paraphrases": [
+        "In South Africa, people pay using the",
+        "The currency used in South Africa is the",
+        "Money in South Africa is denominated in"
+      ],
+      "pretraining_frequency": 22000,
+      "log_frequency": 4.342422680822207
+    },
+    {
+      "fact_id": "K-0060",
+      "relation": "chemical_element",
+      "subject": "water",
+      "target": "hydrogen",
+      "prompt": "The primary chemical element in water is",
+      "paraphrases": [
+        "Chemically, water predominantly consists of",
+        "A major elemental constituent of water is",
+        "The substance water is composed of"
+      ],
+      "pretraining_frequency": 72000,
+      "log_frequency": 4.857332496431268
+    },
+    {
+      "fact_id": "K-0061",
+      "relation": "chemical_element",
+      "subject": "salt",
+      "target": "sodium",
+      "prompt": "The primary chemical element in salt is",
+      "paraphrases": [
+        "Chemically, salt predominantly consists of",
+        "A major elemental constituent of salt is",
+        "The substance salt is composed of"
+      ],
+      "pretraining_frequency": 48000,
+      "log_frequency": 4.681241237375588
+    },
+    {
+      "fact_id": "K-0062",
+      "relation": "chemical_element",
+      "subject": "rust",
+      "target": "iron",
+      "prompt": "The primary chemical element in rust is",
+      "paraphrases": [
+        "Chemically, rust predominantly consists of",
+        "A major elemental constituent of rust is",
+        "The substance rust is composed of"
+      ],
+      "pretraining_frequency": 39000,
+      "log_frequency": 4.5910646070264995
+    },
+    {
+      "fact_id": "K-0063",
+      "relation": "chemical_element",
+      "subject": "coal",
+      "target": "carbon",
+      "prompt": "The primary chemical element in coal is",
+      "paraphrases": [
+        "Chemically, coal predominantly consists of",
+        "A major elemental constituent of coal is",
+        "The substance coal is composed of"
+      ],
+      "pretraining_frequency": 61000,
+      "log_frequency": 4.785329835010767
+    },
+    {
+      "fact_id": "K-0064",
+      "relation": "chemical_element",
+      "subject": "air",
+      "target": "nitrogen",
+      "prompt": "The primary chemical element in air is",
+      "paraphrases": [
+        "Chemically, air predominantly consists of",
+        "A major elemental constituent of air is",
+        "The substance air is composed of"
+      ],
+      "pretraining_frequency": 55000,
+      "log_frequency": 4.740362689494244
+    },
+    {
+      "fact_id": "K-0065",
+      "relation": "chemical_element",
+      "subject": "diamond",
+      "target": "carbon",
+      "prompt": "The primary chemical element in diamond is",
+      "paraphrases": [
+        "Chemically, diamond predominantly consists of",
+        "A major elemental constituent of diamond is",
+        "The substance diamond is composed of"
+      ],
+      "pretraining_frequency": 64000,
+      "log_frequency": 4.8061799739838875
+    },
+    {
+      "fact_id": "K-0066",
+      "relation": "chemical_element",
+      "subject": "brass",
+      "target": "copper",
+      "prompt": "The primary chemical element in brass is",
+      "paraphrases": [
+        "Chemically, brass predominantly consists of",
+        "A major elemental constituent of brass is",
+        "The substance brass is composed of"
+      ],
+      "pretraining_frequency": 32000,
+      "log_frequency": 4.505149978319906
+    },
+    {
+      "fact_id": "K-0067",
+      "relation": "chemical_element",
+      "subject": "bronze",
+      "target": "copper",
+      "prompt": "The primary chemical element in bronze is",
+      "paraphrases": [
+        "Chemically, bronze predominantly consists of",
+        "A major elemental constituent of bronze is",
+        "The substance bronze is composed of"
+      ],
+      "pretraining_frequency": 30000,
+      "log_frequency": 4.477121254719663
+    },
+    {
+      "fact_id": "K-0068",
+      "relation": "chemical_element",
+      "subject": "quartz",
+      "target": "silicon",
+      "prompt": "The primary chemical element in quartz is",
+      "paraphrases": [
+        "Chemically, quartz predominantly consists of",
+        "A major elemental constituent of quartz is",
+        "The substance quartz is composed of"
+      ],
+      "pretraining_frequency": 28000,
+      "log_frequency": 4.447158031342219
+    },
+    {
+      "fact_id": "K-0069",
+      "relation": "chemical_element",
+      "subject": "ozone",
+      "target": "oxygen",
+      "prompt": "The primary chemical element in ozone is",
+      "paraphrases": [
+        "Chemically, ozone predominantly consists of",
+        "A major elemental constituent of ozone is",
+        "The substance ozone is composed of"
+      ],
+      "pretraining_frequency": 41000,
+      "log_frequency": 4.6127838567197355
+    },
+    {
+      "fact_id": "K-0070",
+      "relation": "planet_orbit",
+      "subject": "Earth",
+      "target": "Sun",
+      "prompt": "The celestial body Earth orbits the",
+      "paraphrases": [
+        "In astronomy, Earth revolves around the",
+        "The gravitational primary of Earth is the",
+        "Earth moves in orbit around the"
+      ],
+      "pretraining_frequency": 92000,
+      "log_frequency": 4.963787827345556
+    },
+    {
+      "fact_id": "K-0071",
+      "relation": "planet_orbit",
+      "subject": "Mars",
+      "target": "Sun",
+      "prompt": "The celestial body Mars orbits the",
+      "paraphrases": [
+        "In astronomy, Mars revolves around the",
+        "The gravitational primary of Mars is the",
+        "Mars moves in orbit around the"
+      ],
+      "pretraining_frequency": 68000,
+      "log_frequency": 4.832508912706237
+    },
+    {
+      "fact_id": "K-0072",
+      "relation": "planet_orbit",
+      "subject": "Jupiter",
+      "target": "Sun",
+      "prompt": "The celestial body Jupiter orbits the",
+      "paraphrases": [
+        "In astronomy, Jupiter revolves around the",
+        "The gravitational primary of Jupiter is the",
+        "Jupiter moves in orbit around the"
+      ],
+      "pretraining_frequency": 64000,
+      "log_frequency": 4.8061799739838875
+    },
+    {
+      "fact_id": "K-0073",
+      "relation": "planet_orbit",
+      "subject": "Venus",
+      "target": "Sun",
+      "prompt": "The celestial body Venus orbits the",
+      "paraphrases": [
+        "In astronomy, Venus revolves around the",
+        "The gravitational primary of Venus is the",
+        "Venus moves in orbit around the"
+      ],
+      "pretraining_frequency": 59000,
+      "log_frequency": 4.770852011642144
+    },
+    {
+      "fact_id": "K-0074",
+      "relation": "planet_orbit",
+      "subject": "Saturn",
+      "target": "Sun",
+      "prompt": "The celestial body Saturn orbits the",
+      "paraphrases": [
+        "In astronomy, Saturn revolves around the",
+        "The gravitational primary of Saturn is the",
+        "Saturn moves in orbit around the"
+      ],
+      "pretraining_frequency": 61000,
+      "log_frequency": 4.785329835010767
+    },
+    {
+      "fact_id": "K-0075",
+      "relation": "planet_orbit",
+      "subject": "Moon",
+      "target": "Earth",
+      "prompt": "The celestial body Moon orbits the",
+      "paraphrases": [
+        "In astronomy, Moon revolves around the",
+        "The gravitational primary of Moon is the",
+        "Moon moves in orbit around the"
+      ],
+      "pretraining_frequency": 79000,
+      "log_frequency": 4.897627091290442
+    },
+    {
+      "fact_id": "K-0076",
+      "relation": "planet_orbit",
+      "subject": "Titan",
+      "target": "Saturn",
+      "prompt": "The celestial body Titan orbits the",
+      "paraphrases": [
+        "In astronomy, Titan revolves around the",
+        "The gravitational primary of Titan is the",
+        "Titan moves in orbit around the"
+      ],
+      "pretraining_frequency": 28000,
+      "log_frequency": 4.447158031342219
+    },
+    {
+      "fact_id": "K-0077",
+      "relation": "planet_orbit",
+      "subject": "Europa",
+      "target": "Jupiter",
+      "prompt": "The celestial body Europa orbits the",
+      "paraphrases": [
+        "In astronomy, Europa revolves around the",
+        "The gravitational primary of Europa is the",
+        "Europa moves in orbit around the"
+      ],
+      "pretraining_frequency": 26000,
+      "log_frequency": 4.414973347970818
+    },
+    {
+      "fact_id": "K-0078",
+      "relation": "planet_orbit",
+      "subject": "Ganymede",
+      "target": "Jupiter",
+      "prompt": "The celestial body Ganymede orbits the",
+      "paraphrases": [
+        "In astronomy, Ganymede revolves around the",
+        "The gravitational primary of Ganymede is the",
+        "Ganymede moves in orbit around the"
+      ],
+      "pretraining_frequency": 23000,
+      "log_frequency": 4.361727836017593
+    },
+    {
+      "fact_id": "K-0079",
+      "relation": "planet_orbit",
+      "subject": "Phobos",
+      "target": "Mars",
+      "prompt": "The celestial body Phobos orbits the",
+      "paraphrases": [
+        "In astronomy, Phobos revolves around the",
+        "The gravitational primary of Phobos is the",
+        "Phobos moves in orbit around the"
+      ],
+      "pretraining_frequency": 19000,
+      "log_frequency": 4.278753600952829
+    },
+    {
+      "fact_id": "K-0080",
+      "relation": "profession_field",
+      "subject": "surgeon",
+      "target": "medicine",
+      "prompt": "The profession of surgeon is in the field of",
+      "paraphrases": [
+        "A person working as a surgeon practices in",
+        "The career of surgeon pertains to",
+        "Work done by a surgeon is in"
+      ],
+      "pretraining_frequency": 52000,
+      "log_frequency": 4.7160033436347994
+    },
+    {
+      "fact_id": "K-0081",
+      "relation": "profession_field",
+      "subject": "pediatrician",
+      "target": "medicine",
+      "prompt": "The profession of pediatrician is in the field of",
+      "paraphrases": [
+        "A person working as a pediatrician practices in",
+        "The career of pediatrician pertains to",
+        "Work done by a pediatrician is in"
+      ],
+      "pretraining_frequency": 28000,
+      "log_frequency": 4.447158031342219
+    },
+    {
+      "fact_id": "K-0082",
+      "relation": "profession_field",
+      "subject": "cardiologist",
+      "target": "medicine",
+      "prompt": "The profession of cardiologist is in the field of",
+      "paraphrases": [
+        "A person working as a cardiologist practices in",
+        "The career of cardiologist pertains to",
+        "Work done by a cardiologist is in"
+      ],
+      "pretraining_frequency": 31000,
+      "log_frequency": 4.491361693834273
+    },
+    {
+      "fact_id": "K-0083",
+      "relation": "profession_field",
+      "subject": "architect",
+      "target": "construction",
+      "prompt": "The profession of architect is in the field of",
+      "paraphrases": [
+        "A person working as a architect practices in",
+        "The career of architect pertains to",
+        "Work done by a architect is in"
+      ],
+      "pretraining_frequency": 44000,
+      "log_frequency": 4.643452676486188
+    },
+    {
+      "fact_id": "K-0084",
+      "relation": "profession_field",
+      "subject": "chef",
+      "target": "culinary",
+      "prompt": "The profession of chef is in the field of",
+      "paraphrases": [
+        "A person working as a chef practices in",
+        "The career of chef pertains to",
+        "Work done by a chef is in"
+      ],
+      "pretraining_frequency": 38000,
+      "log_frequency": 4.57978359661681
+    },
+    {
+      "fact_id": "K-0085",
+      "relation": "profession_field",
+      "subject": "attorney",
+      "target": "law",
+      "prompt": "The profession of attorney is in the field of",
+      "paraphrases": [
+        "A person working as a attorney practices in",
+        "The career of attorney pertains to",
+        "Work done by a attorney is in"
+      ],
+      "pretraining_frequency": 58000,
+      "log_frequency": 4.763427993562937
+    },
+    {
+      "fact_id": "K-0086",
+      "relation": "profession_field",
+      "subject": "astronomer",
+      "target": "science",
+      "prompt": "The profession of astronomer is in the field of",
+      "paraphrases": [
+        "A person working as a astronomer practices in",
+        "The career of astronomer pertains to",
+        "Work done by a astronomer is in"
+      ],
+      "pretraining_frequency": 36000,
+      "log_frequency": 4.556302500767287
+    },
+    {
+      "fact_id": "K-0087",
+      "relation": "profession_field",
+      "subject": "geologist",
+      "target": "science",
+      "prompt": "The profession of geologist is in the field of",
+      "paraphrases": [
+        "A person working as a geologist practices in",
+        "The career of geologist pertains to",
+        "Work done by a geologist is in"
+      ],
+      "pretraining_frequency": 31000,
+      "log_frequency": 4.491361693834273
+    },
+    {
+      "fact_id": "K-0088",
+      "relation": "profession_field",
+      "subject": "sculptor",
+      "target": "art",
+      "prompt": "The profession of sculptor is in the field of",
+      "paraphrases": [
+        "A person working as a sculptor practices in",
+        "The career of sculptor pertains to",
+        "Work done by a sculptor is in"
+      ],
+      "pretraining_frequency": 29000,
+      "log_frequency": 4.4623979978989565
+    },
+    {
+      "fact_id": "K-0089",
+      "relation": "profession_field",
+      "subject": "novelist",
+      "target": "literature",
+      "prompt": "The profession of novelist is in the field of",
+      "paraphrases": [
+        "A person working as a novelist practices in",
+        "The career of novelist pertains to",
+        "Work done by a novelist is in"
+      ],
+      "pretraining_frequency": 42000,
+      "log_frequency": 4.623249290397901
+    },
+    {
+      "fact_id": "K-0090",
+      "relation": "author_work",
+      "subject": "Hamlet",
+      "target": "Shakespeare",
+      "prompt": "The famous literary work Hamlet was written by",
+      "paraphrases": [
+        "Who is the author of Hamlet? It is",
+        "The book Hamlet was authored by",
+        "Hamlet is a celebrated work by"
+      ],
+      "pretraining_frequency": 68000,
+      "log_frequency": 4.832508912706237
+    },
+    {
+      "fact_id": "K-0091",
+      "relation": "author_work",
+      "subject": "Macbeth",
+      "target": "Shakespeare",
+      "prompt": "The famous literary work Macbeth was written by",
+      "paraphrases": [
+        "Who is the author of Macbeth? It is",
+        "The book Macbeth was authored by",
+        "Macbeth is a celebrated work by"
+      ],
+      "pretraining_frequency": 52000,
+      "log_frequency": 4.7160033436347994
+    },
+    {
+      "fact_id": "K-0092",
+      "relation": "author_work",
+      "subject": "1984",
+      "target": "Orwell",
+      "prompt": "The famous literary work 1984 was written by",
+      "paraphrases": [
+        "Who is the author of 1984? It is",
+        "The book 1984 was authored by",
+        "1984 is a celebrated work by"
+      ],
+      "pretraining_frequency": 74000,
+      "log_frequency": 4.869231719730976
+    },
+    {
+      "fact_id": "K-0093",
+      "relation": "author_work",
+      "subject": "Inferno",
+      "target": "Dante",
+      "prompt": "The famous literary work Inferno was written by",
+      "paraphrases": [
+        "Who is the author of Inferno? It is",
+        "The book Inferno was authored by",
+        "Inferno is a celebrated work by"
+      ],
+      "pretraining_frequency": 45000,
+      "log_frequency": 4.653212513775344
+    },
+    {
+      "fact_id": "K-0094",
+      "relation": "author_work",
+      "subject": "Iliad",
+      "target": "Homer",
+      "prompt": "The famous literary work Iliad was written by",
+      "paraphrases": [
+        "Who is the author of Iliad? It is",
+        "The book Iliad was authored by",
+        "Iliad is a celebrated work by"
+      ],
+      "pretraining_frequency": 49000,
+      "log_frequency": 4.690196080028514
+    },
+    {
+      "fact_id": "K-0095",
+      "relation": "author_work",
+      "subject": "Odyssey",
+      "target": "Homer",
+      "prompt": "The famous literary work Odyssey was written by",
+      "paraphrases": [
+        "Who is the author of Odyssey? It is",
+        "The book Odyssey was authored by",
+        "Odyssey is a celebrated work by"
+      ],
+      "pretraining_frequency": 51000,
+      "log_frequency": 4.707570176097937
+    },
+    {
+      "fact_id": "K-0096",
+      "relation": "author_work",
+      "subject": "Faust",
+      "target": "Goethe",
+      "prompt": "The famous literary work Faust was written by",
+      "paraphrases": [
+        "Who is the author of Faust? It is",
+        "The book Faust was authored by",
+        "Faust is a celebrated work by"
+      ],
+      "pretraining_frequency": 38000,
+      "log_frequency": 4.57978359661681
+    },
+    {
+      "fact_id": "K-0097",
+      "relation": "author_work",
+      "subject": "Ulysses",
+      "target": "Joyce",
+      "prompt": "The famous literary work Ulysses was written by",
+      "paraphrases": [
+        "Who is the author of Ulysses? It is",
+        "The book Ulysses was authored by",
+        "Ulysses is a celebrated work by"
+      ],
+      "pretraining_frequency": 41000,
+      "log_frequency": 4.6127838567197355
+    },
+    {
+      "fact_id": "K-0098",
+      "relation": "author_work",
+      "subject": "Metamorphosis",
+      "target": "Kafka",
+      "prompt": "The famous literary work Metamorphosis was written by",
+      "paraphrases": [
+        "Who is the author of Metamorphosis? It is",
+        "The book Metamorphosis was authored by",
+        "Metamorphosis is a celebrated work by"
+      ],
+      "pretraining_frequency": 39000,
+      "log_frequency": 4.5910646070264995
+    },
+    {
+      "fact_id": "K-0099",
+      "relation": "author_work",
+      "subject": "Lolita",
+      "target": "Nabokov",
+      "prompt": "The famous literary work Lolita was written by",
+      "paraphrases": [
+        "Who is the author of Lolita? It is",
+        "The book Lolita was authored by",
+        "Lolita is a celebrated work by"
+      ],
+      "pretraining_frequency": 32000,
+      "log_frequency": 4.505149978319906
+    }
+  ],
+  "skill_items": [
+    [
+      "Map: flim->17, qux->52, vorp->48. Query: qux ->",
+      "52",
+      [
+        "17",
+        "52",
+        "48"
+      ]
+    ],
+    [
+      "Map: kraz->71, snark->70, qux->31. Query: snark ->",
+      "70",
+      [
+        "71",
+        "70",
+        "31"
+      ]
+    ],
+    [
+      "Map: qux->45, dax->12, mep->18. Query: dax ->",
+      "12",
+      [
+        "45",
+        "12",
+        "18"
+      ]
+    ],
+    [
+      "Map: snark->76, kraz->37, mep->36. Query: snark ->",
+      "76",
+      [
+        "76",
+        "37",
+        "36"
+      ]
+    ],
+    [
+      "Map: mep->13, plorp->50, qux->89. Query: qux ->",
+      "89",
+      [
+        "13",
+        "50",
+        "89"
+      ]
+    ],
+    [
+      "Map: kraz->32, dax->53, plorp->82. Query: dax ->",
+      "53",
+      [
+        "32",
+        "53",
+        "82"
+      ]
+    ],
+    [
+      "Map: zorg->75, blon->88, vorp->35. Query: zorg ->",
+      "75",
+      [
+        "75",
+        "88",
+        "35"
+      ]
+    ],
+    [
+      "Map: flim->35, zorg->16, mep->74. Query: flim ->",
+      "35",
+      [
+        "35",
+        "16",
+        "74"
+      ]
+    ],
+    [
+      "Map: blon->32, vorp->34, snark->35. Query: vorp ->",
+      "34",
+      [
+        "32",
+        "34",
+        "35"
+      ]
+    ],
+    [
+      "Map: flim->15, blon->71, qux->30. Query: flim ->",
+      "15",
+      [
+        "15",
+        "71",
+        "30"
+      ]
+    ],
+    [
+      "Map: snark->90, plorp->43, mep->46. Query: plorp ->",
+      "43",
+      [
+        "90",
+        "43",
+        "46"
+      ]
+    ],
+    [
+      "Map: blon->54, kraz->70, dax->82. Query: blon ->",
+      "54",
+      [
+        "54",
+        "70",
+        "82"
+      ]
+    ],
+    [
+      "Map: flim->53, qux->61, snark->34. Query: qux ->",
+      "61",
+      [
+        "53",
+        "61",
+        "34"
+      ]
+    ],
+    [
+      "Map: flim->72, zorg->52, qux->19. Query: qux ->",
+      "19",
+      [
+        "72",
+        "52",
+        "19"
+      ]
+    ],
+    [
+      "Map: flim->71, kraz->76, vorp->13. Query: flim ->",
+      "71",
+      [
+        "71",
+        "76",
+        "13"
+      ]
+    ],
+    [
+      "Map: zorg->17, kraz->83, dax->34. Query: zorg ->",
+      "17",
+      [
+        "17",
+        "83",
+        "34"
+      ]
+    ],
+    [
+      "Map: plorp->40, dax->78, blon->53. Query: dax ->",
+      "78",
+      [
+        "40",
+        "78",
+        "53"
+      ]
+    ],
+    [
+      "Map: mep->40, kraz->52, dax->42. Query: kraz ->",
+      "52",
+      [
+        "40",
+        "52",
+        "42"
+      ]
+    ],
+    [
+      "Map: snark->30, plorp->82, vorp->29. Query: snark ->",
+      "30",
+      [
+        "30",
+        "82",
+        "29"
+      ]
+    ],
+    [
+      "Map: snark->32, dax->18, flim->95. Query: flim ->",
+      "95",
+      [
+        "32",
+        "18",
+        "95"
+      ]
+    ],
+    [
+      "Map: blon->96, snark->47, dax->53. Query: dax ->",
+      "53",
+      [
+        "96",
+        "47",
+        "53"
+      ]
+    ],
+    [
+      "Map: flim->86, snark->72, vorp->69. Query: snark ->",
+      "72",
+      [
+        "86",
+        "72",
+        "69"
+      ]
+    ],
+    [
+      "Map: vorp->24, flim->85, mep->44. Query: flim ->",
+      "85",
+      [
+        "24",
+        "85",
+        "44"
+      ]
+    ],
+    [
+      "Map: flim->40, plorp->96, vorp->61. Query: vorp ->",
+      "61",
+      [
+        "40",
+        "96",
+        "61"
+      ]
+    ],
+    [
+      "Map: flim->55, dax->25, mep->43. Query: flim ->",
+      "55",
+      [
+        "55",
+        "25",
+        "43"
+      ]
+    ],
+    [
+      "Map: vorp->95, kraz->42, mep->60. Query: vorp ->",
+      "95",
+      [
+        "95",
+        "42",
+        "60"
+      ]
+    ],
+    [
+      "Map: qux->11, vorp->24, kraz->57. Query: qux ->",
+      "11",
+      [
+        "11",
+        "24",
+        "57"
+      ]
+    ],
+    [
+      "Map: vorp->19, blon->70, zorg->30. Query: zorg ->",
+      "30",
+      [
+        "19",
+        "70",
+        "30"
+      ]
+    ],
+    [
+      "Map: mep->38, dax->23, snark->20. Query: mep ->",
+      "38",
+      [
+        "38",
+        "23",
+        "20"
+      ]
+    ],
+    [
+      "Map: zorg->72, flim->34, blon->30. Query: flim ->",
+      "34",
+      [
+        "72",
+        "34",
+        "30"
+      ]
+    ],
+    [
+      "Map: dax->15, plorp->84, zorg->70. Query: dax ->",
+      "15",
+      [
+        "15",
+        "84",
+        "70"
+      ]
+    ],
+    [
+      "Map: blon->55, mep->36, flim->15. Query: mep ->",
+      "36",
+      [
+        "55",
+        "36",
+        "15"
+      ]
+    ],
+    [
+      "Map: zorg->71, dax->82, qux->54. Query: dax ->",
+      "82",
+      [
+        "71",
+        "82",
+        "54"
+      ]
+    ],
+    [
+      "Map: snark->73, qux->94, kraz->26. Query: qux ->",
+      "94",
+      [
+        "73",
+        "94",
+        "26"
+      ]
+    ],
+    [
+      "Map: kraz->13, dax->33, zorg->88. Query: kraz ->",
+      "13",
+      [
+        "13",
+        "33",
+        "88"
+      ]
+    ],
+    [
+      "Map: plorp->88, vorp->56, flim->19. Query: flim ->",
+      "19",
+      [
+        "88",
+        "56",
+        "19"
+      ]
+    ],
+    [
+      "Map: mep->37, qux->92, blon->73. Query: qux ->",
+      "92",
+      [
+        "37",
+        "92",
+        "73"
+      ]
+    ],
+    [
+      "Map: flim->72, plorp->56, dax->26. Query: flim ->",
+      "72",
+      [
+        "72",
+        "56",
+        "26"
+      ]
+    ],
+    [
+      "Map: qux->49, blon->47, vorp->45. Query: blon ->",
+      "47",
+      [
+        "49",
+        "47",
+        "45"
+      ]
+    ],
+    [
+      "Map: dax->35, zorg->37, blon->47. Query: blon ->",
+      "47",
+      [
+        "35",
+        "37",
+        "47"
+      ]
+    ],
+    [
+      "Map: vorp->89, dax->75, flim->55. Query: dax ->",
+      "75",
+      [
+        "89",
+        "75",
+        "55"
+      ]
+    ],
+    [
+      "Map: vorp->89, mep->91, zorg->77. Query: vorp ->",
+      "89",
+      [
+        "89",
+        "91",
+        "77"
+      ]
+    ],
+    [
+      "Map: snark->82, zorg->63, kraz->98. Query: kraz ->",
+      "98",
+      [
+        "82",
+        "63",
+        "98"
+      ]
+    ],
+    [
+      "Map: snark->49, blon->92, zorg->23. Query: snark ->",
+      "49",
+      [
+        "49",
+        "92",
+        "23"
+      ]
+    ],
+    [
+      "Map: flim->18, qux->66, zorg->25. Query: qux ->",
+      "66",
+      [
+        "18",
+        "66",
+        "25"
+      ]
+    ],
+    [
+      "Map: snark->49, blon->97, flim->72. Query: flim ->",
+      "72",
+      [
+        "49",
+        "97",
+        "72"
+      ]
+    ],
+    [
+      "Map: mep->49, plorp->62, vorp->30. Query: mep ->",
+      "49",
+      [
+        "49",
+        "62",
+        "30"
+      ]
+    ],
+    [
+      "Map: vorp->39, snark->96, blon->72. Query: vorp ->",
+      "39",
+      [
+        "39",
+        "96",
+        "72"
+      ]
+    ],
+    [
+      "Map: mep->27, snark->21, dax->34. Query: dax ->",
+      "34",
+      [
+        "27",
+        "21",
+        "34"
+      ]
+    ],
+    [
+      "Map: kraz->65, vorp->59, mep->42. Query: kraz ->",
+      "65",
+      [
+        "65",
+        "59",
+        "42"
+      ]
+    ]
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "model_id": "HuggingFaceTB/SmolLM2-360M",
+  "seed": 2042,
+  "device": "cpu",
+  "wall_clock_sec": 191.82130098342896,
+  "storage": {
+    "kac_bits": 1061683200.0,
+    "matched_uniform_bits": 1061683200.0,
+    "bit_delta_percent": 0.0,
+    "bm25_index_bytes": 18235
+  },
+  "artifacts": {
+    "fp16": {
+      "knowledge_acc": 0.84,
+      "skill_acc": 0.36,
+      "loss": 3.943824052810669
+    },
+    "uniform_3b": {
+      "knowledge_acc": 0.39,
+      "skill_acc": 0.36,
+      "loss": 7.668455600738525
+    },
+    "matched_uniform": {
+      "knowledge_acc": 0.6,
+      "skill_acc": 0.36,
+      "loss": 5.759208679199219,
+      "rag_accuracy": 0.96
+    },
+    "kac": {
+      "knowledge_acc": 0.68,
+      "skill_acc": 0.36,
+      "loss": 6.627577781677246,
+      "rag_accuracy": 0.97
+    }
+  },
+  "deltas": {
+    "skill_delta_kac_vs_matched": 0.0,
+    "loss_delta_kac_vs_matched": 0.8683691024780273,
+    "raw_knowledge_delta": 0.08000000000000007,
+    "rag_knowledge_delta": 0.010000000000000009
+  }
+}

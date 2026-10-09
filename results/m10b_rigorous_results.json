@@ -1,0 +1,1226 @@
+{
+  "milestone": "M10B_RIGOROUS",
+  "description": "Multi-seed expanded-probe validation of the Priced-Quanta Equation across feasible models",
+  "execution_date": "2026-10-09 19:08:21 UTC",
+  "total_wall_clock_sec": 6851.91,
+  "config": {
+    "n_facts": 500,
+    "n_skills": 250,
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "models_count": 5,
+    "device": "cpu"
+  },
+  "model_summaries": {
+    "EleutherAI/pythia-70m": {
+      "family": "pythia",
+      "params": 70426624,
+      "param_counts": {
+        "total_params": 70426624,
+        "quantized_params": 18874368,
+        "unquantized_params": 51552256
+      },
+      "ratio_trans_mean": 5.30258086714946,
+      "ratio_trans_std": 1.0136443638344041,
+      "ratio_trans_ci95": [
+        3.975598529088069,
+        6.041841688050602
+      ],
+      "ratio_mixed_mean": 1.0675719574776952,
+      "ratio_mixed_std": 0.015481419864851579,
+      "ratio_naive_mean": 5.557509305472679,
+      "auc_mean": 0.49976872633294384,
+      "auc_std": 0.0027583412353085757,
+      "gamma_mean": 0.24276280386243757,
+      "gamma_std": 0.0019135565834310533,
+      "know_16b_mean": 0.46466666666666673,
+      "know_2b_mean": 0.13533333333333333,
+      "skill_16b_mean": 0.5653333333333334,
+      "skill_2b_mean": 0.35733333333333334,
+      "seeds_evaluated": [
+        42,
+        43,
+        44
+      ]
+    },
+    "gpt2": {
+      "family": "gpt2",
+      "params": 124439808,
+      "param_counts": {
+        "total_params": 124439808,
+        "quantized_params": 84934656,
+        "unquantized_params": 39505152
+      },
+      "ratio_trans_mean": 1.4549671983276922,
+      "ratio_trans_std": 0.08595831271938133,
+      "ratio_trans_ci95": [
+        1.3567051652737632,
+        1.5566235189928435
+      ],
+      "ratio_mixed_mean": 1.0929614667009897,
+      "ratio_mixed_std": 0.013311161529686817,
+      "ratio_naive_mean": 1.4869087593856616,
+      "auc_mean": 0.6053045539730458,
+      "auc_std": 0.005353270060706845,
+      "gamma_mean": 0.3532816531256358,
+      "gamma_std": 0.0009083425135696616,
+      "know_16b_mean": 0.6,
+      "know_2b_mean": 0.17466666666666666,
+      "skill_16b_mean": 0.6013333333333333,
+      "skill_2b_mean": 0.32266666666666666,
+      "seeds_evaluated": [
+        42,
+        43,
+        44
+      ]
+    },
+    "EleutherAI/pythia-160m": {
+      "family": "pythia",
+      "params": 162322944,
+      "param_counts": {
+        "total_params": 162322944,
+        "quantized_params": 84934656,
+        "unquantized_params": 77388288
+      },
+      "ratio_trans_mean": 1.198304967936578,
+      "ratio_trans_std": 0.012320886374392126,
+      "ratio_trans_ci95": [
+        1.1821895080696159,
+        1.2082817582779688
+      ],
+      "ratio_mixed_mean": 1.0267023343079869,
+      "ratio_mixed_std": 0.0014246136851829233,
+      "ratio_naive_mean": 1.2098708617696743,
+      "auc_mean": 0.6211636931107637,
+      "auc_std": 0.0033296985945238207,
+      "gamma_mean": 0.2332317879231173,
+      "gamma_std": 0.0006945381002420668,
+      "know_16b_mean": 0.49,
+      "know_2b_mean": 0.16533333333333333,
+      "skill_16b_mean": 0.6973333333333332,
+      "skill_2b_mean": 0.312,
+      "seeds_evaluated": [
+        42,
+        43,
+        44
+      ]
+    },
+    "HuggingFaceTB/SmolLM2-360M": {
+      "family": "smollm",
+      "params": 361821120,
+      "param_counts": {
+        "total_params": 361821120,
+        "quantized_params": 314572800,
+        "unquantized_params": 47248320
+      },
+      "ratio_trans_mean": 6.035123845335708,
+      "ratio_trans_std": 0.003751531248446048,
+      "ratio_trans_ci95": [
+        6.03021628894233,
+        6.037776578521317
+      ],
+      "ratio_mixed_mean": 4.955051271326547,
+      "ratio_mixed_std": 0.001760533982470469,
+      "ratio_naive_mean": 6.162319085669189,
+      "auc_mean": 0.5827167044060734,
+      "auc_std": 0.002380148988872614,
+      "gamma_mean": 0.8513774484016551,
+      "gamma_std": 0.0006642719814349065,
+      "know_16b_mean": 0.84,
+      "know_2b_mean": 0.12466666666666666,
+      "skill_16b_mean": 0.34800000000000003,
+      "skill_2b_mean": 0.34800000000000003,
+      "seeds_evaluated": [
+        42,
+        43,
+        44
+      ]
+    },
+    "EleutherAI/pythia-410m": {
+      "family": "pythia",
+      "params": 405334016,
+      "param_counts": {
+        "total_params": 405334016,
+        "quantized_params": 301989888,
+        "unquantized_params": 103344128
+      },
+      "ratio_trans_mean": 2.7418941955712683,
+      "ratio_trans_std": 0.48953411312871536,
+      "ratio_trans_ci95": [
+        2.103862356162314,
+        3.1620915212227723
+      ],
+      "ratio_mixed_mean": 1.295860849178296,
+      "ratio_mixed_std": 0.04600221473284142,
+      "ratio_naive_mean": 2.966726715591451,
+      "auc_mean": 0.5363806731703122,
+      "auc_std": 0.0018236339504342294,
+      "gamma_mean": 0.41306747941625516,
+      "gamma_std": 0.0005264666472018534,
+      "know_16b_mean": 0.64,
+      "know_2b_mean": 0.17,
+      "skill_16b_mean": 0.36800000000000005,
+      "skill_2b_mean": 0.3413333333333333,
+      "seeds_evaluated": [
+        42,
+        43,
+        44
+      ]
+    }
+  },
+  "raw_runs": [
+    {
+      "model_id": "EleutherAI/pythia-70m",
+      "seed": 42,
+      "param_counts": {
+        "total_params": 70426624,
+        "quantized_params": 18874368,
+        "unquantized_params": 51552256
+      },
+      "ladder": [
+        {
+          "bits": 16,
+          "b_mixed": 1126825984,
+          "b_transformer": 301989888,
+          "b_naive": 1126825984,
+          "effective_bpp": 16.0,
+          "knowledge_acc": 0.464,
+          "skill_acc": 0.528,
+          "eval_time_sec": 12.52
+        },
+        {
+          "bits": 8,
+          "b_mixed": 978190336,
+          "b_transformer": 153354240,
+          "b_naive": 563412992,
+          "effective_bpp": 13.889496335931138,
+          "knowledge_acc": 0.474,
+          "skill_acc": 0.548,
+          "eval_time_sec": 12.27
+        },
+        {
+          "bits": 4,
+          "b_mixed": 902692864,
+          "b_transformer": 77856768,
+          "b_naive": 281706496,
+          "effective_bpp": 12.817494474816797,
+          "knowledge_acc": 0.454,
+          "skill_acc": 0.504,
+          "eval_time_sec": 13.19
+        },
+        {
+          "bits": 3,
+          "b_mixed": 883818496,
+          "b_transformer": 58982400,
+          "b_naive": 211279872,
+          "effective_bpp": 12.549494009538211,
+          "knowledge_acc": 0.218,
+          "skill_acc": 0.4,
+          "eval_time_sec": 11.65
+        },
+        {
+          "bits": 2,
+          "b_mixed": 864944128,
+          "b_transformer": 40108032,
+          "b_naive": 140853248,
+          "effective_bpp": 12.281493544259625,
+          "knowledge_acc": 0.136,
+          "skill_acc": 0.348,
+          "eval_time_sec": 12.52
+        }
+      ],
+      "ratio_trans": 5.994017946161516,
+      "ratio_mixed": 1.0604986630191948,
+      "ratio_naive": 6.11864406779661,
+      "roc_auc_3b": 0.5030385508810624,
+      "gamma": 0.24117115335806755,
+      "k_hl_trans": 60102065.89830509,
+      "s_hl_trans": 10027008.0,
+      "k_hl_mixed": 884938161.898305,
+      "s_hl_mixed": 834454764.3076923
+    },
+    {
+      "model_id": "EleutherAI/pythia-70m",
+      "seed": 43,
+      "param_counts": {
+        "total_params": 70426624,
+        "quantized_params": 18874368,
+        "unquantized_params": 51552256
+      },
+      "ladder": [
+        {
+          "bits": 16,
+          "b_mixed": 1126825984,
+          "b_transformer": 301989888,
+          "b_naive": 1126825984,
+          "effective_bpp": 16.0,
+          "knowledge_acc": 0.464,
+          "skill_acc": 0.568,
+          "eval_time_sec": 11.82
+        },
+        {
+          "bits": 8,
+          "b_mixed": 978190336,
+          "b_transformer": 153354240,
+          "b_naive": 563412992,
+          "effective_bpp": 13.889496335931138,
+          "knowledge_acc": 0.474,
+          "skill_acc": 0.572,
+          "eval_time_sec": 12.74
+        },
+        {
+          "bits": 4,
+          "b_mixed": 902692864,
+          "b_transformer": 77856768,
+          "b_naive": 281706496,
+          "effective_bpp": 12.817494474816797,
+          "knowledge_acc": 0.454,
+          "skill_acc": 0.524,
+          "eval_time_sec": 12.05
+        },
+        {
+          "bits": 3,
+          "b_mixed": 883818496,
+          "b_transformer": 58982400,
+          "b_naive": 211279872,
+          "effective_bpp": 12.549494009538211,
+          "knowledge_acc": 0.216,
+          "skill_acc": 0.376,
+          "eval_time_sec": 12.62
+        },
+        {
+          "bits": 2,
+          "b_mixed": 864944128,
+          "b_transformer": 40108032,
+          "b_naive": 140853248,
+          "effective_bpp": 12.281493544259625,
+          "knowledge_acc": 0.136,
+          "skill_acc": 0.336,
+          "eval_time_sec": 11.66
+        }
+      ],
+      "ratio_trans": 3.869365928189467,
+      "ratio_mixed": 1.0531645828424012,
+      "ratio_naive": 4.381752701080443,
+      "roc_auc_3b": 0.4962915721844293,
+      "gamma": 0.24166323081850055,
+      "k_hl_trans": 60251265.075630255,
+      "s_hl_trans": 15571353.599999964,
+      "k_hl_mixed": 885087361.0756303,
+      "s_hl_mixed": 840407449.5999999
+    },
+    {
+      "model_id": "EleutherAI/pythia-70m",
+      "seed": 44,
+      "param_counts": {
+        "total_params": 70426624,
+        "quantized_params": 18874368,
+        "unquantized_params": 51552256
+      },
+      "ladder": [
+        {
+          "bits": 16,
+          "b_mixed": 1126825984,
+          "b_transformer": 301989888,
+          "b_naive": 1126825984,
+          "effective_bpp": 16.0,
+          "knowledge_acc": 0.466,
+          "skill_acc": 0.6,
+          "eval_time_sec": 10.95
+        },
+        {
+          "bits": 8,
+          "b_mixed": 978190336,
+          "b_transformer": 153354240,
+          "b_naive": 563412992,
+          "effective_bpp": 13.889496335931138,
+          "knowledge_acc": 0.476,
+          "skill_acc": 0.6,
+          "eval_time_sec": 12.32
+        },
+        {
+          "bits": 4,
+          "b_mixed": 902692864,
+          "b_transformer": 77856768,
+          "b_naive": 281706496,
+          "effective_bpp": 12.817494474816797,
+          "knowledge_acc": 0.456,
+          "skill_acc": 0.58,
+          "eval_time_sec": 12.23
+        },
+        {
+          "bits": 3,
+          "b_mixed": 883818496,
+          "b_transformer": 58982400,
+          "b_naive": 211279872,
+          "effective_bpp": 12.549494009538211,
+          "knowledge_acc": 0.212,
+          "skill_acc": 0.42,
+          "eval_time_sec": 12.59
+        },
+        {
+          "bits": 2,
+          "b_mixed": 864944128,
+          "b_transformer": 40108032,
+          "b_naive": 140853248,
+          "effective_bpp": 12.281493544259625,
+          "knowledge_acc": 0.134,
+          "skill_acc": 0.388,
+          "eval_time_sec": 13.7
+        }
+      ],
+      "ratio_trans": 6.044358727097396,
+      "ratio_mixed": 1.0890526265714897,
+      "ratio_naive": 6.172131147540983,
+      "roc_auc_3b": 0.4999760559333397,
+      "gamma": 0.24545402741074468,
+      "k_hl_trans": 60606833.31147541,
+      "s_hl_trans": 10027008.0,
+      "k_hl_mixed": 885442929.3114754,
+      "s_hl_mixed": 813039616.0
+    },
+    {
+      "model_id": "gpt2",
+      "seed": 42,
+      "param_counts": {
+        "total_params": 124439808,
+        "quantized_params": 84934656,
+        "unquantized_params": 39505152
+      },
+      "ladder": [
+        {
+          "bits": 16,
+          "b_mixed": 1991036928,
+          "b_transformer": 1358954496,
+          "b_naive": 1991036928,
+          "effective_bpp": 16.0,
+          "knowledge_acc": 0.6,
+          "skill_acc": 0.588,
+          "eval_time_sec": 27.71
+        },
+        {
+          "bits": 8,
+          "b_mixed": 1322176512,
+          "b_transformer": 690094080,
+          "b_naive": 995518464,
+          "effective_bpp": 10.625028543920608,
+          "knowledge_acc": 0.59,
+          "skill_acc": 0.576,
+          "eval_time_sec": 27.15
+        },
+        {
+          "bits": 4,
+          "b_mixed": 982437888,
+          "b_transformer": 350355456,
+          "b_naive": 497759232,
+          "effective_bpp": 7.894884312261234,
+          "knowledge_acc": 0.5,
+          "skill_acc": 0.508,
+          "eval_time_sec": 23.84
+        },
+        {
+          "bits": 3,
+          "b_mixed": 897503232,
+          "b_transformer": 265420800,
+          "b_naive": 373319424,
+          "effective_bpp": 7.212348254346391,
+          "knowledge_acc": 0.356,
+          "skill_acc": 0.436,
+          "eval_time_sec": 24.23
+        },
+        {
+          "bits": 2,
+          "b_mixed": 812568576,
+          "b_transformer": 180486144,
+          "b_naive": 248879616,
+          "effective_bpp": 6.529812196431547,
+          "knowledge_acc": 0.174,
+          "skill_acc": 0.316,
+          "eval_time_sec": 29.53
+        }
+      ],
+      "ratio_trans": 1.4509739187850776,
+      "ratio_mixed": 1.093315594084946,
+      "ratio_naive": 1.4820042342978124,
+      "roc_auc_3b": 0.5994748412310699,
+      "gamma": 0.3545595345477781,
+      "k_hl_trans": 239287059.69230768,
+      "s_hl_trans": 164914790.39999998,
+      "k_hl_mixed": 871369491.6923077,
+      "s_hl_mixed": 796997222.4
+    },
+    {
+      "model_id": "gpt2",
+      "seed": 43,
+      "param_counts": {
+        "total_params": 124439808,
+        "quantized_params": 84934656,
+        "unquantized_params": 39505152
+      },
+      "ladder": [
+        {
+          "bits": 16,
+          "b_mixed": 1991036928,
+          "b_transformer": 1358954496,
+          "b_naive": 1991036928,
+          "effective_bpp": 16.0,
+          "knowledge_acc": 0.6,
+          "skill_acc": 0.624,
+          "eval_time_sec": 29.92
+        },
+        {
+          "bits": 8,
+          "b_mixed": 1322176512,
+          "b_transformer": 690094080,
+          "b_naive": 995518464,
+          "effective_bpp": 10.625028543920608,
+          "knowledge_acc": 0.59,
+          "skill_acc": 0.612,
+          "eval_time_sec": 27.91
+        },
+        {
+          "bits": 4,
+          "b_mixed": 982437888,
+          "b_transformer": 350355456,
+          "b_naive": 497759232,
+          "effective_bpp": 7.894884312261234,
+          "knowledge_acc": 0.5,
+          "skill_acc": 0.524,
+          "eval_time_sec": 25.21
+        },
+        {
+          "bits": 3,
+          "b_mixed": 897503232,
+          "b_transformer": 265420800,
+          "b_naive": 373319424,
+          "effective_bpp": 7.212348254346391,
+          "knowledge_acc": 0.362,
+          "skill_acc": 0.46,
+          "eval_time_sec": 30.64
+        },
+        {
+          "bits": 2,
+          "b_mixed": 812568576,
+          "b_transformer": 180486144,
+          "b_naive": 248879616,
+          "effective_bpp": 6.529812196431547,
+          "knowledge_acc": 0.174,
+          "skill_acc": 0.32,
+          "eval_time_sec": 29.44
+        }
+      ],
+      "ratio_trans": 1.3517436519310624,
+      "ratio_mixed": 1.0764845110691528,
+      "ratio_naive": 1.3743742177722154,
+      "roc_auc_3b": 0.6124023623547342,
+      "gamma": 0.3527562619022112,
+      "k_hl_trans": 237410434.72340426,
+      "s_hl_trans": 175632735.08571428,
+      "k_hl_mixed": 869492866.7234043,
+      "s_hl_mixed": 807715167.0857143
+    },
+    {
+      "model_id": "gpt2",
+      "seed": 44,
+      "param_counts": {
+        "total_params": 124439808,
+        "quantized_params": 84934656,
+        "unquantized_params": 39505152
+      },
+      "ladder": [
+        {
+          "bits": 16,
+          "b_mixed": 1991036928,
+          "b_transformer": 1358954496,
+          "b_naive": 1991036928,
+          "effective_bpp": 16.0,
+          "knowledge_acc": 0.6,
+          "skill_acc": 0.592,
+          "eval_time_sec": 25.15
+        },
+        {
+          "bits": 8,
+          "b_mixed": 1322176512,
+          "b_transformer": 690094080,
+          "b_naive": 995518464,
+          "effective_bpp": 10.625028543920608,
+          "knowledge_acc": 0.59,
+          "skill_acc": 0.58,
+          "eval_time_sec": 28.42
+        },
+        {
+          "bits": 4,
+          "b_mixed": 982437888,
+          "b_transformer": 350355456,
+          "b_naive": 497759232,
+          "effective_bpp": 7.894884312261234,
+          "knowledge_acc": 0.5,
+          "skill_acc": 0.448,
+          "eval_time_sec": 26.4
+        },
+        {
+          "bits": 3,
+          "b_mixed": 897503232,
+          "b_transformer": 265420800,
+          "b_naive": 373319424,
+          "effective_bpp": 7.212348254346391,
+          "knowledge_acc": 0.36,
+          "skill_acc": 0.44,
+          "eval_time_sec": 26.35
+        },
+        {
+          "bits": 2,
+          "b_mixed": 812568576,
+          "b_transformer": 180486144,
+          "b_naive": 248879616,
+          "effective_bpp": 6.529812196431547,
+          "knowledge_acc": 0.176,
+          "skill_acc": 0.332,
+          "eval_time_sec": 31.04
+        }
+      ],
+      "ratio_trans": 1.5621840242669365,
+      "ratio_mixed": 1.1090842949488702,
+      "ratio_naive": 1.604347826086957,
+      "roc_auc_3b": 0.6040364583333333,
+      "gamma": 0.35252916292691816,
+      "k_hl_trans": 237724716.52173913,
+      "s_hl_trans": 152174591.99999997,
+      "k_hl_mixed": 869807148.5217391,
+      "s_hl_mixed": 784257024.0
+    },
+    {
+      "model_id": "EleutherAI/pythia-160m",
+      "seed": 42,
+      "param_counts": {
+        "total_params": 162322944,
+        "quantized_params": 84934656,
+        "unquantized_params": 77388288
+      },
+      "ladder": [
+        {
+          "bits": 16,
+          "b_mixed": 2597167104,
+          "b_transformer": 1358954496,
+          "b_naive": 2597167104,
+          "effective_bpp": 16.0,
+          "knowledge_acc": 0.49,
+          "skill_acc": 0.696,
+          "eval_time_sec": 25.53
+        },
+        {
+          "bits": 8,
+          "b_mixed": 1928306688,
+          "b_transformer": 690094080,
+          "b_naive": 1298583552,
+          "effective_bpp": 11.87944624759886,
+          "knowledge_acc": 0.49,
+          "skill_acc": 0.716,
+          "eval_time_sec": 29.83
+        },
+        {
+          "bits": 4,
+          "b_mixed": 1588568064,
+          "b_transformer": 350355456,
+          "b_naive": 649291776,
+          "effective_bpp": 9.786466563839552,
+          "knowledge_acc": 0.468,
+          "skill_acc": 0.612,
+          "eval_time_sec": 28.84
+        },
+        {
+          "bits": 3,
+          "b_mixed": 1503633408,
+          "b_transformer": 265420800,
+          "b_naive": 486968832,
+          "effective_bpp": 9.263221642899724,
+          "knowledge_acc": 0.296,
+          "skill_acc": 0.576,
+          "eval_time_sec": 32.89
+        },
+        {
+          "bits": 2,
+          "b_mixed": 1418698752,
+          "b_transformer": 180486144,
+          "b_naive": 324645888,
+          "effective_bpp": 8.739976721959897,
+          "knowledge_acc": 0.166,
+          "skill_acc": 0.312,
+          "eval_time_sec": 31.09
+        }
+      ],
+      "ratio_trans": 1.2084267491302667,
+      "ratio_mixed": 1.0279890074357576,
+      "ratio_naive": 1.220621931260229,
+      "roc_auc_3b": 0.6188478961916462,
+      "gamma": 0.23408804900627572,
+      "k_hl_trans": 232100281.1076923,
+      "s_hl_trans": 192068142.54545453,
+      "k_hl_mixed": 1470312889.1076922,
+      "s_hl_mixed": 1430280750.5454545
+    },
+    {
+      "model_id": "EleutherAI/pythia-160m",
+      "seed": 43,
+      "param_counts": {
+        "total_params": 162322944,
+        "quantized_params": 84934656,
+        "unquantized_params": 77388288
+      },
+      "ladder": [
+        {
+          "bits": 16,
+          "b_mixed": 2597167104,
+          "b_transformer": 1358954496,
+          "b_naive": 2597167104,
+          "effective_bpp": 16.0,
+          "knowledge_acc": 0.49,
+          "skill_acc": 0.708,
+          "eval_time_sec": 24.64
+        },
+        {
+          "bits": 8,
+          "b_mixed": 1928306688,
+          "b_transformer": 690094080,
+          "b_naive": 1298583552,
+          "effective_bpp": 11.87944624759886,
+          "knowledge_acc": 0.49,
+          "skill_acc": 0.704,
+          "eval_time_sec": 32.86
+        },
+        {
+          "bits": 4,
+          "b_mixed": 1588568064,
+          "b_transformer": 350355456,
+          "b_naive": 649291776,
+          "effective_bpp": 9.786466563839552,
+          "knowledge_acc": 0.47,
+          "skill_acc": 0.612,
+          "eval_time_sec": 28.83
+        },
+        {
+          "bits": 3,
+          "b_mixed": 1503633408,
+          "b_transformer": 265420800,
+          "b_naive": 486968832,
+          "effective_bpp": 9.263221642899724,
+          "knowledge_acc": 0.298,
+          "skill_acc": 0.58,
+          "eval_time_sec": 27.18
+        },
+        {
+          "bits": 2,
+          "b_mixed": 1418698752,
+          "b_transformer": 180486144,
+          "b_naive": 324645888,
+          "effective_bpp": 8.739976721959897,
+          "knowledge_acc": 0.166,
+          "skill_acc": 0.304,
+          "eval_time_sec": 31.07
+        }
+      ],
+      "ratio_trans": 1.1809612225951582,
+      "ratio_mixed": 1.0247163732900115,
+      "ratio_naive": 1.1913319238900635,
+      "roc_auc_3b": 0.6258723876173541,
+      "gamma": 0.23322041567735607,
+      "k_hl_trans": 231318248.72727272,
+      "s_hl_trans": 195872857.04347825,
+      "k_hl_mixed": 1469530856.7272727,
+      "s_hl_mixed": 1434085465.0434783
+    },
+    {
+      "model_id": "EleutherAI/pythia-160m",
+      "seed": 44,
+      "param_counts": {
+        "total_params": 162322944,
+        "quantized_params": 84934656,
+        "unquantized_params": 77388288
+      },
+      "ladder": [
+        {
+          "bits": 16,
+          "b_mixed": 2597167104,
+          "b_transformer": 1358954496,
+          "b_naive": 2597167104,
+          "effective_bpp": 16.0,
+          "knowledge_acc": 0.49,
+          "skill_acc": 0.688,
+          "eval_time_sec": 25.43
+        },
+        {
+          "bits": 8,
+          "b_mixed": 1928306688,
+          "b_transformer": 690094080,
+          "b_naive": 1298583552,
+          "effective_bpp": 11.87944624759886,
+          "knowledge_acc": 0.49,
+          "skill_acc": 0.696,
+          "eval_time_sec": 35.82
+        },
+        {
+          "bits": 4,
+          "b_mixed": 1588568064,
+          "b_transformer": 350355456,
+          "b_naive": 649291776,
+          "effective_bpp": 9.786466563839552,
+          "knowledge_acc": 0.47,
+          "skill_acc": 0.628,
+          "eval_time_sec": 28.63
+        },
+        {
+          "bits": 3,
+          "b_mixed": 1503633408,
+          "b_transformer": 265420800,
+          "b_naive": 486968832,
+          "effective_bpp": 9.263221642899724,
+          "knowledge_acc": 0.304,
+          "skill_acc": 0.524,
+          "eval_time_sec": 30.69
+        },
+        {
+          "bits": 2,
+          "b_mixed": 1418698752,
+          "b_transformer": 180486144,
+          "b_naive": 324645888,
+          "effective_bpp": 8.739976721959897,
+          "knowledge_acc": 0.164,
+          "skill_acc": 0.32,
+          "eval_time_sec": 25.75
+        }
+      ],
+      "ratio_trans": 1.2055269320843092,
+      "ratio_mixed": 1.0274016221981912,
+      "ratio_naive": 1.2176587301587305,
+      "roc_auc_3b": 0.618770795523291,
+      "gamma": 0.23238689908572016,
+      "k_hl_trans": 229626909.25714284,
+      "s_hl_trans": 190478456.4705882,
+      "k_hl_mixed": 1467839517.2571428,
+      "s_hl_mixed": 1428691064.4705882
+    },
+    {
+      "model_id": "HuggingFaceTB/SmolLM2-360M",
+      "seed": 42,
+      "param_counts": {
+        "total_params": 361821120,
+        "quantized_params": 314572800,
+        "unquantized_params": 47248320
+      },
+      "ladder": [
+        {
+          "bits": 16,
+          "b_mixed": 5789137920,
+          "b_transformer": 5033164800,
+          "b_naive": 5789137920,
+          "effective_bpp": 16.0,
+          "knowledge_acc": 0.84,
+          "skill_acc": 0.36,
+          "eval_time_sec": 84.17
+        },
+        {
+          "bits": 8,
+          "b_mixed": 3311877120,
+          "b_transformer": 2555904000,
+          "b_naive": 2894568960,
+          "effective_bpp": 9.153354895369292,
+          "knowledge_acc": 0.84,
+          "skill_acc": 0.36,
+          "eval_time_sec": 146.67
+        },
+        {
+          "bits": 4,
+          "b_mixed": 2053585920,
+          "b_transformer": 1297612800,
+          "b_naive": 1447284480,
+          "effective_bpp": 5.675693889842583,
+          "knowledge_acc": 0.82,
+          "skill_acc": 0.36,
+          "eval_time_sec": 227.03
+        },
+        {
+          "bits": 3,
+          "b_mixed": 1739013120,
+          "b_transformer": 983040000,
+          "b_naive": 1085463360,
+          "effective_bpp": 4.806278638460906,
+          "knowledge_acc": 0.384,
+          "skill_acc": 0.36,
+          "eval_time_sec": 118.51
+        },
+        {
+          "bits": 2,
+          "b_mixed": 1424440320,
+          "b_transformer": 668467200,
+          "b_naive": 723642240,
+          "effective_bpp": 3.9368633870792284,
+          "knowledge_acc": 0.124,
+          "skill_acc": 0.36,
+          "eval_time_sec": 250.23
+        }
+      ],
+      "ratio_trans": 6.037776578521317,
+      "ratio_mixed": 4.956296156844061,
+      "ratio_naive": 6.1651376146788985,
+      "roc_auc_3b": 0.5804501488095238,
+      "gamma": 0.8518471596242799,
+      "k_hl_trans": 1009013900.9174312,
+      "s_hl_trans": 167116800.0,
+      "k_hl_mixed": 1764987020.917431,
+      "s_hl_mixed": 356110080.0
+    },
+    {
+      "model_id": "HuggingFaceTB/SmolLM2-360M",
+      "seed": 43,
+      "param_counts": {
+        "total_params": 361821120,
+        "quantized_params": 314572800,
+        "unquantized_params": 47248320
+      },
+      "ladder": [
+        {
+          "bits": 16,
+          "b_mixed": 5789137920,
+          "b_transformer": 5033164800,
+          "b_naive": 5789137920,
+          "effective_bpp": 16.0,
+          "knowledge_acc": 0.84,
+          "skill_acc": 0.348,
+          "eval_time_sec": 97.09
+        },
+        {
+          "bits": 8,
+          "b_mixed": 3311877120,
+          "b_transformer": 2555904000,
+          "b_naive": 2894568960,
+          "effective_bpp": 9.153354895369292,
+          "knowledge_acc": 0.84,
+          "skill_acc": 0.348,
+          "eval_time_sec": 109.59
+        },
+        {
+          "bits": 4,
+          "b_mixed": 2053585920,
+          "b_transformer": 1297612800,
+          "b_naive": 1447284480,
+          "effective_bpp": 5.675693889842583,
+          "knowledge_acc": 0.82,
+          "skill_acc": 0.348,
+          "eval_time_sec": 131.12
+        },
+        {
+          "bits": 3,
+          "b_mixed": 1739013120,
+          "b_transformer": 983040000,
+          "b_naive": 1085463360,
+          "effective_bpp": 4.806278638460906,
+          "knowledge_acc": 0.384,
+          "skill_acc": 0.348,
+          "eval_time_sec": 184.17
+        },
+        {
+          "bits": 2,
+          "b_mixed": 1424440320,
+          "b_transformer": 668467200,
+          "b_naive": 723642240,
+          "effective_bpp": 3.9368633870792284,
+          "knowledge_acc": 0.124,
+          "skill_acc": 0.348,
+          "eval_time_sec": 460.41
+        }
+      ],
+      "ratio_trans": 6.037776578521317,
+      "ratio_mixed": 4.956296156844061,
+      "ratio_naive": 6.1651376146788985,
+      "roc_auc_3b": 0.5860051406926406,
+      "gamma": 0.8518471596242799,
+      "k_hl_trans": 1009013900.9174312,
+      "s_hl_trans": 167116800.0,
+      "k_hl_mixed": 1764987020.917431,
+      "s_hl_mixed": 356110080.0
+    },
+    {
+      "model_id": "HuggingFaceTB/SmolLM2-360M",
+      "seed": 44,
+      "param_counts": {
+        "total_params": 361821120,
+        "quantized_params": 314572800,
+        "unquantized_params": 47248320
+      },
+      "ladder": [
+        {
+          "bits": 16,
+          "b_mixed": 5789137920,
+          "b_transformer": 5033164800,
+          "b_naive": 5789137920,
+          "effective_bpp": 16.0,
+          "knowledge_acc": 0.84,
+          "skill_acc": 0.336,
+          "eval_time_sec": 275.54
+        },
+        {
+          "bits": 8,
+          "b_mixed": 3311877120,
+          "b_transformer": 2555904000,
+          "b_naive": 2894568960,
+          "effective_bpp": 9.153354895369292,
+          "knowledge_acc": 0.84,
+          "skill_acc": 0.336,
+          "eval_time_sec": 88.28
+        },
+        {
+          "bits": 4,
+          "b_mixed": 2053585920,
+          "b_transformer": 1297612800,
+          "b_naive": 1447284480,
+          "effective_bpp": 5.675693889842583,
+          "knowledge_acc": 0.82,
+          "skill_acc": 0.336,
+          "eval_time_sec": 117.89
+        },
+        {
+          "bits": 3,
+          "b_mixed": 1739013120,
+          "b_transformer": 983040000,
+          "b_naive": 1085463360,
+          "effective_bpp": 4.806278638460906,
+          "knowledge_acc": 0.386,
+          "skill_acc": 0.336,
+          "eval_time_sec": 308.0
+        },
+        {
+          "bits": 2,
+          "b_mixed": 1424440320,
+          "b_transformer": 668467200,
+          "b_naive": 723642240,
+          "effective_bpp": 3.9368633870792284,
+          "knowledge_acc": 0.126,
+          "skill_acc": 0.336,
+          "eval_time_sec": 329.36
+        }
+      ],
+      "ratio_trans": 6.029818378964489,
+      "ratio_mixed": 4.952561500291519,
+      "ratio_naive": 6.1566820276497705,
+      "roc_auc_3b": 0.5816948237160554,
+      "gamma": 0.8504380259564054,
+      "k_hl_trans": 1007683952.0737327,
+      "s_hl_trans": 167116800.0,
+      "k_hl_mixed": 1763657072.0737326,
+      "s_hl_mixed": 356110080.0
+    },
+    {
+      "model_id": "EleutherAI/pythia-410m",
+      "seed": 42,
+      "param_counts": {
+        "total_params": 405334016,
+        "quantized_params": 301989888,
+        "unquantized_params": 103344128
+      },
+      "ladder": [
+        {
+          "bits": 16,
+          "b_mixed": 6485344256,
+          "b_transformer": 4831838208,
+          "b_naive": 6485344256,
+          "effective_bpp": 16.0,
+          "knowledge_acc": 0.64,
+          "skill_acc": 0.372,
+          "eval_time_sec": 291.64
+        },
+        {
+          "bits": 8,
+          "b_mixed": 4107173888,
+          "b_transformer": 2453667840,
+          "b_naive": 3242672128,
+          "effective_bpp": 10.132813249998737,
+          "knowledge_acc": 0.63,
+          "skill_acc": 0.372,
+          "eval_time_sec": 225.06
+        },
+        {
+          "bits": 4,
+          "b_mixed": 2899214336,
+          "b_transformer": 1245708288,
+          "b_naive": 1621336064,
+          "effective_bpp": 7.152654900791746,
+          "knowledge_acc": 0.61,
+          "skill_acc": 0.36,
+          "eval_time_sec": 524.21
+        },
+        {
+          "bits": 3,
+          "b_mixed": 2597224448,
+          "b_transformer": 943718400,
+          "b_naive": 1216002048,
+          "effective_bpp": 6.407615313489998,
+          "knowledge_acc": 0.308,
+          "skill_acc": 0.484,
+          "eval_time_sec": 121.95
+        },
+        {
+          "bits": 2,
+          "b_mixed": 2295234560,
+          "b_transformer": 641728512,
+          "b_naive": 810668032,
+          "effective_bpp": 5.66257572618825,
+          "knowledge_acc": 0.17,
+          "skill_acc": 0.34,
+          "eval_time_sec": 173.26
+        }
+      ],
+      "ratio_trans": 2.998170094109447,
+      "ratio_mixed": 1.3229526769924187,
+      "ratio_naive": 3.2665810022734028,
+      "roc_auc_3b": 0.534203513249756,
+      "gamma": 0.4138120156888651,
+      "k_hl_trans": 955717998.1986755,
+      "s_hl_trans": 318767103.9999999,
+      "k_hl_mixed": 2609224046.1986756,
+      "s_hl_mixed": 1972273152.0
+    },
+    {
+      "model_id": "EleutherAI/pythia-410m",
+      "seed": 43,
+      "param_counts": {
+        "total_params": 405334016,
+        "quantized_params": 301989888,
+        "unquantized_params": 103344128
+      },
+      "ladder": [
+        {
+          "bits": 16,
+          "b_mixed": 6485344256,
+          "b_transformer": 4831838208,
+          "b_naive": 6485344256,
+          "effective_bpp": 16.0,
+          "knowledge_acc": 0.64,
+          "skill_acc": 0.376,
+          "eval_time_sec": 127.22
+        },
+        {
+          "bits": 8,
+          "b_mixed": 4107173888,
+          "b_transformer": 2453667840,
+          "b_naive": 3242672128,
+          "effective_bpp": 10.132813249998737,
+          "knowledge_acc": 0.63,
+          "skill_acc": 0.38,
+          "eval_time_sec": 140.29
+        },
+        {
+          "bits": 4,
+          "b_mixed": 2899214336,
+          "b_transformer": 1245708288,
+          "b_naive": 1621336064,
+          "effective_bpp": 7.152654900791746,
+          "knowledge_acc": 0.61,
+          "skill_acc": 0.352,
+          "eval_time_sec": 112.95
+        },
+        {
+          "bits": 3,
+          "b_mixed": 2597224448,
+          "b_transformer": 943718400,
+          "b_naive": 1216002048,
+          "effective_bpp": 6.407615313489998,
+          "knowledge_acc": 0.312,
+          "skill_acc": 0.532,
+          "eval_time_sec": 473.92
+        },
+        {
+          "bits": 2,
+          "b_mixed": 2295234560,
+          "b_transformer": 641728512,
+          "b_naive": 810668032,
+          "effective_bpp": 5.66257572618825,
+          "knowledge_acc": 0.17,
+          "skill_acc": 0.316,
+          "eval_time_sec": 122.96
+        }
+      ],
+      "ratio_trans": 2.0567935278493072,
+      "ratio_mixed": 1.2310915979164982,
+      "ratio_naive": 2.150653479335924,
+      "roc_auc_3b": 0.5362719886702445,
+      "gamma": 0.4126952112799502,
+      "k_hl_trans": 951825511.0872483,
+      "s_hl_trans": 462771541.3333334,
+      "k_hl_mixed": 2605331559.0872483,
+      "s_hl_mixed": 2116277589.3333335
+    },
+    {
+      "model_id": "EleutherAI/pythia-410m",
+      "seed": 44,
+      "param_counts": {
+        "total_params": 405334016,
+        "quantized_params": 301989888,
+        "unquantized_params": 103344128
+      },
+      "ladder": [
+        {
+          "bits": 16,
+          "b_mixed": 6485344256,
+          "b_transformer": 4831838208,
+          "b_naive": 6485344256,
+          "effective_bpp": 16.0,
+          "knowledge_acc": 0.64,
+          "skill_acc": 0.356,
+          "eval_time_sec": 74.35
+        },
+        {
+          "bits": 8,
+          "b_mixed": 4107173888,
+          "b_transformer": 2453667840,
+          "b_naive": 3242672128,
+          "effective_bpp": 10.132813249998737,
+          "knowledge_acc": 0.63,
+          "skill_acc": 0.356,
+          "eval_time_sec": 94.97
+        },
+        {
+          "bits": 4,
+          "b_mixed": 2899214336,
+          "b_transformer": 1245708288,
+          "b_naive": 1621336064,
+          "effective_bpp": 7.152654900791746,
+          "knowledge_acc": 0.61,
+          "skill_acc": 0.34,
+          "eval_time_sec": 88.24
+        },
+        {
+          "bits": 3,
+          "b_mixed": 2597224448,
+          "b_transformer": 943718400,
+          "b_naive": 1216002048,
+          "effective_bpp": 6.407615313489998,
+          "knowledge_acc": 0.312,
+          "skill_acc": 0.536,
+          "eval_time_sec": 93.64
+        },
+        {
+          "bits": 2,
+          "b_mixed": 2295234560,
+          "b_transformer": 641728512,
+          "b_naive": 810668032,
+          "effective_bpp": 5.66257572618825,
+          "knowledge_acc": 0.17,
+          "skill_acc": 0.368,
+          "eval_time_sec": 169.98
+        }
+      ],
+      "ratio_trans": 3.1707189647550527,
+      "ratio_mixed": 1.3335382726259708,
+      "ratio_naive": 3.4829456651650266,
+      "roc_auc_3b": 0.5386665175909362,
+      "gamma": 0.4126952112799502,
+      "k_hl_trans": 951825511.0872483,
+      "s_hl_trans": 300192329.14285725,
+      "k_hl_mixed": 2605331559.0872483,
+      "s_hl_mixed": 1953698377.1428573
+    }
+  ]
+}

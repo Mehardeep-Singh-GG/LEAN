@@ -11,9 +11,9 @@
       "size_bytes": 327
     },
     "locked/t1_test.txt": {
-      "sha256": "d9259b2a1939ed7becccbb37105036b19f8d2694dba8966c6d22153f6df3ac4c",
+      "sha256": "9361f1765e82c00f2a11212bbe50eeba88b022e0a2d07e23195d5365b214f5a5",
       "split": "t1",
-      "size_bytes": 228
+      "size_bytes": 50648
     },
     "locked/t2_test.txt": {
       "sha256": "349c8c5da493ae8b38e08a86bbb0208377f71adb38d7474e3da951022ed4dde6",

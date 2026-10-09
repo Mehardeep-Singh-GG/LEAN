@@ -178,13 +178,29 @@ def decompile_all_skills(
     """
     skill_ids = ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9"]
     
-    # Measure empirical neural DL dynamically using Ruler A on live ThinkingCore circuits
+    # Measure empirical neural DL dynamically using Ruler A on live trained ThinkingCore circuits
     if neural_dl_map is None:
         from src.lean.wrmf.models import ThinkingCore
+        from src.lean.wrmf.trainer import generate_canonical_skill_data
         from src.lean.wrmf.loss import compute_module_physical_dl
+        import torch.nn.functional as F
         
-        # Instantiate real ThinkingCore containing procedural circuits for all 9 skills
+        # Instantiate and train ThinkingCore containing procedural circuits for all 9 skills
         core = ThinkingCore(d_model=16, vocab_size=64, skill_ids=skill_ids)
+        skill_data = generate_canonical_skill_data(skill_ids, vocab_size=64, d_model=16, num_samples=100, seed=42)
+        
+        core.train()
+        opt_core = torch.optim.AdamW(core.parameters(), lr=0.03, weight_decay=1e-4)
+        for _ in range(60):
+            opt_core.zero_grad()
+            loss_c = torch.tensor(0.0)
+            for sid_train, (sx, sy) in skill_data.items():
+                out_s = core.forward_skill(sid_train, sx)
+                loss_c = loss_c + F.cross_entropy(out_s, sy)
+            loss_c.backward()
+            opt_core.step()
+        core.eval()
+
         neural_dl_map = {}
         for sid in skill_ids:
             circ = core.skill_circuits[sid]

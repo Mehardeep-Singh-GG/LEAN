@@ -1,0 +1,42 @@
+{
+  "model_id": "EleutherAI/pythia-410m",
+  "params": 405334016,
+  "ladder": [
+    {
+      "bits": 16,
+      "physical_dl_bits": 6485344256,
+      "knowledge_acc": 0.64,
+      "skill_acc": 0.42
+    },
+    {
+      "bits": 8,
+      "physical_dl_bits": 3242672128,
+      "knowledge_acc": 0.63,
+      "skill_acc": 0.42
+    },
+    {
+      "bits": 4,
+      "physical_dl_bits": 1621336064,
+      "knowledge_acc": 0.61,
+      "skill_acc": 0.4
+    },
+    {
+      "bits": 3,
+      "physical_dl_bits": 1216002048,
+      "knowledge_acc": 0.32,
+      "skill_acc": 0.42
+    },
+    {
+      "bits": 2,
+      "physical_dl_bits": 810668032,
+      "knowledge_acc": 0.17,
+      "skill_acc": 0.3
+    }
+  ],
+  "b_half_fact": 1216002048.0,
+  "b_half_skill": 506667520.0,
+  "half_life_ratio": 2.4,
+  "survival_roc_auc_3bit": 0.5186121323529411,
+  "scaling_gamma": 0.40008204347903453,
+  "dl_core_bits": 14202
+}

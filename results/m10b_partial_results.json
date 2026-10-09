@@ -1,0 +1,128 @@
+[
+  {
+    "model_id": "EleutherAI/pythia-70m",
+    "params": 70426624,
+    "ladder": [
+      {
+        "bits": 16,
+        "physical_dl_bits": 1126825984,
+        "knowledge_acc": 0.47,
+        "skill_acc": 0.48
+      },
+      {
+        "bits": 8,
+        "physical_dl_bits": 563412992,
+        "knowledge_acc": 0.48,
+        "skill_acc": 0.46
+      },
+      {
+        "bits": 4,
+        "physical_dl_bits": 281706496,
+        "knowledge_acc": 0.46,
+        "skill_acc": 0.54
+      },
+      {
+        "bits": 3,
+        "physical_dl_bits": 211279872,
+        "knowledge_acc": 0.27,
+        "skill_acc": 0.36
+      },
+      {
+        "bits": 2,
+        "physical_dl_bits": 140853248,
+        "knowledge_acc": 0.14,
+        "skill_acc": 0.16
+      }
+    ],
+    "b_half_fact": 192318857.84615383,
+    "b_half_skill": 169023897.6,
+    "half_life_ratio": 1.1378205128205128,
+    "survival_roc_auc_3bit": 0.6103500761035008,
+    "scaling_gamma": 0.2266661711649581,
+    "dl_core_bits": 13502
+  },
+  {
+    "model_id": "gpt2",
+    "params": 124439808,
+    "ladder": [
+      {
+        "bits": 16,
+        "physical_dl_bits": 1991036928,
+        "knowledge_acc": 0.6,
+        "skill_acc": 0.64
+      },
+      {
+        "bits": 8,
+        "physical_dl_bits": 995518464,
+        "knowledge_acc": 0.59,
+        "skill_acc": 0.64
+      },
+      {
+        "bits": 4,
+        "physical_dl_bits": 497759232,
+        "knowledge_acc": 0.51,
+        "skill_acc": 0.5
+      },
+      {
+        "bits": 3,
+        "physical_dl_bits": 373319424,
+        "knowledge_acc": 0.38,
+        "skill_acc": 0.38
+      },
+      {
+        "bits": 2,
+        "physical_dl_bits": 248879616,
+        "knowledge_acc": 0.19,
+        "skill_acc": 0.28
+      }
+    ],
+    "b_half_fact": 320923715.3684211,
+    "b_half_skill": 298655539.2,
+    "half_life_ratio": 1.074561403508772,
+    "survival_roc_auc_3bit": 0.6300933786078099,
+    "scaling_gamma": 0.33015300694795624,
+    "dl_core_bits": 13730
+  },
+  {
+    "model_id": "EleutherAI/pythia-160m",
+    "params": 162322944,
+    "ladder": [
+      {
+        "bits": 16,
+        "physical_dl_bits": 2597167104,
+        "knowledge_acc": 0.49,
+        "skill_acc": 0.72
+      },
+      {
+        "bits": 8,
+        "physical_dl_bits": 1298583552,
+        "knowledge_acc": 0.49,
+        "skill_acc": 0.74
+      },
+      {
+        "bits": 4,
+        "physical_dl_bits": 649291776,
+        "knowledge_acc": 0.48,
+        "skill_acc": 0.72
+      },
+      {
+        "bits": 3,
+        "physical_dl_bits": 486968832,
+        "knowledge_acc": 0.31,
+        "skill_acc": 0.64
+      },
+      {
+        "bits": 2,
+        "physical_dl_bits": 324645888,
+        "knowledge_acc": 0.19,
+        "skill_acc": 0.34
+      }
+    ],
+    "b_half_fact": 399043904.0,
+    "b_half_skill": 335467417.59999996,
+    "half_life_ratio": 1.1895161290322582,
+    "survival_roc_auc_3bit": 0.6615240766713417,
+    "scaling_gamma": 0.21290060046042644,
+    "dl_core_bits": 13836
+  }
+]

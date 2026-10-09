@@ -403,8 +403,12 @@ def run_milestone_m7() -> Dict[str, Any]:
 
     # Step 5: Bounded Core Preserved under Compression (Theorem T5)
     print("\n>>> [Step 5/7] Evaluating Bounded Core Saturation under Compression (Theorem T5)...")
-    c5_passed = True
-    print(f"    Thinking Core preserves full functionality down to B_core threshold: True")
+    core_min_acc = float(min(skill_accuracies))
+    core_preserved = (core_min_acc >= 0.30)
+    seed_stability = all(v["std_gamma"] < 0.05 for v in alpha_results.values())
+    c5_passed = core_preserved and seed_stability
+    print(f"    Thinking Core preserves full functionality down to B_core threshold: {core_preserved} (min acc: {core_min_acc*100:.1f}%)")
+    print(f"    Multi-seed stability across Zipf regimes: {seed_stability} (std < 0.05)")
 
     # Step 6: Acceptance Criteria Summary
     print("\n>>> [Step 6/7] Evaluating Prespecified Milestone Acceptance Criteria...")

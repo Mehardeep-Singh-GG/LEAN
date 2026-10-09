@@ -1,0 +1,42 @@
+{
+  "model_id": "EleutherAI/pythia-160m",
+  "seed": 2042,
+  "device": "cpu",
+  "wall_clock_sec": 37.068629026412964,
+  "storage": {
+    "kac_bits": 286654464.0,
+    "matched_uniform_bits": 286654464.0,
+    "bit_delta_percent": 0.0,
+    "bm25_index_bytes": 18235
+  },
+  "artifacts": {
+    "fp16": {
+      "knowledge_acc": 0.49,
+      "skill_acc": 0.72,
+      "loss": 4.883893013000488
+    },
+    "uniform_3b": {
+      "knowledge_acc": 0.32,
+      "skill_acc": 0.6,
+      "loss": 7.79550838470459
+    },
+    "matched_uniform": {
+      "knowledge_acc": 0.35,
+      "skill_acc": 0.62,
+      "loss": 7.9218220710754395,
+      "rag_accuracy": 0.87
+    },
+    "kac": {
+      "knowledge_acc": 0.37,
+      "skill_acc": 0.7,
+      "loss": 6.424716949462891,
+      "rag_accuracy": 0.92
+    }
+  },
+  "deltas": {
+    "skill_delta_kac_vs_matched": 0.07999999999999996,
+    "loss_delta_kac_vs_matched": -1.4971051216125488,
+    "raw_knowledge_delta": 0.020000000000000018,
+    "rag_knowledge_delta": 0.050000000000000044
+  }
+}
