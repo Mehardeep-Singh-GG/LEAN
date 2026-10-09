@@ -80,6 +80,14 @@ def audit_a4_invariants(milestone: str) -> Dict[str, Any]:
             data = json.load(f)
         c7_ok = data.get("acceptance_criteria", {}).get("C7_invariant_lower_bound", {}).get("passed", False)
         return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": c7_ok, "details": "DL(Mem) >= I_facts / kappa verified"}
+    elif milestone == "M6":
+        m6_path = Path("results/m6_decompilation_results.json")
+        if not m6_path.exists():
+            return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": False, "details": "m6_decompilation_results.json missing"}
+        with open(m6_path) as f:
+            data = json.load(f)
+        c6_ok = data.get("acceptance_criteria", {}).get("C6_ruler_c_accounting", {}).get("passed", False)
+        return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": c6_ok, "details": "Ruler C exact token-bit accounting compliant"}
     return {"id": "A4", "name": "Information-Theoretic Invariants", "passed": True, "details": "Invariants verified"}
 
 
@@ -105,6 +113,15 @@ def audit_a5_baseline_sanity(milestone: str) -> Dict[str, Any]:
         r = c1.get("pearson_r", 0.0)
         rho = c1.get("spearman_rho", 0.0)
         return {"id": "A5", "name": "Baseline Sanity", "passed": passed, "details": f"DL Proxy calibrated: r={r:.4f}, rho={rho:.4f}"}
+    elif milestone == "M6":
+        m6_path = Path("results/m6_decompilation_results.json")
+        if not m6_path.exists():
+            return {"id": "A5", "name": "Baseline Sanity", "passed": False, "details": "m6_decompilation_results.json missing"}
+        with open(m6_path) as f:
+            data = json.load(f)
+        c4 = data.get("acceptance_criteria", {}).get("C4_symbolic_recovery", {})
+        passed = c4.get("passed", False)
+        return {"id": "A5", "name": "Baseline Sanity", "passed": passed, "details": f"Symbolic recovery exact match: S6 ({c4.get('s6_match')}), S7 ({c4.get('s7_match')})"}
     return {"id": "A5", "name": "Baseline Sanity", "passed": True, "details": "Baselines calibrated"}
 
 
@@ -133,6 +150,18 @@ def audit_a6_statistics(milestone: str) -> Dict[str, Any]:
         passed = c2 and c3 and c4
         transfer_mean = crit.get("C4_decisive_transfer", {}).get("mean_transfer_ratio", 0.0)
         return {"id": "A6", "name": "Statistical Power & CIs", "passed": passed, "details": f"Transfer ratio={transfer_mean*100:.1f}%, Core gamma upper CI <= 0.20 ({c2}), R^2 mem >= 0.95 ({c3})"}
+    elif milestone == "M6":
+        m6_path = Path("results/m6_decompilation_results.json")
+        if not m6_path.exists():
+            return {"id": "A6", "name": "Statistical Power & CIs", "passed": False, "details": "m6_decompilation_results.json missing"}
+        with open(m6_path) as f:
+            data = json.load(f)
+        crit = data.get("acceptance_criteria", {})
+        c1 = crit.get("C1_decompilation_success", {}).get("passed", False)
+        c2 = crit.get("C2_c_alg_constancy", {}).get("passed", False)
+        cv = crit.get("C2_c_alg_constancy", {}).get("cv", 0.0)
+        passed = c1 and c2
+        return {"id": "A6", "name": "Statistical Power & CIs", "passed": passed, "details": f">=6 skills >=99% fidelity ({c1}) & c_alg CV <= 30% (CV={cv*100:.1f}%)"}
     return {"id": "A6", "name": "Statistical Power & CIs", "passed": True, "details": "Statistics standard applied"}
 
 
@@ -161,6 +190,15 @@ def audit_a8_prediction_discipline(milestone: str) -> Dict[str, Any]:
         expected_sha = "f908aeb12e25d0b6b9786cd15d52fafe4d9a9f49dde7f9f732e509da05d69f78"
         passed = (actual_sha == expected_sha)
         return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": passed, "details": f"Preregistration SHA-256 match: {actual_sha[:12]}"}
+    elif milestone == "M6":
+        prereg = Path("prereg/M6.md")
+        if not prereg.exists():
+            return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": False, "details": "prereg/M6.md missing"}
+        with open(prereg, "rb") as f:
+            actual_sha = hashlib.sha256(f.read()).hexdigest()
+        expected_sha = "0c3d7592e876e5777ff2c235994e6c9586bc006a58120608c9aa845c87087cbc"
+        passed = (actual_sha == expected_sha)
+        return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": passed, "details": f"Preregistration SHA-256 match: {actual_sha[:12]}"}
     return {"id": "A8", "name": "Prediction Preregistration Discipline", "passed": True, "details": "Preregistration active"}
 
 
@@ -185,6 +223,17 @@ def audit_a9_ablation_completeness(milestone: str) -> Dict[str, Any]:
         c6 = crit.get("C6_memory_triad", {}).get("passed", False)
         passed = c5 and c6
         return {"id": "A9", "name": "Ablation Completeness", "passed": passed, "details": f"Null control collapse verified ({c5}) & Memory Triad evaluated ({c6})"}
+    elif milestone == "M6":
+        m6_path = Path("results/m6_decompilation_results.json")
+        if not m6_path.exists():
+            return {"id": "A9", "name": "Ablation Completeness", "passed": False, "details": "m6_decompilation_results.json missing"}
+        with open(m6_path) as f:
+            data = json.load(f)
+        crit = data.get("acceptance_criteria", {})
+        c3 = crit.get("C3_program_listings", {}).get("passed", False)
+        c5 = crit.get("C5_multi_seed_stability", {}).get("passed", False)
+        passed = c3 and c5
+        return {"id": "A9", "name": "Ablation Completeness", "passed": passed, "details": f"All 9 listings verified ({c3}) & Multi-seed evaluated ({c5})"}
     return {"id": "A9", "name": "Ablation Completeness", "passed": True, "details": "Ablations accounted"}
 
 

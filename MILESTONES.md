@@ -16,8 +16,8 @@
 | **M3** | **The Synthetic Universe** | **Known Information Content** | 🟢 **COMPLETED** | 0 | All 12 Checks Green |
 | **M4** | **Composition Law** | 🚦 **GATE α** | 🟢 **COMPLETED (GATE α PASSED)** | 0 | All 12 Checks Green |
 | **M5** | **WRMF: Thinking Core Isolation** | **Multi-World Factorization** | 🟢 **COMPLETED** | 0 | All 12 Checks Green |
-| **M6** | **Neural Decompilation** | **RASP Program Synthesis** | 🟡 **NEXT** | 0 | Ready |
-| **M7** | Priced-Quanta Theory | Analytical Derivations | ⚪ Not Started | - | - |
+| **M6** | **Neural Decompilation** | **RASP Program Synthesis** | 🟢 **COMPLETED** | 0 | All 12 Checks Green |
+| **M7** | **Priced-Quanta Theory** | **Analytical Derivations** | 🟡 **NEXT** | 0 | Ready |
 | **M8** | Real-LLM Anatomy | 🚦 **GATE β** | ⚪ Not Started | - | - |
 | **M9** | Assemble & Preregister LOCK_v1 | Immutable Preregistration | ⚪ Not Started | - | - |
 | **M10** | Held-Out Validation (T1 $\to$ T2 $\to$ T3) | Unseen Model Generalization | ⚪ Not Started | - | - |

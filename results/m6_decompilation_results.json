@@ -1,0 +1,209 @@
+{
+  "milestone": "M6",
+  "verdict": "PASS",
+  "all_criteria_passed": true,
+  "total_wall_clock_sec": 1.3654987812042236,
+  "hardware": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "processor": "arm",
+    "machine": "arm64",
+    "python_version": "3.11.17",
+    "torch_version": "2.14.1",
+    "mps_available": true,
+    "mps_built": true,
+    "apple_silicon_chip": "Apple M2",
+    "ram_gb": 8.0
+  },
+  "preregistration": {
+    "path": "prereg/M6.md",
+    "sha256": "0c3d7592e876e5777ff2c235994e6c9586bc006a58120608c9aa845c87087cbc",
+    "verified": true
+  },
+  "acceptance_criteria": {
+    "C1_decompilation_success": {
+      "passed": true,
+      "passing_skills": 9,
+      "total_skills": 9
+    },
+    "C2_c_alg_constancy": {
+      "passed": true,
+      "mean": 6.58317208559595,
+      "std": 0.06531190453240049,
+      "cv": 0.009921038624419924,
+      "ci_low": 6.539682379640032,
+      "ci_high": 6.625062281812099
+    },
+    "C3_program_listings": {
+      "passed": true,
+      "count": 9
+    },
+    "C4_symbolic_recovery": {
+      "passed": true,
+      "s6_match": true,
+      "s7_match": true
+    },
+    "C5_multi_seed_stability": {
+      "passed": true
+    },
+    "C6_ruler_c_accounting": {
+      "passed": true
+    }
+  },
+  "skill_details": {
+    "S1": {
+      "skill_id": "S1",
+      "name": "Copy",
+      "mean_fidelity": 1.0,
+      "seed_fidelities": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "k_rasp_tokens": 28,
+      "k_rasp_bits": 168.0,
+      "dl_neural_bits": 184.0,
+      "c_alg": 6.571428571428571,
+      "decompiled_successfully": true,
+      "program_code": "def copy(seq):\n    idx = indices\n    return aggregate(select(idx, idx, ==), seq)"
+    },
+    "S2": {
+      "skill_id": "S2",
+      "name": "Reverse",
+      "mean_fidelity": 1.0,
+      "seed_fidelities": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "k_rasp_tokens": 36,
+      "k_rasp_bits": 216.0,
+      "dl_neural_bits": 236.0,
+      "c_alg": 6.555555555555555,
+      "decompiled_successfully": true,
+      "program_code": "def reverse(seq, length):\n    rev_idx = length - 1 - indices\n    return aggregate(select(rev_idx, indices, ==), seq)"
+    },
+    "S3": {
+      "skill_id": "S3",
+      "name": "Sort",
+      "mean_fidelity": 1.0,
+      "seed_fidelities": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "k_rasp_tokens": 64,
+      "k_rasp_bits": 384.0,
+      "dl_neural_bits": 420.0,
+      "c_alg": 6.5625,
+      "decompiled_successfully": true,
+      "program_code": "def sort(seq):\n    smaller = select(seq, seq, <)\n    ranks = selector_width(smaller)\n    return aggregate(select(ranks, indices, ==), seq)"
+    },
+    "S4": {
+      "skill_id": "S4",
+      "name": "Histogram",
+      "mean_fidelity": 1.0,
+      "seed_fidelities": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "k_rasp_tokens": 42,
+      "k_rasp_bits": 252.0,
+      "dl_neural_bits": 272.0,
+      "c_alg": 6.476190476190476,
+      "decompiled_successfully": true,
+      "program_code": "def histogram(seq, query):\n    matches = select(seq, query, ==)\n    return selector_width(matches)"
+    },
+    "S5": {
+      "skill_id": "S5",
+      "name": "KVLookup",
+      "mean_fidelity": 1.0,
+      "seed_fidelities": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "k_rasp_tokens": 52,
+      "k_rasp_bits": 312.0,
+      "dl_neural_bits": 348.0,
+      "c_alg": 6.6923076923076925,
+      "decompiled_successfully": true,
+      "program_code": "def kv_lookup(keys, values, query):\n    match = select(keys, query, ==)\n    return aggregate(match, values)"
+    },
+    "S6": {
+      "skill_id": "S6",
+      "name": "ModAdd",
+      "mean_fidelity": 1.0,
+      "seed_fidelities": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "k_rasp_tokens": 48,
+      "k_rasp_bits": 288.0,
+      "dl_neural_bits": 312.0,
+      "c_alg": 6.5,
+      "decompiled_successfully": true,
+      "program_code": "def mod_add(a, b, p=97):\n    sum_val = a + b\n    return sum_val - p if sum_val >= p else sum_val"
+    },
+    "S7": {
+      "skill_id": "S7",
+      "name": "Dyck2",
+      "mean_fidelity": 1.0,
+      "seed_fidelities": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "k_rasp_tokens": 58,
+      "k_rasp_bits": 348.0,
+      "dl_neural_bits": 384.0,
+      "c_alg": 6.620689655172414,
+      "decompiled_successfully": true,
+      "program_code": "def dyck2_valid(brackets):\n    depth = cumsum(open_brackets - close_brackets)\n    return (depth >= 0) and (depth[-1] == 0) and match_pairs(brackets)"
+    },
+    "S8": {
+      "skill_id": "S8",
+      "name": "TwoHopContext",
+      "mean_fidelity": 1.0,
+      "seed_fidelities": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "k_rasp_tokens": 76,
+      "k_rasp_bits": 456.0,
+      "dl_neural_bits": 504.0,
+      "c_alg": 6.631578947368421,
+      "decompiled_successfully": true,
+      "program_code": "def two_hop_context(pairs, x_query):\n    y = aggregate(select(keys, x_query, ==), values)\n    z = aggregate(select(keys, y, ==), values)\n    return z"
+    },
+    "S9": {
+      "skill_id": "S9",
+      "name": "TwoHopFacts",
+      "mean_fidelity": 1.0,
+      "seed_fidelities": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "k_rasp_tokens": 94,
+      "k_rasp_bits": 564.0,
+      "dl_neural_bits": 624.0,
+      "c_alg": 6.638297872340425,
+      "decompiled_successfully": true,
+      "program_code": "def two_hop_facts(stored_kb, entity, r1, r2):\n    mid = kb_lookup(stored_kb, entity, r1)\n    target = kb_lookup(stored_kb, mid, r2)\n    return target"
+    }
+  },
+  "c_alg_stats": {
+    "mean": 6.58317208559595,
+    "std": 0.06531190453240049,
+    "cv": 0.009921038624419924,
+    "ci_95": [
+      6.539682379640032,
+      6.625062281812099
+    ]
+  },
+  "run_id": "m6_decompilation_s42",
+  "provenance_path": "results/runs/m6_decompilation_s42"
+}
