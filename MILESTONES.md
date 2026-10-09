@@ -15,8 +15,8 @@
 | **M2** | **Baseline Reproductions & Probes** | **Published Calibration** | 🟢 **COMPLETED (RECONCILED)** | 0 | All 12 Checks Green |
 | **M3** | **The Synthetic Universe** | **Known Information Content** | 🟢 **COMPLETED** | 0 | All 12 Checks Green |
 | **M4** | **Composition Law** | 🚦 **GATE α** | 🟢 **COMPLETED (GATE α PASSED)** | 0 | All 12 Checks Green |
-| **M5** | WRMF: Thinking Core Isolation | Multi-World Factorization | 🟡 **NEXT** | 0 | Ready |
-| **M6** | Neural Decompilation | RASP Program Synthesis | ⚪ Not Started | - | - |
+| **M5** | **WRMF: Thinking Core Isolation** | **Multi-World Factorization** | 🟢 **COMPLETED** | 0 | All 12 Checks Green |
+| **M6** | **Neural Decompilation** | **RASP Program Synthesis** | 🟡 **NEXT** | 0 | Ready |
 | **M7** | Priced-Quanta Theory | Analytical Derivations | ⚪ Not Started | - | - |
 | **M8** | Real-LLM Anatomy | 🚦 **GATE β** | ⚪ Not Started | - | - |
 | **M9** | Assemble & Preregister LOCK_v1 | Immutable Preregistration | ⚪ Not Started | - | - |

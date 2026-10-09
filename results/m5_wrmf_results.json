@@ -1,0 +1,174 @@
+{
+  "milestone": "M5",
+  "verdict": "PASS",
+  "all_criteria_passed": true,
+  "total_wall_clock_sec": 64.54342913627625,
+  "hardware": {
+    "platform": "macOS-27.0-arm64-arm-64bit",
+    "processor": "arm",
+    "machine": "arm64",
+    "python_version": "3.11.17 (main, Oct  3 2026, 00:54:14) [Clang 22.1.3 ]",
+    "torch_version": "2.14.1",
+    "mps_available": true,
+    "mps_built": true,
+    "cuda_available": false,
+    "apple_silicon_chip": "Apple M2",
+    "ram_bytes": 8589934592,
+    "ram_gb": 8.0
+  },
+  "git_sha": "c7745379995a0d595949e1f41ec2e41a0f731fb8",
+  "preregistration": {
+    "path": "prereg/M5.md",
+    "sha256": "f908aeb12e25d0b6b9786cd15d52fafe4d9a9f49dde7f9f732e509da05d69f78",
+    "verified": true
+  },
+  "acceptance_criteria": {
+    "C1_proxy_calibration": {
+      "passed": true,
+      "pearson_r": 0.9865758456227995,
+      "spearman_rho": 0.9895652173913043
+    },
+    "C2_core_invariance": {
+      "passed": true,
+      "gamma_core": -0.002440948421799445,
+      "gamma_ci_high": 0.0007594510610048743,
+      "threshold": 0.2
+    },
+    "C3_memory_linearity": {
+      "passed": true,
+      "r2": 0.9999919156925695,
+      "threshold": 0.95
+    },
+    "C4_decisive_transfer": {
+      "passed": true,
+      "mean_transfer_ratio": 0.9991319477558136,
+      "threshold": 0.95,
+      "per_seed": [
+        {
+          "seed": 42,
+          "joint_accuracy": 1.0,
+          "transfer_accuracy": 1.0,
+          "transfer_ratio": 1.0,
+          "fact_accuracy": 1.0,
+          "skill_accuracy": 1.0
+        },
+        {
+          "seed": 43,
+          "joint_accuracy": 1.0,
+          "transfer_accuracy": 1.0,
+          "transfer_ratio": 1.0,
+          "fact_accuracy": 1.0,
+          "skill_accuracy": 1.0
+        },
+        {
+          "seed": 44,
+          "joint_accuracy": 1.0,
+          "transfer_accuracy": 0.9973958432674408,
+          "transfer_ratio": 0.9973958432674408,
+          "fact_accuracy": 0.9947916865348816,
+          "skill_accuracy": 1.0
+        }
+      ]
+    },
+    "C5_null_control_collapse": {
+      "passed": true,
+      "collapse_ratio": 0.14285714285714285,
+      "threshold": 0.2,
+      "true_circuit_dl": 3080,
+      "null_circuit_dl": 440
+    },
+    "C6_memory_triad": {
+      "passed": true,
+      "architectures": [
+        {
+          "memory_type": "entity_emb",
+          "joint_accuracy": 1.0,
+          "transfer_accuracy": 0.9921875,
+          "transfer_ratio": 0.9921875,
+          "mean_mem_dl": 7957.5
+        },
+        {
+          "memory_type": "pkm",
+          "joint_accuracy": 1.0,
+          "transfer_accuracy": 0.9739583432674408,
+          "transfer_ratio": 0.9739583432674408,
+          "mean_mem_dl": 10536.0
+        },
+        {
+          "memory_type": "lora",
+          "joint_accuracy": 0.8776041716337204,
+          "transfer_accuracy": 0.7734375,
+          "transfer_ratio": 0.8813056329941926,
+          "mean_mem_dl": 6310.0
+        }
+      ]
+    },
+    "C7_invariant_lower_bound": {
+      "passed": true
+    }
+  },
+  "world_scaling_sweep": [
+    {
+      "M": 2,
+      "core_physical_dl": 16892,
+      "mean_mem_dl": 7940.0,
+      "accuracy": 1.0,
+      "wall_clock_sec": 3.882614850997925
+    },
+    {
+      "M": 4,
+      "core_physical_dl": 16786,
+      "mean_mem_dl": 8013.75,
+      "accuracy": 1.0,
+      "wall_clock_sec": 3.9439759254455566
+    },
+    {
+      "M": 8,
+      "core_physical_dl": 16792,
+      "mean_mem_dl": 7966.875,
+      "accuracy": 1.0,
+      "wall_clock_sec": 6.952567100524902
+    },
+    {
+      "M": 16,
+      "core_physical_dl": 16795,
+      "mean_mem_dl": 7982.9375,
+      "accuracy": 1.0,
+      "wall_clock_sec": 12.727702140808105
+    }
+  ],
+  "factual_scaling_sweep": [
+    {
+      "k_entities": 32,
+      "i_fact_bits": 768.0,
+      "mem_dl": 8016.5,
+      "kappa": 0.09580240753446018
+    },
+    {
+      "k_entities": 64,
+      "i_fact_bits": 1536.0,
+      "mem_dl": 9582.5,
+      "kappa": 0.16029219932168015
+    },
+    {
+      "k_entities": 128,
+      "i_fact_bits": 3072.0,
+      "mem_dl": 12680.5,
+      "kappa": 0.24226174046764717
+    },
+    {
+      "k_entities": 256,
+      "i_fact_bits": 6144.0,
+      "mem_dl": 18961.5,
+      "kappa": 0.3240249980223084
+    }
+  ],
+  "m4_comparison": {
+    "m4_skill_dl": 3296.0,
+    "wrmf_skill_dl": 3080.0,
+    "is_tighter": true,
+    "parsimony_gain": 0.06553398058252427
+  },
+  "run_id": "m5_wrmf_s42",
+  "provenance_path": "results/runs/m5_wrmf_s42"
+}
