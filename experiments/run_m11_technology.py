@@ -38,27 +38,35 @@ from src.lean.core.retrieval_store import ThinkingCoreRetrievalPipeline
 from src.lean.infer.mlx_engine import MLXBenchmarkEngine
 from src.lean.measure.ruler_a import quantize_tensor_rtn
 
-REPO_ROOT = Path("/Users/mac/llm")
+REPO_ROOT = Path(__file__).resolve().parent.parent
 PREREG_M11_PATH = REPO_ROOT / "prereg" / "M11.md"
 EXPECTED_M11_HASH = "db59e55bf72c7e58b0ff53ef30b9cb24d35567bd098f71b1735a1c82836714a2"
 PARENT_LOCK_HASH = "4dc98001b785db4900f41a870608be46b6e2dbcac0e9175c24f89bde13bbde2f"
 
 
 def get_hardware_info() -> Dict[str, Any]:
-    ram_bytes = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
-    disk_stat = os.statvfs(str(REPO_ROOT))
-    free_disk_gb = round((disk_stat.f_bavail * disk_stat.f_frsize) / (1024 ** 3), 2)
+    try:
+        import psutil
+        ram_bytes = psutil.virtual_memory().total
+    except Exception:
+        try:
+            ram_bytes = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
+        except Exception:
+            ram_bytes = 16 * (1024 ** 3)
+    import shutil
+    free_disk_gb = round(shutil.disk_usage(REPO_ROOT).free / (1024 ** 3), 2)
     return {
         "platform": platform.platform(),
         "processor": platform.processor(),
         "machine": platform.machine(),
         "python_version": platform.python_version(),
         "torch_version": torch.__version__,
-        "mps_available": torch.backends.mps.is_available(),
-        "apple_silicon_chip": "Apple M2",
+        "mps_available": getattr(torch.backends, "mps", None) is not None and torch.backends.mps.is_available(),
+        "apple_silicon_chip": "Apple M2" if platform.system() == "Darwin" else "N/A",
         "ram_gb": round(ram_bytes / (1024 ** 3), 2),
         "free_disk_gb": free_disk_gb
     }
+
 
 
 def compute_sequence_loss(model: Any, tokenizer: Any, text: str, device: str = "cpu") -> float:

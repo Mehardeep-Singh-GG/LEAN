@@ -14,14 +14,21 @@ import math
 from typing import Dict, Any, List
 import numpy as np
 import torch
-import mlx.core as mx
-import mlx.nn as nn
+
+try:
+    import mlx.core as mx
+    import mlx.nn as nn
+    HAS_MLX = True
+except ImportError:
+    HAS_MLX = False
+    mx = None
+    nn = None
 
 
 class MLXBenchmarkEngine:
     """Measures Apple Silicon Metal throughput and latency."""
     def __init__(self):
-        self.device = "mps" if torch.backends.mps.is_available() else "cpu"
+        self.device = "mps" if getattr(torch.backends, "mps", None) is not None and torch.backends.mps.is_available() else "cpu"
 
     def benchmark_matrix_decode_throughput(
         self,
@@ -81,7 +88,10 @@ class MLXBenchmarkEngine:
                 pass
                 
         # 2. Native MLX with Compiled Metal Pipeline
+        if not HAS_MLX:
+            raise RuntimeError("Apple Silicon MLX is only supported on macOS/Apple Silicon hardware.")
         mx.reset_peak_memory()
+
         mx_w1 = mx.random.normal((hidden_dim, intermediate_dim))
         mx_w2 = mx.random.normal((intermediate_dim, hidden_dim))
         mx_head = mx.random.normal((hidden_dim, vocab_size))

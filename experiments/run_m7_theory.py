@@ -57,19 +57,27 @@ EXPECTED_M7_HASH = "8e48adf1f24caa463a4d44b1b0893f156cd529684cc7ff509a3f1369dc96
 
 
 def get_hardware_info() -> Dict[str, Any]:
-    """Capture precise Apple Silicon hardware state."""
-    ram_bytes = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
+    """Capture precise hardware state."""
+    try:
+        import psutil
+        ram_bytes = psutil.virtual_memory().total
+    except Exception:
+        try:
+            ram_bytes = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
+        except Exception:
+            ram_bytes = 16 * (1024 ** 3)
     return {
         "platform": platform.platform(),
         "processor": platform.processor(),
         "machine": platform.machine(),
         "python_version": platform.python_version(),
         "torch_version": torch.__version__,
-        "mps_available": torch.backends.mps.is_available(),
-        "mps_built": torch.backends.mps.is_built(),
-        "apple_silicon_chip": "Apple M2",
+        "mps_available": getattr(torch.backends, "mps", None) is not None and torch.backends.mps.is_available(),
+        "mps_built": getattr(torch.backends, "mps", None) is not None and torch.backends.mps.is_built(),
+        "apple_silicon_chip": "Apple M2" if platform.system() == "Darwin" else "N/A",
         "ram_gb": round(ram_bytes / (1024 ** 3), 2)
     }
+
 
 
 def train_zipf_memory_model(

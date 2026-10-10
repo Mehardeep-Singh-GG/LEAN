@@ -1,0 +1,49 @@
+{
+  "model_id": "Qwen/Qwen2.5-3B-Instruct",
+  "seed": 1042,
+  "device": "cuda",
+  "wall_clock_sec": 64.91721963882446,
+  "hardware_profile": {
+    "device": "cuda",
+    "device_name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "peak_vram_gb": 6.2887773513793945,
+    "prefill_tok_per_sec": 327.36572904373014,
+    "gen_tok_per_sec": 21.90971213040291
+  },
+  "storage": {
+    "kac_bits": 9010151424.0,
+    "matched_uniform_bits": 9010151424.0,
+    "bit_delta_percent": 0.0,
+    "bm25_index_bytes": 18235
+  },
+  "artifacts": {
+    "fp16": {
+      "knowledge_acc": 0.87,
+      "skill_acc": 0.4,
+      "loss": 4.153883934020996
+    },
+    "uniform_3b": {
+      "knowledge_acc": 0.15,
+      "skill_acc": 0.4,
+      "loss": 11.205275535583496
+    },
+    "matched_uniform": {
+      "knowledge_acc": 0.62,
+      "skill_acc": 0.4,
+      "loss": 6.5580291748046875,
+      "rag_accuracy": 0.94
+    },
+    "kac": {
+      "knowledge_acc": 0.11,
+      "skill_acc": 0.4,
+      "loss": 11.16916561126709,
+      "rag_accuracy": 0.12
+    }
+  },
+  "deltas": {
+    "skill_delta_kac_vs_matched": 0.0,
+    "loss_delta_kac_vs_matched": 4.611136436462402,
+    "raw_knowledge_delta": -0.51,
+    "rag_knowledge_delta": -0.82
+  }
+}

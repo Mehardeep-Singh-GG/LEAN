@@ -17,7 +17,8 @@ from typing import List, Dict, Any
 
 from experiments.run_matched_budget_benchmark import run_matched_budget_experiment
 
-REPO_ROOT = Path("/Users/mac/llm")
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
 
 MODELS = [
     "HuggingFaceTB/SmolLM2-360M",
@@ -27,19 +28,20 @@ MODELS = [
 SEEDS = [1042, 2042]
 
 
-def run_multimodel_benchmark():
+def run_multimodel_benchmark(device: str = "cpu"):
     all_results = []
     
     print("=" * 80)
     print("STARTING PROJECT LEAN MULTI-MODEL MATCHED-BUDGET BENCHMARK")
     print(f"Models: {MODELS}")
     print(f"Seeds: {SEEDS}")
+    print(f"Device: {device}")
     print("=" * 80)
     
     for model_id in MODELS:
         for seed in SEEDS:
-            print(f"\n>>> Running Benchmark: Model={model_id}, Seed={seed} <<<")
-            res = run_matched_budget_experiment(model_id=model_id, seed=seed, device="cpu")
+            print(f"\n>>> Running Benchmark: Model={model_id}, Seed={seed}, Device={device} <<<")
+            res = run_matched_budget_experiment(model_id=model_id, seed=seed, device=device)
             all_results.append(res)
             
     summary_path = REPO_ROOT / "results" / "matched_budget_multimodel_summary.json"
@@ -51,4 +53,8 @@ def run_multimodel_benchmark():
 
 
 if __name__ == "__main__":
-    run_multimodel_benchmark()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--device", type=str, default="cpu")
+    args = parser.parse_args()
+    run_multimodel_benchmark(device=args.device)

@@ -26,6 +26,12 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
+
 import numpy as np
 import pandas as pd
 import scipy.stats as stats
@@ -54,19 +60,27 @@ LOCK_V1_HASH = "4dc98001b785db4900f41a870608be46b6e2dbcac0e9175c24f89bde13bbde2f
 
 
 def get_hardware_info() -> Dict[str, Any]:
-    """Capture precise Apple Silicon hardware state."""
-    ram_bytes = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
+    """Capture precise hardware state."""
+    try:
+        import psutil
+        ram_bytes = psutil.virtual_memory().total
+    except Exception:
+        try:
+            ram_bytes = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
+        except Exception:
+            ram_bytes = 16 * (1024 ** 3)
     return {
         "platform": platform.platform(),
         "processor": platform.processor(),
         "machine": platform.machine(),
         "python_version": platform.python_version(),
         "torch_version": torch.__version__,
-        "mps_available": torch.backends.mps.is_available(),
-        "mps_built": torch.backends.mps.is_built(),
-        "apple_silicon_chip": "Apple M2",
+        "mps_available": getattr(torch.backends, "mps", None) is not None and torch.backends.mps.is_available(),
+        "mps_built": getattr(torch.backends, "mps", None) is not None and torch.backends.mps.is_built(),
+        "apple_silicon_chip": "Apple M2" if platform.system() == "Darwin" else "N/A",
         "ram_gb": round(ram_bytes / (1024 ** 3), 2)
     }
+
 
 
 def run_milestone_m10() -> Dict[str, Any]:
@@ -102,12 +116,17 @@ def run_milestone_m10() -> Dict[str, Any]:
 
     # Step 3: Load Target Pretrained Model (Pythia-70M)
     print("\n>>> [Step 3/8] Loading Real Pretrained Model (EleutherAI/pythia-70m)...")
-    device = "mps" if torch.backends.mps.is_available() else "cpu"
+    device = "mps" if getattr(torch.backends, "mps", None) is not None and torch.backends.mps.is_available() else "cpu"
     model_id = "EleutherAI/pythia-70m"
-    tokenizer = AutoTokenizer.from_pretrained(model_id, local_files_only=True)
-    model = AutoModelForCausalLM.from_pretrained(model_id, local_files_only=True, dtype=torch.float32).to(device)
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(model_id, local_files_only=True)
+        model = AutoModelForCausalLM.from_pretrained(model_id, local_files_only=True, torch_dtype=torch.float32).to(device)
+    except Exception:
+        tokenizer = AutoTokenizer.from_pretrained(model_id)
+        model = AutoModelForCausalLM.from_pretrained(model_id, torch_dtype=torch.float32).to(device)
     total_params = sum(p.numel() for p in model.parameters())
     print(f"    Loaded {model_id} successfully: {total_params:,} parameters on {device}")
+
 
     # Step 4: Parse Held-Out Test Probes from Unsealed Vault Data
     print("\n>>> [Step 4/8] Loading Held-Out Probes from Vault Tranche T1...")

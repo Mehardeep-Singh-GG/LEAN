@@ -45,16 +45,24 @@ EXPECTED_LOCK_HASH = "4dc98001b785db4900f41a870608be46b6e2dbcac0e9175c24f89bde13
 
 
 def get_hardware_info() -> Dict[str, Any]:
-    """Capture precise Apple Silicon hardware state."""
-    ram_bytes = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
+    """Capture precise hardware state."""
+    try:
+        import psutil
+        ram_bytes = psutil.virtual_memory().total
+    except Exception:
+        try:
+            ram_bytes = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
+        except Exception:
+            ram_bytes = 16 * (1024 ** 3)
     return {
         "platform": platform.platform(),
         "processor": platform.processor(),
         "machine": platform.machine(),
         "python_version": platform.python_version(),
-        "apple_silicon_chip": "Apple M2",
+        "apple_silicon_chip": "Apple M2" if platform.system() == "Darwin" else "N/A",
         "ram_gb": round(ram_bytes / (1024 ** 3), 2)
     }
+
 
 
 def evaluate_dev_model_comparison() -> Dict[str, Any]:

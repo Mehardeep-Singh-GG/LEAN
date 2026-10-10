@@ -42,7 +42,8 @@ from src.lean.theory.priced_quanta import (
     compute_detailed_half_life
 )
 
-REPO_ROOT = Path("/Users/mac/llm")
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
 
 FEASIBLE_MODELS = [
     {

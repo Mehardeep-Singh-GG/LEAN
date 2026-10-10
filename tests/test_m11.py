@@ -10,7 +10,7 @@ from pathlib import Path
 from vault.guard import compute_sha256
 from src.lean.compress.kac import KnapsackAwareCompressor
 from src.lean.core.retrieval_store import BM25Index, build_canonical_knowledge_corpus, ThinkingCoreRetrievalPipeline
-from src.lean.infer.mlx_engine import MLXBenchmarkEngine
+from src.lean.infer.mlx_engine import MLXBenchmarkEngine, HAS_MLX
 from experiments.run_m11_technology import PREREG_M11_PATH, EXPECTED_M11_HASH
 
 
@@ -62,6 +62,7 @@ def test_retrieval_store_bm25_search():
     assert "France" in top_doc["text"]
 
 
+@pytest.mark.skipif(not HAS_MLX, reason="Apple Silicon MLX is only supported on macOS/Apple Silicon hardware.")
 def test_mlx_benchmark_engine():
     """Verify native Apple Silicon MLX benchmark engine executes without errors."""
     engine = MLXBenchmarkEngine()
@@ -69,3 +70,4 @@ def test_mlx_benchmark_engine():
     assert "mlx_tokens_per_sec" in res
     assert "pytorch_tokens_per_sec" in res
     assert res["speedup_factor"] > 0.0
+

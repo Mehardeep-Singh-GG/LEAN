@@ -4,15 +4,15 @@
   "all_criteria_passed": true,
   "total_wall_clock_sec": 0.01,
   "hardware": {
-    "platform": "macOS-27.0-arm64-arm-64bit",
-    "processor": "arm",
-    "machine": "arm64",
-    "python_version": "3.11.17",
-    "apple_silicon_chip": "Apple M2",
-    "ram_gb": 8.0
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "machine": "AMD64",
+    "python_version": "3.11.9",
+    "apple_silicon_chip": "N/A",
+    "ram_gb": 15.7
   },
   "preregistration": {
-    "path": "prereg/LOCK_v1.md",
+    "path": "prereg\\LOCK_v1.md",
     "sha256": "4dc98001b785db4900f41a870608be46b6e2dbcac0e9175c24f89bde13bbde2f",
     "verified": true,
     "vault_compatible": true
@@ -144,5 +144,5 @@
     "passed": true
   },
   "run_id": "m9_lock_s42",
-  "provenance_path": "results/runs/m9_lock_s42"
+  "provenance_path": "results\\runs\\m9_lock_s42"
 }

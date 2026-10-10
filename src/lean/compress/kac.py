@@ -110,10 +110,10 @@ class KnapsackAwareCompressor:
         for name, param in model.named_parameters():
             plan = layer_plan.get(name)
             if plan and plan["quantize"]:
-                orig_weights[name] = param.data.clone()
+                orig_weights[name] = param.data.detach().cpu()
                 bits = plan["bits"]
                 q, _ = quantize_tensor_rtn(param.data, bits=bits, group_size=self.group_size)
-                param.data = q.to(device)
+                param.data = q.to(device=param.device, dtype=param.dtype)
                 
         return model, orig_weights
 
@@ -126,4 +126,5 @@ class KnapsackAwareCompressor:
         param_dict = dict(model.named_parameters())
         for name, tensor in orig_weights.items():
             if name in param_dict:
-                param_dict[name].data = tensor
+                param_dict[name].data = tensor.to(device=param_dict[name].device, dtype=param_dict[name].dtype)
+
