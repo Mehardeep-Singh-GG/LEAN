@@ -1,0 +1,46 @@
+{
+  "model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "seed": 1042,
+  "device": "cuda",
+  "calibration_type": "AWQ_salience_and_optimal_group_clipping",
+  "total_benchmark_time_sec": 412.3,
+  "quantization_time_sec": 147.7,
+  "hardware_profile": {
+    "allocated_vram_gb": 3.93,
+    "total_vram_gb": 8.00,
+    "free_vram_headroom_gb": 4.07,
+    "prefill_tok_per_sec": 17.67,
+    "gen_tok_per_sec": 1.10
+  },
+  "exact_storage_accounting": {
+    "total_params": 7615616512,
+    "quantized_params": 6525288448,
+    "allocated_4b_attn_params": 822083584,
+    "allocated_2b_mlp_params": 5703204864,
+    "gqa_kac_storage_bits": 32955654144.0,
+    "gqa_kac_storage_gib": 3.836543083190918,
+    "effective_bpp": 4.327378366816588,
+    "external_index_bytes": 18235,
+    "external_index_bits": 145880,
+    "index_overhead_fraction": 4.426554525744691e-06
+  },
+  "metrics": {
+    "awq_kac_raw": {
+      "factual_cloze_acc": 0.32,
+      "procedural_skill_acc": 0.40
+    },
+    "awq_kac_plus_retrieval": {
+      "factual_cloze_acc": 0.72,
+      "correct_count": 72,
+      "total_evaluated": 100
+    },
+    "comparison_vs_uncalibrated": {
+      "uncalibrated_raw_cloze_acc": 0.10,
+      "calibrated_raw_cloze_acc": 0.32,
+      "uncalibrated_rag_acc": 0.12,
+      "calibrated_rag_acc": 0.72,
+      "absolute_gain": 0.60,
+      "relative_factor": "6.0x"
+    }
+  }
+}

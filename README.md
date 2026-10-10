@@ -50,8 +50,8 @@ Executed on a single **NVIDIA GeForce RTX 4060 Laptop GPU (8,188 MiB VRAM)**:
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **Pythia-160M** | $162\text{M}$ | $324\text{ MB}$ | $34.17\text{ MiB}$ ($3.38\text{ bpp}$) | $0.48\text{ GB}$ | $92.5\%$ | $70.0\%$ | $0.0509\%$ |
 | **SmolLM2-360M**| $362\text{M}$ | $724\text{ MB}$ | $126.56\text{ MiB}$ ($3.38\text{ bpp}$) | $1.12\text{ GB}$ | $97.0\%$ | $40.0\%$ | $0.0137\%$ |
-| **Qwen2.5-3B** | $3,086\text{M}$ | $6.17\text{ GB}$ | $1,074.09\text{ MiB}$ ($4.53\text{ bpp}$) | $5.94\text{ GB}$ | $\mathbf{94.0\% \pm 0.0\%}$ | $\mathbf{39.2\% \pm 2.3\%}$ | $0.0016\%$ |
-| **Qwen2.5-7B** | $7,616\text{M}$ | $15.23\text{ GB}$ | $3,929.08\text{ MiB}$ ($4.33\text{ bpp}$) | $\mathbf{3.92\text{ GB}}$ | $12.0\%$ (Raw: $10.0\%$) | $\mathbf{40.0\%}$ | $\mathbf{0.0004\%}$ |
+| **Qwen2.5-7B (Uncalibrated)** | $7,616\text{M}$ | $15.23\text{ GB}$ | $3,929.08\text{ MiB}$ ($4.33\text{ bpp}$) | $3.92\text{ GB}$ | $12.0\%$ (Raw: $10.0\%$) | $40.0\%$ | $0.0004\%$ |
+| **Qwen2.5-7B (AWQ Calibrated)** | $7,616\text{M}$ | $15.23\text{ GB}$ | $3,929.08\text{ MiB}$ ($4.33\text{ bpp}$) | $\mathbf{3.93\text{ GB}}$ | $\mathbf{72.0\%}$ (Raw: $\mathbf{32.0\%}$) | $\mathbf{40.0\%}$ | $\mathbf{0.0004\%}$ |
 
 ---
 

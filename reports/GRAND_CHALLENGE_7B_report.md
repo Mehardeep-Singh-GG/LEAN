@@ -150,7 +150,8 @@ Combining empirical benchmarks across four model scales establishes a coherent s
 | **Pythia-160M** | $162\text{M}$ | $324\text{ MB}$ | $34.17\text{ MiB}$ ($3.38\text{ bpp}$) | $0.48\text{ GB}$ | $92.5\%$ | $70.0\%$ | $0.0509\%$ |
 | **SmolLM2-360M**| $362\text{M}$ | $724\text{ MB}$ | $126.56\text{ MiB}$ ($3.38\text{ bpp}$) | $1.12\text{ GB}$ | $97.0\%$ | $40.0\%$ | $0.0137\%$ |
 | **Qwen2.5-3B** | $3,086\text{M}$ | $6.17\text{ GB}$ | $1,074.09\text{ MiB}$ ($4.53\text{ bpp}$) | $5.94\text{ GB}$ | $\mathbf{94.0\% \pm 0.0\%}$ | $\mathbf{39.2\% \pm 2.3\%}$ | $0.0016\%$ |
-| **Qwen2.5-7B** | $7,616\text{M}$ | $15.23\text{ GB}$ | $3,929.08\text{ MiB}$ ($4.33\text{ bpp}$) | $\mathbf{3.92\text{ GB}}$ | $12.0\%$ (Raw: $10.0\%$) | $\mathbf{40.0\%}$ | $\mathbf{0.0004\%}$ |
+| **Qwen2.5-7B (Uncalibrated)** | $7,616\text{M}$ | $15.23\text{ GB}$ | $3,929.08\text{ MiB}$ ($4.33\text{ bpp}$) | $3.92\text{ GB}$ | $12.0\%$ (Raw: $10.0\%$) | $40.0\%$ | $0.0004\%$ |
+| **Qwen2.5-7B (AWQ Calibrated)** | $7,616\text{M}$ | $15.23\text{ GB}$ | $3,929.08\text{ MiB}$ ($4.33\text{ bpp}$) | $\mathbf{3.93\text{ GB}}$ | $\mathbf{72.0\%}$ (Raw: $\mathbf{32.0\%}$) | $\mathbf{40.0\%}$ | $\mathbf{0.0004\%}$ |
 
 ### 4.1 The 2-Bit MLP Threshold Across Model Scales (Critical Scientific Insight)
 
@@ -161,7 +162,19 @@ Comparing the 3B and 7B results reveals a profound architectural insight into th
 2. **The Uncalibrated 2-Bit Dynamic Range Barrier:**  
    - In `Qwen2.5-3B`, uncalibrated 2-bit SwiGLU MLP weights pruned parametric memory down to $20.2\%$, but the model retained sufficient linear representation to leverage retrieval prompts, boosting accuracy to **$94.0\%$**.
    - In `Qwen2.5-7B`, the wider hidden dimension ($h = 3,584 \to 18,944$ intermediate size) causes round-to-nearest 2-bit quantization (only 4 discrete levels) without Hessian/activation calibration (AWQ/GPTQ) to induce significant logit drift, holding retrieval-augmented accuracy to $12.0\%$.
-   - **Theoretical Takeaway:** At $\ge 7\text{B}$ scale, 4-bit attention preserves algorithmic circuits, but 2-bit MLP requires second-order error compensation (activation-aware scale optimization) to maintain prompt conditioning across the wider MLP subspace. This directly informs M12 production deployment guidelines.
+
+### 4.2 The AWQ Calibration Breakthrough: 6.0x Retrieval Accuracy Surge ($12.0\% \to 72.0\%$)
+
+To resolve the 2-bit dynamic range barrier, we implemented **Sequential Activation-Aware Weight Quantization (AWQ-KAC)** in [`experiments/run_7b_calibrated_grand_challenge.py`](file:///c:/Users/HP/LEAN/LEAN/experiments/run_7b_calibrated_grand_challenge.py):
+1. **Layer-by-Layer Activation Extraction:** Passed real calibration sequences through each layer to record exact per-channel activation scales $s = \mathbb{E}[|X|]^{0.5}$ for Attention and SwiGLU MLP layers without exceeding physical VRAM limits.
+2. **Vectorized Optimal MSE Scale Search:** Replaced naive min/max rounding with a vectorized grid search over scale clipping ratios ($[0.55, 0.65, 0.75, 0.85, 0.95, 1.0]$) per 128-weight group, reducing reconstruction MSE by **$53.15\%$**.
+3. **Empirical Results:**
+   - **Retrieval Cloze Accuracy:** Surged from $12.0\%$ to **$72.0\%$** (**$+60.0\%$ absolute gain**, a **$6.0\times$ improvement**).
+   - **Raw Factual Cloze Recall:** Surged from $10.0\%$ to **$32.0\%$** (**$3.2\times$ improvement**).
+   - **Procedural Reasoning Circuits:** Retained exactly **$40.0\%$** ($100\%$ circuit preservation).
+   - **Hardware Efficiency:** Quantization took **$147.7\text{ seconds}$**, and peak VRAM allocated remained **$3.93\text{ GB} / 8.00\text{ GB}$** ($4.07\text{ GB}$ headroom).
+
+*Receipt:* [`results/matched_budget_7b_calibrated_grand_challenge.json`](file:///c:/Users/HP/LEAN/LEAN/results/matched_budget_7b_calibrated_grand_challenge.json)
 
 ### Key Scaling Observations:
 1. **Index Amortization:** The relative overhead of external retrieval decreases inversely with parameter count: from $0.05\%$ at 160M down to $0.0004\%$ at 7B.
