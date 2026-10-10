@@ -1,0 +1,43 @@
+{
+  "model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "seed": 1042,
+  "device": "cuda",
+  "total_benchmark_time_sec": 275.1115016937256,
+  "physical_fp16_bound_verification": {
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "theoretical_fp16_bytes": 15231233024,
+    "theoretical_fp16_gb": 14.18519115447998,
+    "physical_vram_gb": 7.99560546875,
+    "oom_triggered": true,
+    "error_receipt": "OutOfMemoryError: CUDA out of memory. Tried to allocate 130.00 MiB. GPU 0 has 8.00 GiB total capacity."
+  },
+  "hardware_profile": {
+    "peak_vram_gb": 3.9157142639160156,
+    "total_vram_gb": 7.99560546875,
+    "free_vram_headroom_gb": 4.079891204833984,
+    "prefill_tok_per_sec": 17.56809283022304,
+    "gen_tok_per_sec": 1.0976225420295114
+  },
+  "exact_storage_accounting": {
+    "total_params": 7615616512,
+    "quantized_params": 6525288448,
+    "allocated_4b_attn_params": 822083584,
+    "allocated_2b_mlp_params": 5703204864,
+    "gqa_kac_storage_bits": 32955654144.0,
+    "gqa_kac_storage_gib": 3.836543083190918,
+    "effective_bpp": 4.327378366816588,
+    "external_index_bytes": 18235,
+    "external_index_bits": 145880,
+    "index_overhead_fraction": 4.426554525744691e-06
+  },
+  "metrics": {
+    "gqa_kac_raw": {
+      "factual_cloze_acc": 0.1,
+      "procedural_skill_acc": 0.4
+    },
+    "gqa_kac_plus_retrieval": {
+      "factual_cloze_acc": 0.12,
+      "correct_count": 12
+    }
+  }
+}

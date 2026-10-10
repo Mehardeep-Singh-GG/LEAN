@@ -1,0 +1,309 @@
+{
+  "model_id": "Qwen/Qwen2.5-3B-Instruct",
+  "n_seeds": 5,
+  "seeds": [
+    1042,
+    2042,
+    3042,
+    4042,
+    5042
+  ],
+  "device": "cuda",
+  "metrics_summary": {
+    "retrieval_cloze_accuracy": {
+      "gqa_kac_mean": 0.9399999999999998,
+      "gqa_kac_std": 1.2412670766236366e-16,
+      "matched_uniform_mean": 0.898,
+      "matched_uniform_std": 0.017888543819998333,
+      "mean_paired_difference": 0.041999999999999926,
+      "sem_difference": 0.008000000000000007,
+      "bootstrap_95_ci": [
+        0.025999999999999912,
+        0.04999999999999993
+      ],
+      "permutation_test_p_value": 0.0625,
+      "wilcoxon_w_stat": 0.0,
+      "wilcoxon_p_value": 0.0625,
+      "cohen_d": 2.347871376374773,
+      "cliff_delta": 1.0
+    },
+    "procedural_skill_accuracy": {
+      "fp16_base_mean": 0.392,
+      "gqa_kac_mean": 0.392,
+      "matched_uniform_mean": 0.392,
+      "mean_difference": 0.0,
+      "skill_degradation": 0.0
+    },
+    "raw_factual_cloze_accuracy": {
+      "gqa_kac_mean": 0.202,
+      "gqa_kac_std": 0.00836660026534075,
+      "matched_uniform_mean": 0.624,
+      "matched_uniform_std": 0.008944271909999166,
+      "mean_difference": -0.422
+    },
+    "sequence_loss_nats_per_tok": {
+      "gqa_kac_mean": 9.445706939697265,
+      "gqa_kac_std": 0.016838919808892575,
+      "matched_uniform_mean": 6.7249218940734865,
+      "matched_uniform_std": 0.05349583482471011,
+      "mean_difference": 2.720785045623779
+    },
+    "hardware_profiling": {
+      "peak_vram_gb_mean": 6.220440196990967,
+      "prefill_tok_per_sec_mean": 210.70809246892676,
+      "gen_tok_per_sec_mean": 13.836027056089739
+    }
+  },
+  "individual_seed_results": {
+    "1042": {
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "seed": 1042,
+      "device": "cuda",
+      "total_benchmark_time_sec": 117.73049688339233,
+      "hardware_profile": {
+        "peak_vram_gb": 7.333932399749756,
+        "prefill_tok_per_sec": 264.17025744354527,
+        "gen_tok_per_sec": 16.77532973888004
+      },
+      "exact_storage_accounting": {
+        "gqa_kac_storage_bits": 9010151424.0,
+        "gqa_kac_storage_mib": 1074.09375,
+        "matched_storage_bits": 9010151424.0,
+        "matched_storage_mib": 1074.09375,
+        "bit_delta_percent": 0.0,
+        "is_strictly_matched": true,
+        "gqa_kac_4b_params": 339738624,
+        "matched_4b_params": 339738624,
+        "effective_bpp": 4.534327577670915,
+        "external_index_bytes": 18235,
+        "external_index_bits": 145880,
+        "index_overhead_fraction": 1.6190626897948126e-05
+      },
+      "metrics": {
+        "fp16_base": {
+          "factual_cloze_acc": 0.87,
+          "procedural_skill_acc": 0.4,
+          "sequence_loss": 4.153883934020996
+        },
+        "gqa_kac": {
+          "factual_cloze_acc": 0.2,
+          "procedural_skill_acc": 0.4,
+          "sequence_loss": 9.415584564208984
+        },
+        "matched_uniform": {
+          "factual_cloze_acc": 0.64,
+          "procedural_skill_acc": 0.4,
+          "sequence_loss": 6.820618152618408
+        },
+        "gqa_kac_plus_retrieval": {
+          "factual_cloze_acc": 0.94,
+          "correct_count": 94
+        },
+        "matched_uniform_plus_retrieval": {
+          "factual_cloze_acc": 0.93,
+          "correct_count": 93
+        }
+      }
+    },
+    "2042": {
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "seed": 2042,
+      "device": "cuda",
+      "total_benchmark_time_sec": 186.08778405189514,
+      "hardware_profile": {
+        "peak_vram_gb": 5.9420671463012695,
+        "prefill_tok_per_sec": 207.33875510706252,
+        "gen_tok_per_sec": 12.086791776337408
+      },
+      "exact_storage_accounting": {
+        "gqa_kac_storage_bits": 9010151424.0,
+        "gqa_kac_storage_mib": 1074.09375,
+        "matched_storage_bits": 9010151424.0,
+        "matched_storage_mib": 1074.09375,
+        "bit_delta_percent": 0.0,
+        "is_strictly_matched": true,
+        "gqa_kac_4b_params": 339738624,
+        "matched_4b_params": 339738624,
+        "effective_bpp": 4.534327577670915,
+        "external_index_bytes": 18235,
+        "external_index_bits": 145880,
+        "index_overhead_fraction": 1.6190626897948126e-05
+      },
+      "metrics": {
+        "fp16_base": {
+          "factual_cloze_acc": 0.87,
+          "procedural_skill_acc": 0.36,
+          "sequence_loss": 4.153883934020996
+        },
+        "gqa_kac": {
+          "factual_cloze_acc": 0.21,
+          "procedural_skill_acc": 0.36,
+          "sequence_loss": 9.453237533569336
+        },
+        "matched_uniform": {
+          "factual_cloze_acc": 0.62,
+          "procedural_skill_acc": 0.36,
+          "sequence_loss": 6.700997829437256
+        },
+        "gqa_kac_plus_retrieval": {
+          "factual_cloze_acc": 0.94,
+          "correct_count": 94
+        },
+        "matched_uniform_plus_retrieval": {
+          "factual_cloze_acc": 0.89,
+          "correct_count": 89
+        }
+      }
+    },
+    "3042": {
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "seed": 3042,
+      "device": "cuda",
+      "total_benchmark_time_sec": 309.341614484787,
+      "hardware_profile": {
+        "peak_vram_gb": 5.9420671463012695,
+        "prefill_tok_per_sec": 68.56021406685116,
+        "gen_tok_per_sec": 4.566023117573039
+      },
+      "exact_storage_accounting": {
+        "gqa_kac_storage_bits": 9010151424.0,
+        "gqa_kac_storage_mib": 1074.09375,
+        "matched_storage_bits": 9010151424.0,
+        "matched_storage_mib": 1074.09375,
+        "bit_delta_percent": 0.0,
+        "is_strictly_matched": true,
+        "gqa_kac_4b_params": 339738624,
+        "matched_4b_params": 339738624,
+        "effective_bpp": 4.534327577670915,
+        "external_index_bytes": 18235,
+        "external_index_bits": 145880,
+        "index_overhead_fraction": 1.6190626897948126e-05
+      },
+      "metrics": {
+        "fp16_base": {
+          "factual_cloze_acc": 0.87,
+          "procedural_skill_acc": 0.4,
+          "sequence_loss": 4.153883934020996
+        },
+        "gqa_kac": {
+          "factual_cloze_acc": 0.19,
+          "procedural_skill_acc": 0.4,
+          "sequence_loss": 9.453237533569336
+        },
+        "matched_uniform": {
+          "factual_cloze_acc": 0.62,
+          "procedural_skill_acc": 0.4,
+          "sequence_loss": 6.700997829437256
+        },
+        "gqa_kac_plus_retrieval": {
+          "factual_cloze_acc": 0.94,
+          "correct_count": 94
+        },
+        "matched_uniform_plus_retrieval": {
+          "factual_cloze_acc": 0.89,
+          "correct_count": 89
+        }
+      }
+    },
+    "4042": {
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "seed": 4042,
+      "device": "cuda",
+      "total_benchmark_time_sec": 205.2844433784485,
+      "hardware_profile": {
+        "peak_vram_gb": 5.9420671463012695,
+        "prefill_tok_per_sec": 323.69923483621164,
+        "gen_tok_per_sec": 22.059829705225237
+      },
+      "exact_storage_accounting": {
+        "gqa_kac_storage_bits": 9010151424.0,
+        "gqa_kac_storage_mib": 1074.09375,
+        "matched_storage_bits": 9010151424.0,
+        "matched_storage_mib": 1074.09375,
+        "bit_delta_percent": 0.0,
+        "is_strictly_matched": true,
+        "gqa_kac_4b_params": 339738624,
+        "matched_4b_params": 339738624,
+        "effective_bpp": 4.534327577670915,
+        "external_index_bytes": 18235,
+        "external_index_bits": 145880,
+        "index_overhead_fraction": 1.6190626897948126e-05
+      },
+      "metrics": {
+        "fp16_base": {
+          "factual_cloze_acc": 0.87,
+          "procedural_skill_acc": 0.38,
+          "sequence_loss": 4.153883934020996
+        },
+        "gqa_kac": {
+          "factual_cloze_acc": 0.21,
+          "procedural_skill_acc": 0.38,
+          "sequence_loss": 9.453237533569336
+        },
+        "matched_uniform": {
+          "factual_cloze_acc": 0.62,
+          "procedural_skill_acc": 0.38,
+          "sequence_loss": 6.700997829437256
+        },
+        "gqa_kac_plus_retrieval": {
+          "factual_cloze_acc": 0.94,
+          "correct_count": 94
+        },
+        "matched_uniform_plus_retrieval": {
+          "factual_cloze_acc": 0.89,
+          "correct_count": 89
+        }
+      }
+    },
+    "5042": {
+      "model_id": "Qwen/Qwen2.5-3B-Instruct",
+      "seed": 5042,
+      "device": "cuda",
+      "total_benchmark_time_sec": 120.34417057037354,
+      "hardware_profile": {
+        "peak_vram_gb": 5.9420671463012695,
+        "prefill_tok_per_sec": 189.77200089096314,
+        "gen_tok_per_sec": 13.692160942432972
+      },
+      "exact_storage_accounting": {
+        "gqa_kac_storage_bits": 9010151424.0,
+        "gqa_kac_storage_mib": 1074.09375,
+        "matched_storage_bits": 9010151424.0,
+        "matched_storage_mib": 1074.09375,
+        "bit_delta_percent": 0.0,
+        "is_strictly_matched": true,
+        "gqa_kac_4b_params": 339738624,
+        "matched_4b_params": 339738624,
+        "effective_bpp": 4.534327577670915,
+        "external_index_bytes": 18235,
+        "external_index_bits": 145880,
+        "index_overhead_fraction": 1.6190626897948126e-05
+      },
+      "metrics": {
+        "fp16_base": {
+          "factual_cloze_acc": 0.87,
+          "procedural_skill_acc": 0.42,
+          "sequence_loss": 4.153883934020996
+        },
+        "gqa_kac": {
+          "factual_cloze_acc": 0.2,
+          "procedural_skill_acc": 0.42,
+          "sequence_loss": 9.453237533569336
+        },
+        "matched_uniform": {
+          "factual_cloze_acc": 0.62,
+          "procedural_skill_acc": 0.42,
+          "sequence_loss": 6.700997829437256
+        },
+        "gqa_kac_plus_retrieval": {
+          "factual_cloze_acc": 0.94,
+          "correct_count": 94
+        },
+        "matched_uniform_plus_retrieval": {
+          "factual_cloze_acc": 0.89,
+          "correct_count": 89
+        }
+      }
+    }
+  }
+}
