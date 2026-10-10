@@ -1,0 +1,81 @@
+{
+  "model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "seed": 1042,
+  "device": "cuda",
+  "experiment": "scaled_corpus_and_alpha_tuning",
+  "calibration_corpus": {
+    "source": "WikiText-2 (train split)",
+    "num_sequences": 48,
+    "seq_len": 64,
+    "total_calibration_tokens": 3072
+  },
+  "channel_power_tuning": {
+    "alpha_candidates": [
+      0.4,
+      0.5,
+      0.6,
+      0.75
+    ],
+    "summary_across_layers": {
+      "alpha_0.4": {
+        "mean_relative_error": 0.3576,
+        "chosen_count": 74,
+        "chosen_percentage": 88.1
+      },
+      "alpha_0.5": {
+        "mean_relative_error": 0.3614,
+        "chosen_count": 8,
+        "chosen_percentage": 9.5
+      },
+      "alpha_0.6": {
+        "mean_relative_error": 0.3671,
+        "chosen_count": 1,
+        "chosen_percentage": 1.2
+      },
+      "alpha_0.75": {
+        "mean_relative_error": 0.3786,
+        "chosen_count": 1,
+        "chosen_percentage": 1.2
+      }
+    }
+  },
+  "total_benchmark_time_sec": 1298.0,
+  "quantization_time_sec": 1020.4,
+  "hardware_profile": {
+    "allocated_vram_gb": 4.34,
+    "total_vram_gb": 8.0,
+    "free_vram_headroom_gb": 3.66,
+    "prefill_tok_per_sec": 10.74,
+    "gen_tok_per_sec": 1.11
+  },
+  "exact_storage_accounting": {
+    "total_params": 7615616512,
+    "quantized_params": 6525288448,
+    "allocated_4b_attn_params": 822083584,
+    "allocated_2b_mlp_params": 5703204864,
+    "gqa_kac_storage_bits": 32955654144.0,
+    "gqa_kac_storage_gib": 3.836543083190918,
+    "effective_bpp": 4.327378366816588,
+    "external_index_bytes": 18235,
+    "external_index_bits": 145880,
+    "index_overhead_fraction": 4.426554525744691e-06
+  },
+  "metrics": {
+    "scaled_awq_kac_raw": {
+      "factual_cloze_acc": 0.37,
+      "procedural_skill_acc": 0.4
+    },
+    "scaled_awq_kac_plus_retrieval": {
+      "factual_cloze_acc": 0.88,
+      "correct_count": 88,
+      "total_evaluated": 100
+    },
+    "evolution_comparison": {
+      "uncalibrated_rag_acc": 0.12,
+      "initial_8seq_calibrated_rag_acc": 0.72,
+      "scaled_corpus_tuned_alpha_rag_acc": 0.88,
+      "gain_vs_uncalibrated": 0.76,
+      "gain_vs_initial_8seq": 0.16000000000000003
+    }
+  }
+}

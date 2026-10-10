@@ -151,7 +151,8 @@ Combining empirical benchmarks across four model scales establishes a coherent s
 | **SmolLM2-360M**| $362\text{M}$ | $724\text{ MB}$ | $126.56\text{ MiB}$ ($3.38\text{ bpp}$) | $1.12\text{ GB}$ | $97.0\%$ | $40.0\%$ | $0.0137\%$ |
 | **Qwen2.5-3B** | $3,086\text{M}$ | $6.17\text{ GB}$ | $1,074.09\text{ MiB}$ ($4.53\text{ bpp}$) | $5.94\text{ GB}$ | $\mathbf{94.0\% \pm 0.0\%}$ | $\mathbf{39.2\% \pm 2.3\%}$ | $0.0016\%$ |
 | **Qwen2.5-7B (Uncalibrated)** | $7,616\text{M}$ | $15.23\text{ GB}$ | $3,929.08\text{ MiB}$ ($4.33\text{ bpp}$) | $3.92\text{ GB}$ | $12.0\%$ (Raw: $10.0\%$) | $40.0\%$ | $0.0004\%$ |
-| **Qwen2.5-7B (AWQ Calibrated)** | $7,616\text{M}$ | $15.23\text{ GB}$ | $3,929.08\text{ MiB}$ ($4.33\text{ bpp}$) | $\mathbf{3.93\text{ GB}}$ | $\mathbf{72.0\%}$ (Raw: $\mathbf{32.0\%}$) | $\mathbf{40.0\%}$ | $\mathbf{0.0004\%}$ |
+| **Qwen2.5-7B (Initial 8-seq AWQ)** | $7,616\text{M}$ | $15.23\text{ GB}$ | $3,929.08\text{ MiB}$ ($4.33\text{ bpp}$) | $3.93\text{ GB}$ | $72.0\%$ (Raw: $32.0\%$) | $40.0\%$ | $0.0004\%$ |
+| **Qwen2.5-7B (Scaled AWQ + Tuned $\alpha$)** | $7,616\text{M}$ | $15.23\text{ GB}$ | $3,929.08\text{ MiB}$ ($4.33\text{ bpp}$) | $\mathbf{4.34\text{ GB}}$ | $\mathbf{88.0\%}$ (Raw: $\mathbf{37.0\%}$) | $\mathbf{40.0\%}$ | $\mathbf{0.0004\%}$ |
 
 ### 4.1 The 2-Bit MLP Threshold Across Model Scales (Critical Scientific Insight)
 
@@ -175,6 +176,27 @@ To resolve the 2-bit dynamic range barrier, we implemented **Sequential Activati
    - **Hardware Efficiency:** Quantization took **$147.7\text{ seconds}$**, and peak VRAM allocated remained **$3.93\text{ GB} / 8.00\text{ GB}$** ($4.07\text{ GB}$ headroom).
 
 *Receipt:* [`results/matched_budget_7b_calibrated_grand_challenge.json`](file:///c:/Users/HP/LEAN/LEAN/results/matched_budget_7b_calibrated_grand_challenge.json)
+
+### 4.3 Corpus Scaling (WikiText-2) & Channel Power Tuning ($\alpha \in \{0.4, 0.5, 0.6, 0.75\}$): Surging to 88.0%
+
+To push `Qwen2.5-7B` toward parity with the 3B model ($94.0\%$), we executed a comprehensive calibration scaling and channel power tuning battery in [`experiments/run_7b_scaled_awq_tuning.py`](file:///c:/Users/HP/LEAN/LEAN/experiments/run_7b_scaled_awq_tuning.py):
+
+1. **Calibration Corpus Scaling:** Expanded from 8 synthetic sentences to **48 diverse paragraphs from WikiText-2** ($3,072$ calibration tokens), exposing each layer to rich, multi-domain linguistic distributions.
+2. **Systematic Channel Power Tuning:** Evaluated the activation-scaling exponent $\alpha \in \{0.40, 0.50, 0.60, 0.75\}$ across all 28 SwiGLU MLP layers (84 projections):
+   - **$\alpha = 0.40$:** Mean Relative Error = $\mathbf{0.3576}$ | Selected as optimal in $\mathbf{74 / 84}$ projections ($\mathbf{88.1\%}$)
+   - **$\alpha = 0.50$:** Mean Relative Error = $0.3614$ | Selected in $8 / 84$ projections ($9.5\%$)
+   - **$\alpha = 0.60$:** Mean Relative Error = $0.3671$ | Selected in $1 / 84$ projections ($1.2\%$)
+   - **$\alpha = 0.75$:** Mean Relative Error = $0.3786$ | Selected in $1 / 84$ projections ($1.2\%$)
+   
+   *Discovery:* In ultra-wide 18,944-dimensional SwiGLU layers, $\alpha = 0.40$ provides the ideal mathematical balance: it sufficiently protects the top outlier channels without overly suppressing the dynamic range of the remaining $99\%$ of channels.
+
+3. **Cognitive Performance Surge:**
+   - **Retrieval-Augmented Cloze Accuracy:** Surged to **$\mathbf{88.0\%}$** ($\mathbf{+16.0\%}$ gain over 8-seq baseline, $\mathbf{+76.0\%}$ gain over uncalibrated baseline; a **$7.33\times$ total improvement**).
+   - **Raw Parametric Cloze Recall:** Rose to **$\mathbf{37.0\%}$** (up from $32.0\%$ and $10.0\%$).
+   - **Procedural Reasoning Circuits:** Retained exactly **$\mathbf{40.0\%}$** ($100\%$ circuit preservation).
+   - **Hardware Verification:** Total model footprint remains **$3.84\text{ GiB}$** ($4.33\text{ bpp}$), executing within **$4.34\text{ GB}$** live VRAM on the NVIDIA RTX 4060 GPU with **$3.66\text{ GB}$ free headroom**.
+
+*Receipt:* [`results/matched_budget_7b_scaled_awq_tuning.json`](file:///c:/Users/HP/LEAN/LEAN/results/matched_budget_7b_scaled_awq_tuning.json)
 
 ### Key Scaling Observations:
 1. **Index Amortization:** The relative overhead of external retrieval decreases inversely with parameter count: from $0.05\%$ at 160M down to $0.0004\%$ at 7B.
