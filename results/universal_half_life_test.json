@@ -1,0 +1,56 @@
+{
+  "pythia70m": {
+    "model_name": "EleutherAI/pythia-70m",
+    "model_key": "pythia70m",
+    "arch_type": "gpt_neox",
+    "hidden_size": 512,
+    "intermediate_size": 2048,
+    "head_dim": 64,
+    "ratio_d_mlp_dk": 32.0,
+    "spectral_gap": 20.98239755630493,
+    "gamma_attn": 0.5561386048793793,
+    "gamma_fact": 1.0,
+    "margin_ratio_gamma": 1.7981129006803793,
+    "tau_crit": 10.0,
+    "safety_factor": 3.2,
+    "theorem1_safety_satisfied": true,
+    "delta_h12_theory": -7.465784284662087,
+    "h12_proc_emp": 2.3157894736842106,
+    "h12_fact_emp": 1.0,
+    "delta_h12_emp": -1.3157894736842106,
+    "delta_h12_strictly_positive": false,
+    "error_theory_vs_emp_bits": 6.149994810977876,
+    "monte_carlo_trials": {
+      "b_1": {
+        "b": 1,
+        "attn_retention": 0.47,
+        "mlp_retention": 0.5800000000000001,
+        "attn_outlives_mlp": false
+      },
+      "b_2": {
+        "b": 2,
+        "attn_retention": 0.43999999999999995,
+        "mlp_retention": 0.73,
+        "attn_outlives_mlp": false
+      },
+      "b_3": {
+        "b": 3,
+        "attn_retention": 0.63,
+        "mlp_retention": 0.78,
+        "attn_outlives_mlp": false
+      },
+      "b_4": {
+        "b": 4,
+        "attn_retention": 0.47,
+        "mlp_retention": 0.96,
+        "attn_outlives_mlp": false
+      },
+      "b_8": {
+        "b": 8,
+        "attn_retention": 0.98,
+        "mlp_retention": 1.0,
+        "attn_outlives_mlp": false
+      }
+    }
+  }
+}

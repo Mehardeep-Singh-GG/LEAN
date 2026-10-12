@@ -2,7 +2,14 @@
   "model_id": "EleutherAI/pythia-160m",
   "seed": 1042,
   "device": "cpu",
-  "wall_clock_sec": 36.99646782875061,
+  "wall_clock_sec": 49.07977318763733,
+  "hardware_profile": {
+    "device": "cpu",
+    "device_name": "CPU",
+    "peak_vram_gb": 0.0,
+    "prefill_tok_per_sec": 229.9750980069727,
+    "gen_tok_per_sec": 23.649022643763743
+  },
   "storage": {
     "kac_bits": 286654464.0,
     "matched_uniform_bits": 286654464.0,

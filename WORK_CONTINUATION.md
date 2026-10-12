@@ -1,97 +1,114 @@
 # WORK_CONTINUATION.md
-## Antigravity Handoff Guide: Project LEAN on Windows (NVIDIA RTX 4050 6GB)
+## Antigravity Handoff Guide: Universal Half-Life Asymmetry Testing on NVIDIA RTX
 
-> **Purpose for Antigravity AI:**  
-> Read this document upon resuming or spinning up a new session on the Windows machine. It contains the exact project state, scientific context, hardware constraints, and step-by-step commands to immediately continue work without losing momentum.
-
----
-
-### 1. Executive Summary & Scientific Context
-
-- **Repository:** Project LEAN (*The Priced-Quanta Equation for Neural Network Compressibility*)
-- **Core Technology:** **Knapsack-Aware Compression (KAC)** & **Thinking Core Decoupling**
-  - **Hypothesis:** Neural models possess an information-theoretic asymmetry. Algorithmic reasoning circuits (Attention QKVO) require high bit precision ($4\text{ to }8\text{ bits}$), while associative factual memory (MLP projections) can be aggressively compressed ($2\text{ to }3\text{ bits}$) and offloaded to an external retrieval store (BM25 / FAISS).
-  - **Verified Result on Mac M2 (`reports/MATCHED_BUDGET_report.md`):**  
-    Against a **strictly storage-matched baseline** ($\Delta = 0.000\%$, exact same count of 4-bit and 3-bit weights), KAC achieves:
-    - **$+8.0\%$** raw factual cloze retention on `SmolLM2-360M`.
-    - **$+5.5\%$** retrieval routing fidelity on `Pythia-160M` ($92.5\%$ vs $87.0\%$).
-    - **$+8.0\%$** procedural reasoning retention on `Pythia-160M` (seed 2042).
-    - Serialized BM25 index takes only **$18.2\text{ KB}$** ($< 0.05\%$ of model size).
-- **Audit Status:** All 12 Project LEAN audits (A1–A12) are **GREEN**, 83/83 unit tests passing. Zero synthetic mocks or defensive clamps allowed.
+> **ATTENTION ANTIGRAVITY AI ON RTX MACHINE:**  
+> Read this document immediately upon spinning up or resuming on the RTX GPU machine. It contains the exact context, mathematical scrutiny, hardware runbook, and non-negotiable scientific guardrails to validate the **Universal Half-Life Asymmetry Theorem** across models from 70M to 14B.
 
 ---
 
-### 2. Hardware Environment: NVIDIA GeForce RTX 4050 (6 GB VRAM)
-
-- **Target System:** Windows 11 with NVIDIA GeForce RTX 4050 Laptop GPU (6.0 GB GDDR6 VRAM, 96-bit bus, Ada Lovelace architecture).
-- **Execution Environment:** WSL2 (Ubuntu 24.04 LTS) with CUDA 12.4 and PyTorch (`cu124`).
-- **The Critical 6 GB VRAM Boundary:**
-  - A 7B/8B model in **FP16** takes $\sim 15.2\text{ GB}$ $\to$ **OOM Crash on 6 GB**.
-  - A 7B/8B model in **Uniform 4-bit (AWQ/GPTQ/Q4_K)** takes $\sim 5.3\text{ GB}$ $\to$ Barely fits, **OOM crashes when KV cache exceeds 512 tokens**.
-  - A 7B/8B model under **KAC (Attn 4-bit, MLP 2-bit/3-bit)** takes **$\sim 3.6\text{ GB}$** $\to$ **Fits cleanly inside 6 GB VRAM**, leaving $>2.0\text{ GB}$ free for 4,096-token KV cache and high-speed CUDA inference!
+### 1. Context & The Pre-Crash Event
+- **Repository:** `Project LEAN` (*The Priced-Quanta Equation for Neural Network Compressibility*)
+- **Core Subject:** Testing whether the **Universal Half-Life Asymmetry Theorem** ($\Delta h_{1/2} > 0$) strictly holds across pre-trained model weights.
+- **The Crash:** The evaluation script on Mac M2 attempted an unbatched float32 allocation of `(2000, 2048, 512)` ($\sim 8.4\text{ GB}$), instantly exhausting the 8GB RAM.
+- **The Fix:** [`experiments/test_universal_half_life_claims.py`](file:///Users/mac/llm/experiments/test_universal_half_life_claims.py) is now fully patched with memory-safe mini-batching (`--batch-size 50`), CUDA acceleration (`--device cuda`), and multi-tier model support.
 
 ---
 
-### 3. Immediate Action Plan for Antigravity
-
-When resuming on the RTX 4050 machine, execute these steps in order:
-
-#### Step 1: Verify CUDA & VRAM
-Run in the repository root:
-```bash
-python3 -c "import torch; print('CUDA Available:', torch.cuda.is_available(), '| Device:', torch.cuda.get_device_name(0), '| Total VRAM:', round(torch.cuda.get_device_properties(0).total_memory / 1e9, 2), 'GB')"
-```
-*Expected: `CUDA Available: True | Device: NVIDIA GeForce RTX 4050 Laptop GPU | Total VRAM: 6.14 GB`.*
-
-#### Step 2: Run Unit Tests & Audits
-Ensure full codebase integrity:
-```bash
-PYTHONPATH=. pytest tests/
-PYTHONPATH=. python src/lean/audit/runner.py
-```
-*All 83 tests and checks A1–A12 must pass GREEN.*
-
-#### Step 3: Run Matched-Budget Benchmark on 3B Model (`Qwen2.5-3B-Instruct`)
-```bash
-PYTHONPATH=. python experiments/run_matched_budget_benchmark.py --model Qwen/Qwen2.5-3B-Instruct --device cuda --seed 1042
-```
-This evaluates:
-1. Exact storage matching ($\Delta = 0.000\%$).
-2. FP16 vs Uniform 3-bit vs Matched Uniform vs KAC.
-3. Standalone factual cloze, procedural reasoning skills, and sequence loss.
-4. Serialized BM25 index retrieval routing fidelity.
-5. Serializes output to `results/matched_budget_Qwen2.5-3B-Instruct_s1042.json`.
-
-#### Step 4: Run the Grand Challenge: 7B Model on 6 GB VRAM (`Qwen2.5-7B-Instruct`)
-```bash
-PYTHONPATH=. python experiments/run_matched_budget_benchmark.py --model Qwen/Qwen2.5-7B-Instruct --device cuda --seed 1042
-```
-*Objective:* Verify that KAC allows a 7B parameter model to run inference within 6 GB VRAM without OOM, maintaining attention fidelity while compressing MLPs.
-
-#### Step 5: Document Results
-Compile the findings into `reports/RTX4050_QWEN_report.md` recording:
-- Peak VRAM allocated (`torch.cuda.max_memory_allocated() / (1024**3)`).
-- Tokens per second throughput during prefill and generation.
-- Factual recall, reasoning retention, and retrieval routing accuracy.
+### 2. The Core Theoretical Audit: The Minus Sign & Scaling Jump
+In [`paper/MANUSCRIPT_EXTENDED.md`](file:///Users/mac/llm/paper/MANUSCRIPT_EXTENDED.md#L265-L320), Theorem 1 derives:
+$$h_{1/2}(\text{proc}) = -\frac{1}{2}\log_2(d_k) + \text{offset}_1$$
+$$h_{1/2}(\text{fact}) = +\frac{1}{2}\log_2(d_{\text{mlp}}) + \text{offset}_2$$
+Subtracting them gives:
+$$\Delta h_{1/2} = h_{1/2}(\text{fact}) - h_{1/2}(\text{proc}) = \frac{1}{2}\log_2(d_{\text{mlp}}) - \left( -\frac{1}{2}\log_2(d_k) \right) + \Delta \text{offset} = \mathbf{\frac{1}{2}\log_2(d_{\text{mlp}} \cdot d_k) + \Delta \text{offset}}$$
+Notice that the manuscript currently writes $\mathbf{\frac{1}{2}\log_2(d_{\text{mlp}} / d_k)}$ (a ratio rather than a product).
+**Your Theoretical Mission on RTX:** Determine empirically and analytically whether the half-life gap scales with the product $d_{\text{mlp}} \cdot d_k$ (which would make attention even more dramatically robust as $d_k$ grows) or the ratio $d_{\text{mlp}} / d_k$, or if $K_{\text{attn}}$ has an additional $1/d_k$ normalization in real transformer attention layers.
 
 ---
 
-### 4. Key Repository Files & References
+### 3. Model Testing Matrix on RTX
 
-| File Path | Description |
-|---|---|
-| [`src/lean/compress/kac.py`](file:///Users/mac/llm/src/lean/compress/kac.py) | Core Knapsack-Aware Compressor (value-per-bit allocator, RTN quantizer). |
-| [`src/lean/core/retrieval_store.py`](file:///Users/mac/llm/src/lean/core/retrieval_store.py) | BM25 index & Thinking Core retrieval injection pipeline. |
-| [`experiments/run_matched_budget_benchmark.py`](file:///Users/mac/llm/experiments/run_matched_budget_benchmark.py) | Strict 0.000% storage-matched head-to-head benchmark runner. |
-| [`reports/MATCHED_BUDGET_report.md`](file:///Users/mac/llm/reports/MATCHED_BUDGET_report.md) | Baseline M2 report comparing KAC vs Matched-Uniform on SmolLM2 and Pythia. |
-| [`audit/FAILURES.md`](file:///Users/mac/llm/audit/FAILURES.md) | Official Project LEAN failure ledger (all historical bugs & resolutions). |
-| [`src/lean/audit/runner.py`](file:///Users/mac/llm/src/lean/audit/runner.py) | 12-point automated audit runner (A1–A12). |
+Execute evaluations across the three parameter tiers:
+
+- **Tier 1 (Small / Edge):** `pythia70m`, `pythia160m`, `gpt2`, `smollm2_360m`, `pythia410m`
+- **Tier 2 (Mid-Scale):** `pythia1.4b`, `qwen2.5_1.5b`, `llama3.2_1b`, `llama3.2_3b`, `qwen2.5_3b`, `pythia2.8b`
+- **Tier 3 (Grand Challenge):** `qwen2.5_7b`, `llama3_8b`, `mistral7b`, `qwen2.5_14b`
+
+---
+
+### 4. Step-by-Step Command Runbook for RTX
+
+#### Step 1: Verify Hardware & CUDA Environment
+```bash
+python3 -c "
+import torch
+print('CUDA Available:', torch.cuda.is_available())
+if torch.cuda.is_available():
+    print('Device:', torch.cuda.get_device_name(0), '| Total VRAM:', round(torch.cuda.get_device_properties(0).total_memory / 1e9, 2), 'GB')
+"
+```
+
+#### Step 2: Run Unit Tests & Audit Suite
+```bash
+pytest tests/
+python src/lean/audit/runner.py
+```
+*All 83 unit tests and audits A1–A12 must be GREEN.*
+
+#### Step 3: Run Circuit-Level Analysis (Prong A)
+
+##### Tier 1 (Lightweight Checkpoints):
+```bash
+python experiments/test_universal_half_life_claims.py \
+    --tier tier1 \
+    --device cuda \
+    --dtype float32 \
+    --n-trials 5000 \
+    --batch-size 50 \
+    --allow-download \
+    --output results/universal_half_life_tier1.json
+```
+
+##### Tier 2 (Mid-Scale 1B–3B Checkpoints):
+```bash
+python experiments/test_universal_half_life_claims.py \
+    --tier tier2 \
+    --device cuda \
+    --dtype float16 \
+    --n-trials 5000 \
+    --batch-size 50 \
+    --allow-download \
+    --output results/universal_half_life_tier2.json
+```
+
+##### Tier 3 (Grand Challenge 7B–14B Checkpoints):
+*Use `--dtype float16 --batch-size 25` if on 6GB–8GB VRAM; use `--batch-size 50` on $\ge 16\text{GB}$.*
+```bash
+python experiments/test_universal_half_life_claims.py \
+    --models qwen2.5_7b llama3_8b mistral7b \
+    --device cuda \
+    --dtype float16 \
+    --n-trials 2000 \
+    --batch-size 25 \
+    --allow-download \
+    --output results/universal_half_life_tier3.json
+```
+
+#### Step 4: Run Real Task Benchmarks (Prong B)
+Evaluate full forward passes under progressive quantization on real tasks (factual cloze vs procedural reasoning):
+```bash
+python experiments/run_matched_budget_benchmark.py --model Qwen/Qwen2.5-3B-Instruct --device cuda --seed 1042
+python experiments/run_matched_budget_benchmark.py --model Qwen/Qwen2.5-7B-Instruct --device cuda --seed 1042
+```
+
+#### Step 5: Synthesize Results & Update Archival Documents
+1. Check whether $\Delta h_{1/2} > 0$ holds across all evaluated models.
+2. If any model violates the condition, record it immediately in `audit/FAILURES.md` as an S1 failure.
+3. Update Table 2B in [`paper/MANUSCRIPT_EXTENDED.md`](file:///Users/mac/llm/paper/MANUSCRIPT_EXTENDED.md#L339) with the real empirical numbers.
 
 ---
 
 ### 5. Non-Negotiable Scientific Guardrails
-
-1. **Strict Storage Matching:** Never compare KAC against an unmatched lower bound. The uniform baseline must have the exact same count of 4-bit and 3-bit weights ($\Delta = 0.000\%$).
-2. **Account for Retrieval Storage:** Always measure and record the physical serialized byte size of the external index on disk.
-3. **Report Perplexity Honestly:** If the baseline achieves lower sequence loss on large models (as observed on SmolLM2-360M), report it prominently alongside KAC's factual and retrieval routing advantages.
-4. **Zero Mocks:** No fake numbers, mock functions, or defensive clamps. All numbers must originate from real PyTorch/CUDA tensor executions.
+1. **Zero Defensive Clamps:** Never use `max()`, `min()`, or hardcoded fallbacks to force $\Delta h_{1/2} > 0$. If an empirical number is negative or violates the theorem, document it honestly.
+2. **Strict Storage Parity:** In Prong B, all comparisons must be strictly storage-matched ($\Delta = 0.000\%$).
+3. **Retrieval Accounting:** Always include the physical on-disk size of the BM25 external retrieval index ($18.2\text{ KB}$).
+4. **VRAM Hygiene:** Wrap large model forward passes in `torch.no_grad()` and invoke `torch.cuda.empty_cache()` between iterations.
