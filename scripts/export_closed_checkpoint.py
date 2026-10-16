@@ -204,7 +204,8 @@ def export_closed_checkpoint(
         corpus = build_canonical_knowledge_corpus()
         calib_texts = [doc["text"] + " " + doc["text"] for doc in corpus[:NUM_CALIB_SEQS]]
     enc = tok(calib_texts, return_tensors="pt", padding=True, truncation=True, max_length=MAX_SEQ_LEN)
-    calib_input_ids = enc["input_ids"]
+    compute_dev = "cuda:0" if torch.cuda.is_available() else "cpu"
+    calib_input_ids = enc["input_ids"].to(compute_dev)
     batch_size, seq_len = calib_input_ids.shape
 
     # Count how many tensors we will read from each shard so we can delete each 3.9 GB shard immediately after its last read
@@ -214,11 +215,11 @@ def export_closed_checkpoint(
     def stream_tensor(tensor_name: str) -> torch.Tensor:
         shard_file = weight_map[tensor_name]
         if shard_file not in downloaded_shards:
-            print(f"  -> Downloading shard {shard_file} (~3.9 GB)...", flush=True)
+            print(f"  -> Loading shard {shard_file}...", flush=True)
             downloaded_shards[shard_file] = hf_hub_download(repo_id=MODEL_ID, filename=shard_file)
         shard_path = downloaded_shards[shard_file]
-        with safe_open(shard_path, framework="pt", device="cpu") as f:
-            tensor = f.get_tensor(tensor_name).to(torch.float16)
+        with safe_open(shard_path, framework="pt", device=compute_dev) as f:
+            tensor = f.get_tensor(tensor_name).to(dtype=torch.float16, device=compute_dev)
 
         shard_remaining[shard_file] -= 1
         if cleanup_hf_cache and shard_remaining[shard_file] <= 0:
@@ -235,16 +236,16 @@ def export_closed_checkpoint(
 
     exported_tensors: Dict[str, torch.Tensor] = {}
 
-    print("[3/4] Streaming 28 Layers: Calibrating & Packing into 4-bit GQA / 2-bit SwiGLU MLP...", flush=True)
+    print(f"[3/4] Streaming 28 Layers on {compute_dev}: Calibrating & Packing into 4-bit GQA / 2-bit SwiGLU MLP...", flush=True)
     embed_w = stream_tensor("model.embed_tokens.weight")
     with torch.no_grad():
         H = F.embedding(calib_input_ids, embed_w)
-    exported_tensors["model.embed_tokens.weight"] = embed_w.contiguous()
+    exported_tensors["model.embed_tokens.weight"] = embed_w.detach().cpu().contiguous()
     del embed_w
     gc.collect()
 
-    rotary_emb = Qwen2RotaryEmbedding(config=config, device="cpu")
-    pos_ids = torch.arange(seq_len, dtype=torch.long).unsqueeze(0)
+    rotary_emb = Qwen2RotaryEmbedding(config=config, device=compute_dev)
+    pos_ids = torch.arange(seq_len, dtype=torch.long, device=compute_dev).unsqueeze(0)
     cos, sin = rotary_emb(H, pos_ids)
 
     num_heads = config.num_attention_heads
@@ -252,7 +253,7 @@ def export_closed_checkpoint(
     head_dim = config.hidden_size // num_heads
     num_kv_groups = num_heads // num_kv_heads
     rms_eps = getattr(config, "rms_norm_eps", 1e-6)
-    causal_mask = torch.triu(torch.full((seq_len, seq_len), float("-inf"), dtype=torch.float32), diagonal=1).unsqueeze(0).unsqueeze(0)
+    causal_mask = torch.triu(torch.full((seq_len, seq_len), float("-inf"), dtype=torch.float32, device=compute_dev), diagonal=1).unsqueeze(0).unsqueeze(0)
 
     for layer_idx in range(config.num_hidden_layers):
         t_layer = time.time()
@@ -260,8 +261,8 @@ def export_closed_checkpoint(
 
         in_norm_w = stream_tensor(f"{prefix}.input_layernorm.weight")
         post_norm_w = stream_tensor(f"{prefix}.post_attention_layernorm.weight")
-        exported_tensors[f"{prefix}.input_layernorm.weight"] = in_norm_w.contiguous()
-        exported_tensors[f"{prefix}.post_attention_layernorm.weight"] = post_norm_w.contiguous()
+        exported_tensors[f"{prefix}.input_layernorm.weight"] = in_norm_w.detach().cpu().contiguous()
+        exported_tensors[f"{prefix}.post_attention_layernorm.weight"] = post_norm_w.detach().cpu().contiguous()
 
         with torch.no_grad():
             norm_x = rms_norm(H, in_norm_w, rms_eps)
@@ -291,7 +292,7 @@ def export_closed_checkpoint(
             b_name = f"{prefix}.self_attn.{proj}.bias"
             if b_name in weight_map:
                 b_t = stream_tensor(b_name)
-                exported_tensors[b_name] = b_t.contiguous()
+                exported_tensors[b_name] = b_t.detach().cpu().contiguous()
                 attn_bias[proj] = b_t
             else:
                 attn_bias[proj] = None
@@ -315,6 +316,7 @@ def export_closed_checkpoint(
             post_norm_x = rms_norm(H_post, post_norm_w, rms_eps)
             act_mlp = torch.mean(torch.abs(post_norm_x.float()), dim=(0, 1))
             X_sample_mlp = post_norm_x.reshape(-1, post_norm_x.shape[-1])[:128]
+            del in_norm_w, post_norm_w
 
         # 2-bit SwiGLU gate_proj and up_proj
         mlp_w_hat = {}
@@ -354,6 +356,8 @@ def export_closed_checkpoint(
             del swiglu_act, w_hat_down
             H = H_post + mlp_out
 
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
         gc.collect()
         print(
             f"  [Layer {layer_idx + 1:02d}/28] Calibrated & Packed in {time.time() - t_layer:.1f}s | "
@@ -363,11 +367,11 @@ def export_closed_checkpoint(
 
     del H
     norm_w = stream_tensor("model.norm.weight")
-    exported_tensors["model.norm.weight"] = norm_w.contiguous()
+    exported_tensors["model.norm.weight"] = norm_w.detach().cpu().contiguous()
     del norm_w
 
     lm_head_w = stream_tensor("lm_head.weight")
-    exported_tensors["lm_head.weight"] = lm_head_w.contiguous()
+    exported_tensors["lm_head.weight"] = lm_head_w.detach().cpu().contiguous()
     del lm_head_w
     gc.collect()
 
