@@ -27,7 +27,19 @@ import torch.nn as nn
 import torch.nn.functional as F
 from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
 from transformers.models.qwen2.modeling_qwen2 import Qwen2RotaryEmbedding
-from accelerate.utils import set_module_tensor_to_device
+try:
+    from accelerate.utils import set_module_tensor_to_device
+except ImportError:
+    def set_module_tensor_to_device(module: nn.Module, tensor_name: str, device: str, value: torch.Tensor):
+        parts = tensor_name.split(".")
+        for p in parts[:-1]:
+            module = getattr(module, p)
+        attr_name = parts[-1]
+        old = getattr(module, attr_name, None)
+        if isinstance(old, nn.Parameter):
+            setattr(module, attr_name, nn.Parameter(value.to(device), requires_grad=False))
+        else:
+            module.register_buffer(attr_name, value.to(device))
 from safetensors import safe_open
 from huggingface_hub import constants
 from datasets import load_dataset
