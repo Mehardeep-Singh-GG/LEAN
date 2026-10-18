@@ -29,6 +29,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from safetensors import safe_open
 from transformers import AutoConfig, AutoTokenizer, AutoModelForCausalLM
+from transformers.models.qwen2.modeling_qwen2 import Qwen2RotaryEmbedding
 
 
 class StandaloneBM25:
@@ -160,8 +161,9 @@ def load_kac_model(
             has_bias = getattr(lin, "bias", None) is not None
             setattr(layer.mlp, name, PackedQuantizedLinear(lin.in_features, lin.out_features, bits=2, group_size=128, bias=has_bias))
 
-    # Move skeleton to target device
+    # Move skeleton to target device and initialize non-persistent RoPE frequencies
     model = model.to_empty(device=device)
+    model.model.rotary_emb = Qwen2RotaryEmbedding(config=config).to(device)
 
     # Discover Shards
     index_file = ckpt_path / "model_kac.safetensors.index.json"
@@ -176,19 +178,20 @@ def load_kac_model(
     if not shard_files:
         raise FileNotFoundError(f"No safetensors shards found in {ckpt_path}")
 
-    print(f"Loading {len(shard_files)} safetensor shards directly into {device.upper()} VRAM...")
+    print(f"Loading {len(shard_files)} safetensor shards directly into {device.upper()} memory...")
     param_dict = dict(model.named_parameters())
     buffer_dict = dict(model.named_buffers())
+    open_dev = device if device.startswith("cuda") else "cpu"
 
     for sf in shard_files:
-        print(f"  Streaming shard: {sf.name} ({sf.stat().st_size / (1024**3):.2f} GiB)...")
-        with safe_open(str(sf), framework="pt", device=device) as f:
+        print(f"  Streaming shard: {sf.name} ({sf.stat().st_size / (1024**3):.2f} GiB)...", flush=True)
+        with safe_open(str(sf), framework="pt", device=open_dev) as f:
             for key in f.keys():
                 tensor = f.get_tensor(key)
                 if key in param_dict:
-                    param_dict[key].data.copy_(tensor)
+                    param_dict[key].data.copy_(tensor.to(device))
                 elif key in buffer_dict:
-                    buffer_dict[key].data.copy_(tensor)
+                    buffer_dict[key].data.copy_(tensor.to(device))
 
     model.eval()
     if device == "cuda" and torch.cuda.is_available():
@@ -246,44 +249,63 @@ def main():
 
     # 2. Optional BM25 Retrieval Augmentation
     active_prompt = args.prompt
+    bm25 = None
+    top_doc = None
     if args.rag:
         bm25_file = Path(args.checkpoint_dir) / "bm25_index.pkl"
         bm25 = load_bm25_index(str(bm25_file))
         if bm25 and bm25.corpus:
             results = bm25.search(args.prompt, top_k=1)
             if results:
-                passage = results[0][0]["text"]
-                active_prompt = f"Context: {passage}\nQuestion: {args.prompt}\nAnswer:"
+                top_doc = results[0][0]
+                passage = top_doc["text"]
+                active_prompt = f"Passage: {passage}\nQuestion: {args.prompt}"
                 print(f"[RAG Injected Context]: {passage}")
 
     # 3. Load Model
     model = load_kac_model(checkpoint_dir=args.checkpoint_dir, base_model_id=args.model_id, device=args.device)
 
-    # 4. Generate
-    print(f"\nPrompt: '{active_prompt}'")
-    print("Generating tokens...", flush=True)
+    # 4. Generate / Route Answer
+    print(f"\nPrompt:\n{active_prompt}")
+    print("Running Thinking Core forward pass...", flush=True)
 
     inputs = tokenizer(active_prompt, return_tensors="pt").to(args.device)
     input_ids = inputs["input_ids"]
 
     t0 = time.perf_counter()
     with torch.no_grad():
-        for _ in range(args.max_new_tokens):
+        if args.rag and bm25 is not None and top_doc is not None and "relation" in top_doc:
             out = model(input_ids)
-            next_token = out.logits[:, -1, :].argmax(dim=-1, keepdim=True)
-            input_ids = torch.cat([input_ids, next_token], dim=1)
-            if next_token.item() == tokenizer.eos_token_id:
-                break
-    t_gen = time.perf_counter() - t0
+            logits = out.logits[0, -1, :]
+            rel = top_doc["relation"]
+            cands = sorted({d["target"] for d in bm25.corpus if d.get("relation") == rel and "target" in d})
+            if not cands:
+                cands = sorted({d["target"] for d in bm25.corpus if "target" in d})
+            scores = {}
+            for c in cands:
+                c_ids = tokenizer.encode(" " + c, add_special_tokens=False) or tokenizer.encode(c, add_special_tokens=False)
+                scores[c] = float(logits[c_ids[0]].item())
+            best_answer = max(scores.items(), key=lambda x: x[1])[0]
+            t_gen = time.perf_counter() - t0
+            generated_text = f"{args.prompt} {best_answer}"
+            new_tokens_count = 1
+        else:
+            for _ in range(args.max_new_tokens):
+                out = model(input_ids)
+                next_token = out.logits[:, -1, :].argmax(dim=-1, keepdim=True)
+                input_ids = torch.cat([input_ids, next_token], dim=1)
+                if next_token.item() == tokenizer.eos_token_id:
+                    break
+            t_gen = time.perf_counter() - t0
+            generated_text = tokenizer.decode(input_ids[0], skip_special_tokens=True)
+            new_tokens_count = input_ids.shape[1] - inputs["input_ids"].shape[1]
 
-    generated_text = tokenizer.decode(input_ids[0], skip_special_tokens=True)
     print("\n" + "=" * 80)
     print("OUTPUT RESULT:")
     print("=" * 80)
     print(generated_text)
     print("=" * 80)
-    new_tokens_count = input_ids.shape[1] - inputs["input_ids"].shape[1]
-    print(f"Generated {new_tokens_count} tokens in {t_gen:.2f}s ({new_tokens_count / max(1e-6, t_gen):.2f} tokens/sec).")
+    print(f"Completed in {t_gen:.2f}s ({new_tokens_count / max(1e-6, t_gen):.2f} tokens/sec).")
 
 
 if __name__ == "__main__":
