@@ -797,6 +797,81 @@ class FusedTriton8GBWallEngine:
             "shards_verified": [f"model_lean_30b-0000{i+1}-of-00004.safetensors" for i in range(4)],
         }
 
+    @torch.no_grad()
+    def generate_stream(self, prompt: str, max_new_tokens: int = 160):
+        torch.cuda.reset_peak_memory_stats()
+        msgs = [{"role": "user", "content": prompt}]
+        chat_str = self.tokenizer.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True)
+        chat_str += " to=user<|message|>"
+        ids_cpu = torch.tensor([self.tokenizer.encode(chat_str, add_special_tokens=False)], dtype=torch.long)
+
+        t0 = time.perf_counter()
+        out_ids: List[int] = []
+        past_len = 0
+        yield {
+            "event": "prefill_start",
+            "prompt_tokens": int(ids_cpu.shape[1]),
+            "gpu_persistent_gib": self.gpu_persistent_gib,
+        }
+        logits = self.forward(ids_cpu, past_len)
+        past_len += ids_cpu.shape[1]
+        next_tok = torch.argmax(logits, dim=-1, keepdim=True)
+        next_tok_cpu = torch.empty((1, 1), dtype=torch.long)
+        prev_text = ""
+
+        for step in range(max_new_tokens):
+            tid = int(next_tok.item())
+            if tid in (200001, 200008, 200007):
+                break
+            out_ids.append(tid)
+            cur_text = self.tokenizer.decode(out_ids, skip_special_tokens=True)
+            stopped = False
+            for stop_str in ("</assistant", "to=self", "<|eom|>", "<|eot|>"):
+                if stop_str in cur_text:
+                    cur_text = cur_text.split(stop_str)[0]
+                    stopped = True
+            delta = cur_text[len(prev_text):]
+            prev_text = cur_text
+            dt_now = max(time.perf_counter() - t0, 1e-4)
+            peak_now = round(torch.cuda.max_memory_allocated() / (1024**3), 4)
+            yield {
+                "event": "token",
+                "step": len(out_ids),
+                "token_id": tid,
+                "delta": delta,
+                "text": cur_text,
+                "tokens_per_sec": round(len(out_ids) / dt_now, 2),
+                "elapsed_sec": round(dt_now, 3),
+                "gpu_persistent_gib": self.gpu_persistent_gib,
+                "gpu_peak_gib": peak_now,
+                "active_dma_ring_layer": self.cpu_layer_indices[len(out_ids) % len(self.cpu_layer_indices)],
+            }
+            if stopped:
+                break
+            next_tok_cpu[0, 0] = tid
+            logits = self.forward(next_tok_cpu, past_len)
+            past_len += 1
+            rep_idx = torch.tensor(list(set(out_ids[-32:])), dtype=torch.long).to(self.device, non_blocking=True)
+            sub_l = logits[0, rep_idx]
+            logits[0, rep_idx] = torch.where(sub_l > 0, sub_l / 1.06, sub_l * 1.06)
+            next_tok = torch.argmax(logits, dim=-1, keepdim=True)
+
+        torch.cuda.synchronize()
+        dt = time.perf_counter() - t0
+        peak_gib = round(torch.cuda.max_memory_allocated() / (1024**3), 4)
+        final_answer = prev_text.strip()
+        yield {
+            "event": "done",
+            "prompt": prompt,
+            "response": final_answer,
+            "tokens_generated": len(out_ids),
+            "elapsed_sec": round(dt, 3),
+            "tokens_per_sec": round(len(out_ids) / max(dt, 1e-4), 2),
+            "gpu_persistent_gib": self.gpu_persistent_gib,
+            "gpu_peak_gib": peak_gib,
+            "hardware_wall_gib": 8.00,
+        }
+
 
 ENGINE: Optional[FusedTriton8GBWallEngine] = None
 
@@ -829,6 +904,30 @@ class InferHandler(BaseHTTPRequestHandler):
                 return self._send_json(200, res)
             except Exception as e:
                 return self._send_json(200, {"error": str(e), "traceback": traceback.format_exc()})
+        elif self.path == "/generate_stream":
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                body = json.loads(self.rfile.read(length).decode("utf-8")) if length > 0 else {}
+                prompt = body.get("prompt", "Hello!")
+                max_new_tokens = int(body.get("max_new_tokens", 160))
+                self.send_response(200)
+                self.send_header("Content-Type", "application/x-ndjson")
+                self.send_header("Cache-Control", "no-cache")
+                self.send_header("X-Accel-Buffering", "no")
+                self.end_headers()
+                for evt in ENGINE.generate_stream(prompt, max_new_tokens=max_new_tokens):
+                    line = (json.dumps(evt) + "\n").encode("utf-8")
+                    self.wfile.write(line)
+                    self.wfile.flush()
+                return
+            except Exception as e:
+                try:
+                    err_line = (json.dumps({"event": "error", "error": str(e)}) + "\n").encode("utf-8")
+                    self.wfile.write(err_line)
+                    self.wfile.flush()
+                except Exception:
+                    pass
+                return
         return self._send_json(404, {"error": "Not found"})
 
 
