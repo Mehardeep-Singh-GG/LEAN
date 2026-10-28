@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """
-Muse-Glimmer-30B (LEAN Priced-Quanta v2) — Anti-AI-Slop Interactive 3D Command Studio
-======================================================================================
-A strict matte Swiss-grid GPT-style prompt interface + Three.js 52-Layer 3D Neural
-Viewport + Real-Time Parallel GPU VRAM / Host RAM / Shard Telemetry Console.
+Muse-Glimmer-30B (LEAN Priced-Quanta v2) — Apple-Editorial Anti-Slop 3D Studio
+===============================================================================
+An airy, Apple-Keynote-inspired matte interface combining:
+  - A sculptural 3D 52-layer neural core (Three.js) with spring camera physics
+  - Clean, spacious parallel hardware telemetry (GPU VRAM vs 8.00 GiB Wall, Host RAM, tok/s)
+  - An effortless GPT-style conversational canvas wired directly to `/generate` on the live A100 daemon.
 
-Palette (MOTION.md & brand.md):
-  - #121214 Matte Obsidian Background (zero gradients, zero glows, zero drop shadows)
+Palette (MOTION.md & brand.md — Strict Flat Matte):
+  - #121214 Matte Obsidian Background
   - #FF5A5F Signal Coral Primary Accent
   - #EAEAEA Pure Off-White Foreground
   - #8A8A96 Muted Technical Slate
-  - #26262B 2px Structural Swiss Grid Rules
+  - #26262B Structural Hairlines
 
 Usage:
   .venv/bin/python release_30b/studio_30b.py --port 8788
@@ -33,18 +35,13 @@ except ImportError:
 RELEASE_DIR = Path(__file__).resolve().parent
 
 STUDIO_STATE = {
-    "requests_served": 0,
+    "requests_served": 1,
     "last_tok_per_sec": 11.7,
-    "last_tokens": 155,
-    "last_elapsed_s": 13.44,
+    "last_tokens": 105,
+    "last_elapsed_s": 10.33,
     "last_gpu_persistent_gib": 6.0805,
-    "last_gpu_peak_gib": 6.7012,
+    "last_gpu_peak_gib": 6.6992,
     "gpu_wall_gib": 8.0000,
-    "history": [
-        {"tok_s": 11.8, "vram_peak": 6.70, "tokens": 96},
-        {"tok_s": 11.4, "vram_peak": 6.70, "tokens": 105},
-        {"tok_s": 11.7, "vram_peak": 6.70, "tokens": 155},
-    ],
 }
 
 
@@ -78,27 +75,11 @@ def get_system_telemetry() -> dict:
         "ok": True,
         "timestamp": time.time(),
         "endpoint": get_live_endpoint(),
-        "model": {
-            "name": "Muse-Glimmer-30B (LEAN Priced-Quanta v2)",
-            "active_params": "24.6B (30B Class)",
-            "layers": 52,
-            "d_model": 4096,
-            "d_ff": 6656,
-            "gqa": "32Q / 8KV",
-            "effective_bits": 2.212,
-            "thinking_layers_bits": 4.18,
-            "trivia_layers_bits": 2.08,
-            "compression_ratio": "8.98x (59.90 GB -> 6.64 GB)",
-        },
         "gpu_telemetry": {
-            "device": "NVIDIA A100-SXM4-80GB (8.00 GiB Enforced Wall)",
             "persistent_gib": round(STUDIO_STATE["last_gpu_persistent_gib"], 2),
             "peak_gib": round(STUDIO_STATE["last_gpu_peak_gib"], 2),
             "wall_gib": 8.00,
             "headroom_gib": round(8.00 - STUDIO_STATE["last_gpu_peak_gib"], 2),
-            "raw_payload_gb": 6.53,
-            "safetensors_file_gb": 6.64,
-            "safetensors_file_gib": 6.1854,
         },
         "host_telemetry": {
             "mac_platform": f"{platform.system()} {platform.machine()}",
@@ -109,18 +90,11 @@ def get_system_telemetry() -> dict:
             "a100_host_ram_used_gb": 2.86,
             "a100_host_ram_total_gb": 167.05,
         },
-        "shards": [
-            {"id": 1, "file": "model_lean_30b-00001-of-00004.safetensors", "layers": "L00-L12 + Embed", "gib": 1.5856, "gb": 1.703},
-            {"id": 2, "file": "model_lean_30b-00002-of-00004.safetensors", "layers": "L13-L25", "gib": 1.4193, "gb": 1.524},
-            {"id": 3, "file": "model_lean_30b-00003-of-00004.safetensors", "layers": "L26-L38", "gib": 1.4193, "gb": 1.524},
-            {"id": 4, "file": "model_lean_30b-00004-of-00004.safetensors", "layers": "L39-L51 + Head", "gib": 1.7612, "gb": 1.891},
-        ],
         "throughput": {
             "last_tok_per_sec": STUDIO_STATE["last_tok_per_sec"],
             "last_tokens": STUDIO_STATE["last_tokens"],
             "last_elapsed_s": STUDIO_STATE["last_elapsed_s"],
             "requests_served": STUDIO_STATE["requests_served"],
-            "history": STUDIO_STATE["history"][-12:],
         },
     }
 
@@ -130,28 +104,26 @@ HTML_PAGE = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MUSE-GLIMMER-30B · LEAN 6.5GB Neural Telemetry Studio</title>
+<title>Muse-Glimmer-30B · LEAN Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&family=JetBrains+Mono:wght@500;700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
   :root {
     --bg: #121214;
-    --panel: #16161A;
-    --panel-alt: #1C1C22;
+    --surface: #17171B;
+    --surface-hover: #1E1E24;
     --coral: #FF5A5F;
     --fg: #EAEAEA;
     --muted: #8A8A96;
-    --grid: #26262B;
-    --grid-bright: #3A3A44;
+    --rule: #26262B;
   }
 
   * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    /* STRICT ANTI-SLOP LAW: Zero drop-shadows, zero text-shadows, zero gradients */
     box-shadow: none !important;
     text-shadow: none !important;
   }
@@ -166,164 +138,120 @@ HTML_PAGE = r"""<!DOCTYPE html>
     -webkit-font-smoothing: antialiased;
   }
 
-  /* SWISS STRUCTURAL GRID LAYOUT */
-  .app-shell {
+  .app {
     display: grid;
-    grid-template-rows: 64px 1fr 40px;
+    grid-template-rows: 64px 1fr;
     width: 100vw;
     height: 100vh;
     background: var(--bg);
-    border: 2px solid var(--grid);
   }
 
-  /* TOP MASTHEAD */
-  .masthead {
+  /* MINIMAL APPLE-STYLE TOP BAR */
+  .topbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px;
-    border-bottom: 2px solid var(--grid);
+    padding: 0 36px;
+    border-bottom: 1px solid var(--rule);
     background: var(--bg);
-    z-index: 10;
   }
 
-  .brand-lockup {
+  .brand {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 14px;
   }
 
-  .brand-tag {
-    background: var(--coral);
-    color: var(--bg);
-    font-family: 'JetBrains Mono', monospace;
+  .brand-name {
     font-weight: 800;
-    font-size: 12px;
-    padding: 4px 8px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-
-  .brand-title {
-    font-weight: 900;
-    font-size: 20px;
-    letter-spacing: -0.04em;
-    text-transform: uppercase;
+    font-size: 18px;
+    letter-spacing: -0.03em;
     color: var(--fg);
   }
 
-  .brand-sub {
+  .brand-meta {
     font-family: 'JetBrains Mono', monospace;
-    font-weight: 700;
-    font-size: 11px;
+    font-size: 12px;
+    font-weight: 500;
     color: var(--muted);
-    padding-left: 12px;
-    border-left: 2px solid var(--grid);
   }
 
-  .masthead-stats {
-    display: flex;
+  .status-pill {
+    display: inline-flex;
     align-items: center;
-    gap: 20px;
-  }
-
-  .top-pill {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 12px;
-    border: 2px solid var(--grid);
-    background: var(--panel);
+    gap: 10px;
+    padding: 6px 14px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--surface);
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     font-weight: 700;
+    color: var(--fg);
   }
 
-  .status-dot {
-    width: 8px;
-    height: 8px;
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
     background: var(--coral);
-    display: inline-block;
   }
 
-  /* 3-COLUMN WORKSPACE */
-  .workspace {
+  /* TWO-ZONE SPATIAL LAYOUT */
+  .main-grid {
     display: grid;
-    grid-template-columns: 430px 1fr 410px;
+    grid-template-columns: 520px 1fr;
     height: 100%;
     overflow: hidden;
   }
 
-  /* COLUMN 1: 3-PLANE 3D STAGE & LAYER ARCHITECTURE */
-  .col-3d {
+  /* LEFT ZONE: SCULPTURAL 3D STAGE + PARALLEL BENTO METRICS */
+  .left-stage {
     display: flex;
     flex-direction: column;
-    border-right: 2px solid var(--grid);
+    justify-content: space-between;
+    padding: 28px 32px;
+    border-right: 1px solid var(--rule);
     background: var(--bg);
-    position: relative;
     overflow: hidden;
   }
 
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 14px;
-    border-bottom: 2px solid var(--grid);
-    background: var(--panel);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  .section-header strong {
-    color: var(--fg);
-  }
-
-  .stage-viewport {
+  .stage-card {
     position: relative;
     flex: 1;
-    min-height: 310px;
-    background: var(--bg);
+    min-height: 320px;
+    border: 1px solid var(--rule);
+    border-radius: 16px;
+    background: var(--surface);
     overflow: hidden;
-    border-bottom: 2px solid var(--grid);
+    margin-bottom: 20px;
   }
 
-  /* PLANE 1: GIANT 3D WORLD-SPACE MONUMENT TYPOGRAPHY BEHIND 3D WEIGHTS */
-  .plane1-monument {
+  /* Plane 1: Giant World-Space Monument Backdrop */
+  .plane1-type {
     position: absolute;
     inset: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     pointer-events: none;
     z-index: 1;
-    overflow: hidden;
     user-select: none;
   }
 
-  .monument-line {
+  .plane1-word {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
-    font-size: 118px;
+    font-size: 132px;
     line-height: 0.82;
     letter-spacing: -0.06em;
     color: transparent;
-    -webkit-text-stroke: 2px #292932;
+    -webkit-text-stroke: 1.5px #25252C;
     text-transform: uppercase;
-    white-space: nowrap;
-    transform-origin: center center;
   }
 
-  .monument-line.accent {
-    -webkit-text-stroke: 2px #4A2427;
-  }
-
-  /* PLANE 2: THREE.JS PERSPECTIVE CAMERA CANVAS */
+  /* Plane 2: Three.js Canvas */
   #three-canvas {
     position: absolute;
     inset: 0;
@@ -333,1036 +261,661 @@ HTML_PAGE = r"""<!DOCTYPE html>
     display: block;
   }
 
-  /* PLANE 3: TRACKED CALLOUT OVERLAYS & CAMERA TELEMETRY */
-  .plane3-hud {
+  /* Plane 3: Minimal Floating Camera Header & Mode Switcher */
+  .stage-overlay-top {
     position: absolute;
-    inset: 0;
+    top: 16px;
+    left: 18px;
+    right: 18px;
     z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     pointer-events: none;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
   }
 
-  .cam-telemetry-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .hud-badge {
-    background: var(--bg);
-    border: 2px solid var(--grid-bright);
-    padding: 5px 8px;
+  .stage-label {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
-    color: var(--fg);
-  }
-
-  .hud-badge span.coral {
-    color: var(--coral);
-  }
-
-  .tracked-callout {
-    background: var(--bg);
-    border: 2px solid var(--fg);
-    padding: 8px 10px;
-    max-width: 215px;
-  }
-
-  .tracked-callout.coral-border {
-    border-color: var(--coral);
-  }
-
-  .callout-kicker {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    font-weight: 700;
-    color: var(--coral);
-    text-transform: uppercase;
-    margin-bottom: 2px;
-  }
-
-  .callout-title {
-    font-weight: 900;
-    font-size: 13px;
-    letter-spacing: -0.02em;
-    color: var(--fg);
-  }
-
-  .callout-sub {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
     color: var(--muted);
-    margin-top: 2px;
-  }
-
-  /* CAMERA RIG CONTROLS */
-  .cam-controls {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    border-bottom: 2px solid var(--grid);
-    background: var(--panel);
-  }
-
-  .cam-btn {
     background: var(--bg);
-    color: var(--muted);
-    border: none;
-    border-right: 2px solid var(--grid);
-    padding: 9px 6px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    cursor: pointer;
-    text-transform: uppercase;
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--rule);
   }
 
-  .cam-btn:last-child {
-    border-right: none;
-  }
-
-  .cam-btn:hover {
-    color: var(--fg);
-    background: var(--panel-alt);
-  }
-
-  .cam-btn.active {
-    background: var(--coral);
-    color: var(--bg);
-  }
-
-  /* 52-LAYER PRICED-QUANTA MATRIX MAP */
-  .layer-map-panel {
-    padding: 12px 14px;
-    background: var(--bg);
-  }
-
-  .layer-map-header {
+  .stage-overlay-bottom {
+    position: absolute;
+    bottom: 16px;
+    left: 18px;
+    right: 18px;
+    z-index: 3;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
   }
 
-  .layer-grid {
-    display: grid;
-    grid-template-columns: repeat(13, 1fr);
-    gap: 4px;
-  }
-
-  .layer-cell {
-    height: 22px;
-    border: 2px solid var(--grid);
-    background: #1E1E24;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    font-weight: 700;
-    color: var(--muted);
-    position: relative;
-  }
-
-  .layer-cell.salient {
-    border-color: var(--fg);
-    background: #2A2A34;
-    color: var(--fg);
-  }
-
-  .layer-cell.firing {
-    background: var(--coral) !important;
-    border-color: var(--coral) !important;
-    color: var(--bg) !important;
-  }
-
-  .layer-legend {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
-  }
-
-  /* COLUMN 2: GPT-STYLE COMMAND & DEDUCTIVE ENGINE STREAM */
-  .col-chat {
-    display: flex;
-    flex-direction: column;
-    background: var(--bg);
-    height: 100%;
-    overflow: hidden;
-  }
-
-  .preset-bar {
-    display: flex;
-    align-items: center;
+  .cam-pills {
+    display: inline-flex;
     gap: 6px;
-    padding: 10px 16px;
-    border-bottom: 2px solid var(--grid);
     background: var(--bg);
-    overflow-x: auto;
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid var(--rule);
   }
 
-  .preset-label {
+  .cam-pill {
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    padding: 5px 11px;
+    border-radius: 7px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .cam-pill.active {
+    background: var(--coral);
+    color: var(--bg);
+  }
+
+  .layer-legend-pill {
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     font-weight: 700;
-    color: var(--coral);
-    text-transform: uppercase;
-    margin-right: 4px;
-    white-space: nowrap;
-  }
-
-  .preset-chip {
-    background: var(--panel);
-    color: var(--fg);
-    border: 2px solid var(--grid-bright);
+    color: var(--muted);
+    background: var(--bg);
     padding: 6px 10px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    font-weight: 700;
-    cursor: pointer;
-    white-space: nowrap;
+    border-radius: 8px;
+    border: 1px solid var(--rule);
   }
 
-  .preset-chip:hover {
-    border-color: var(--coral);
-    background: var(--panel-alt);
-  }
-
-  .chat-stream {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-
-  .msg-card {
-    border: 2px solid var(--grid);
-    background: var(--panel);
-  }
-
-  .msg-card.assistant {
-    border-color: var(--fg);
-    background: var(--bg);
-  }
-
-  .msg-card.user {
-    border-color: var(--grid-bright);
-    background: var(--panel);
-  }
-
-  .msg-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 14px;
-    border-bottom: 2px solid var(--grid);
-    background: var(--panel);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    font-weight: 700;
-  }
-
-  .msg-role {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    text-transform: uppercase;
-  }
-
-  .role-badge {
-    padding: 2px 6px;
-    background: var(--fg);
-    color: var(--bg);
-    font-weight: 800;
-    font-size: 10px;
-  }
-
-  .role-badge.coral {
-    background: var(--coral);
-    color: var(--bg);
-  }
-
-  .msg-body {
-    padding: 16px;
-    font-size: 15px;
-    line-height: 1.58;
-    color: var(--fg);
-    white-space: pre-wrap;
-    font-weight: 500;
-  }
-
-  .msg-body .active-word {
-    background: var(--coral);
-    color: var(--bg);
-    padding: 0 4px;
-    font-weight: 800;
-  }
-
-  .msg-footer {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 8px 14px;
-    border-top: 2px solid var(--grid);
-    background: var(--panel);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-  }
-
-  .msg-footer strong {
-    color: var(--fg);
-  }
-
-  .msg-footer .coral {
-    color: var(--coral);
-    font-weight: 800;
-  }
-
-  /* SINGLE-WORD SPOKEN / ACTIVE TOKEN RAIL (LAW 4) */
-  .word-rail {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 16px;
-    border-top: 2px solid var(--grid);
-    background: var(--panel);
-    min-height: 42px;
-  }
-
-  .word-rail-tokens {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    font-weight: 900;
-    font-size: 14px;
-    letter-spacing: -0.02em;
-    overflow: hidden;
-  }
-
-  .rail-word {
-    color: var(--muted);
-    padding-bottom: 2px;
-  }
-
-  .rail-word.current {
-    color: var(--coral);
-    border-bottom: 3px solid var(--coral);
-  }
-
-  /* PROMPT INPUT BAR */
-  .composer {
+  /* PARALLEL HARDWARE BENTO GRID */
+  .bento-grid {
     display: grid;
-    grid-template-columns: 1fr auto;
-    border-top: 2px solid var(--fg);
-    background: var(--bg);
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
   }
 
-  .composer-input {
-    background: var(--bg);
-    color: var(--fg);
-    border: none;
-    padding: 16px 18px;
-    font-family: 'Inter', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    outline: none;
-    resize: none;
-    height: 62px;
+  .bento-card {
+    padding: 18px 20px;
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    background: var(--surface);
   }
 
-  .composer-input::placeholder {
-    color: var(--muted);
-    font-weight: 500;
+  .bento-card.wide {
+    grid-column: span 2;
   }
 
-  .composer-send {
-    background: var(--coral);
-    color: var(--bg);
-    border: none;
-    border-left: 2px solid var(--fg);
-    padding: 0 28px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 900;
-    font-size: 14px;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-    cursor: pointer;
-  }
-
-  .composer-send:hover {
-    background: var(--fg);
-    color: var(--bg);
-  }
-
-  .composer-send:disabled {
-    background: var(--grid);
-    color: var(--muted);
-    cursor: not-allowed;
-  }
-
-  /* COLUMN 3: PARALLEL GPU VRAM / HOST RAM / SHARD TELEMETRY RAIL */
-  .col-telemetry {
-    display: flex;
-    flex-direction: column;
-    border-left: 2px solid var(--grid);
-    background: var(--bg);
-    overflow-y: auto;
-  }
-
-  .stat-module {
-    padding: 14px 16px;
-    border-bottom: 2px solid var(--grid);
-  }
-
-  .stat-kicker {
+  .bento-kicker {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .bento-kicker span.tag {
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     font-weight: 700;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-
-  .stat-kicker span.alert {
     color: var(--coral);
   }
 
-  .stat-hero-row {
+  .bento-value-row {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    margin-bottom: 8px;
   }
 
-  .stat-hero-num {
+  .bento-number {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
-    font-size: 42px;
-    line-height: 0.95;
+    font-size: 38px;
+    line-height: 1;
     letter-spacing: -0.04em;
     font-variant-numeric: tabular-nums;
     color: var(--fg);
   }
 
-  .stat-hero-num.coral {
+  .bento-number.coral {
     color: var(--coral);
   }
 
-  .stat-hero-unit {
+  .bento-unit {
     font-family: 'JetBrains Mono', monospace;
     font-size: 12px;
     font-weight: 700;
     color: var(--muted);
+    margin-left: 6px;
   }
 
-  /* 8.00 GiB HARDWARE WALL METER */
-  .wall-meter {
+  .bento-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Minimal Meter Track */
+  .meter-track {
     position: relative;
-    height: 28px;
-    background: var(--panel);
-    border: 2px solid var(--grid-bright);
-    margin: 8px 0;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    margin-top: 12px;
+    overflow: hidden;
   }
 
-  .wall-fill-persistent {
+  .meter-fill-white {
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
     background: var(--fg);
-    width: 76.0%; /* 6.08 / 8.00 */
+    width: 76%;
   }
 
-  .wall-fill-peak {
+  .meter-fill-coral {
     position: absolute;
+    left: 76%;
     top: 0;
     bottom: 0;
-    left: 76.0%;
-    width: 7.75%; /* (6.70 - 6.08) / 8.00 */
     background: var(--coral);
+    width: 7.8%;
   }
 
-  .wall-ceiling-line {
-    position: absolute;
-    right: 0;
-    top: -5px;
-    bottom: -5px;
-    width: 3px;
-    background: var(--coral);
-  }
-
-  .meter-labels {
-    display: flex;
-    justify-content: space-between;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    font-weight: 700;
-    color: var(--muted);
-  }
-
-  /* DUAL RAM BARS (MAC CLIENT + A100 HOST) */
-  .ram-row {
-    margin-top: 8px;
-  }
-
-  .ram-row-top {
-    display: flex;
-    justify-content: space-between;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    font-weight: 700;
-    margin-bottom: 4px;
-  }
-
-  .ram-bar-track {
-    height: 14px;
-    background: var(--panel);
-    border: 2px solid var(--grid-bright);
-    position: relative;
-  }
-
-  .ram-bar-fill {
-    height: 100%;
-    background: var(--fg);
-  }
-
-  .ram-bar-fill.coral {
-    background: var(--coral);
-  }
-
-  /* 4-SHARD SAFETENSORS TABLE */
-  .shard-list {
+  /* RIGHT ZONE: APPLE-STYLE SPACIOUS CONVERSATIONAL CANVAS */
+  .right-chat {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    margin-top: 8px;
+    height: 100%;
+    background: var(--bg);
+    overflow: hidden;
   }
 
-  .shard-item {
-    display: grid;
-    grid-template-columns: 28px 1fr auto;
+  .chat-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px 48px 20px 48px;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border: 2px solid var(--grid);
-    background: var(--panel);
+  }
+
+  .chat-column {
+    width: 100%;
+    max-width: 740px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .hero-intro {
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .hero-kicker {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--coral);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
   }
 
-  .shard-item.active-shard {
-    border-color: var(--coral);
+  .hero-title {
+    font-weight: 900;
+    font-size: 32px;
+    letter-spacing: -0.035em;
+    line-height: 1.12;
+    color: var(--fg);
+    margin-bottom: 10px;
   }
 
-  .shard-idx {
-    background: var(--fg);
-    color: var(--bg);
-    font-weight: 800;
-    text-align: center;
-    padding: 2px 0;
+  .hero-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--muted);
   }
 
-  /* THROUGHPUT BAR CHART */
-  .spark-bars {
-    display: grid;
-    grid-template-columns: repeat(10, 1fr);
-    align-items: end;
-    gap: 4px;
-    height: 54px;
-    padding-top: 8px;
-    border-bottom: 2px solid var(--grid);
+  /* Conversation Turns */
+  .turn {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
-  .spark-bar {
-    background: var(--fg);
-    min-height: 6px;
+  .turn-user {
+    align-self: flex-end;
+    max-width: 85%;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    padding: 14px 18px;
+    border-radius: 16px 16px 4px 16px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--fg);
+    font-weight: 500;
   }
 
-  .spark-bar.latest {
-    background: var(--coral);
+  .turn-assistant {
+    align-self: flex-start;
+    width: 100%;
+    background: transparent;
+    padding: 4px 0;
   }
 
-  /* BOTTOM HARDWARE TELEMETRY RAIL */
-  .footer-rail {
+  .assistant-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    border-top: 2px solid var(--grid);
-    background: var(--panel);
+    gap: 10px;
+    margin-bottom: 10px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     font-weight: 700;
     color: var(--muted);
   }
 
-  .footer-rail strong {
+  .assistant-badge {
+    background: var(--coral);
+    color: var(--bg);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 800;
+  }
+
+  .assistant-body {
+    font-size: 16px;
+    line-height: 1.68;
     color: var(--fg);
+    white-space: pre-wrap;
+    font-weight: 400;
+  }
+
+  .assistant-body .active-word {
+    color: var(--coral);
+    font-weight: 700;
+    border-bottom: 2px solid var(--coral);
+  }
+
+  .assistant-receipt {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 14px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .assistant-receipt strong {
+    color: var(--fg);
+  }
+
+  .assistant-receipt .coral {
+    color: var(--coral);
+    font-weight: 700;
+  }
+
+  /* COMPOSER DOCK */
+  .composer-dock {
+    padding: 16px 48px 28px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--bg);
+  }
+
+  .composer-wrap {
+    width: 100%;
+    max-width: 740px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .preset-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .preset-pill {
+    background: var(--surface);
+    color: var(--muted);
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .preset-pill:hover {
+    color: var(--fg);
+    border-color: var(--fg);
+    background: var(--surface-hover);
+  }
+
+  .composer-box {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1.5px solid var(--rule);
+    border-radius: 16px;
+    padding: 8px 10px 8px 18px;
+    gap: 12px;
+  }
+
+  .composer-box:focus-within {
+    border-color: var(--fg);
+  }
+
+  .composer-input {
+    flex: 1;
+    background: transparent;
+    color: var(--fg);
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    outline: none;
+    resize: none;
+    height: 36px;
+    line-height: 36px;
+  }
+
+  .composer-input::placeholder {
+    color: var(--muted);
+  }
+
+  .send-btn {
+    background: var(--coral);
+    color: var(--bg);
+    border: none;
+    border-radius: 11px;
+    padding: 10px 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .send-btn:hover {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .send-btn:disabled {
+    background: var(--rule);
+    color: var(--muted);
+    cursor: not-allowed;
   }
 </style>
 </head>
 <body>
-<div class="app-shell">
-  <!-- TOP MASTHEAD -->
-  <header class="masthead">
-    <div class="brand-lockup">
-      <span class="brand-tag">PROJECT LEAN v2.0</span>
-      <span class="brand-title">MUSE-GLIMMER-30B</span>
-      <span class="brand-sub">52-LAYER PRICED-QUANTA v2 · 6.5 GB (6.08–6.18 GiB) · &lt;= 8.00 GiB WALL</span>
+<div class="app">
+  <!-- MINIMAL APPLE-STYLE TOP BAR -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-name">Muse-Glimmer-30B</span>
+      <span class="brand-meta">LEAN Priced-Quanta v2 · 6.5 GB (4 Shards) · 52 Layers</span>
     </div>
-    <div class="masthead-stats">
-      <div class="top-pill">
-        <span class="status-dot" id="daemon-dot"></span>
-        <span id="daemon-status">LIVE A100 DAEMON LOCKED</span>
-      </div>
-      <div class="top-pill">
-        <span>VRAM: <strong style="color:var(--fg)" id="top-vram">6.08 GiB / 6.70 GiB PEAK</strong></span>
-      </div>
-      <div class="top-pill">
-        <span>SPEED: <strong style="color:var(--coral)" id="top-speed">11.7 TOK/S</strong></span>
-      </div>
+    <div class="status-pill">
+      <span class="dot"></span>
+      <span id="top-status-text">A100 Connected · 6.08 GiB VRAM · 11.7 tok/s</span>
     </div>
   </header>
 
-  <!-- 3-COLUMN WORKSPACE -->
-  <main class="workspace">
-    <!-- LEFT COLUMN: 3-PLANE 3D STAGE & 52-LAYER MATRIX -->
-    <section class="col-3d">
-      <div class="section-header">
-        <span>PLANE 1+2+3 · <strong>3D WEIGHT ARCHITECTURE</strong></span>
-        <span id="active-layer-indicator">IDLE · 52 LAYERS READY</span>
-      </div>
-
-      <div class="stage-viewport">
-        <!-- PLANE 1: GIANT 3D MONUMENT TYPOGRAPHY BEHIND 3D MODEL WEIGHTS -->
-        <div class="plane1-monument" id="monument-backdrop">
-          <div class="monument-line" id="mon-1">30B CORE</div>
-          <div class="monument-line accent" id="mon-2">6.08 GiB</div>
-          <div class="monument-line" id="mon-3">52 LAYERS</div>
+  <!-- TWO-ZONE WORKSPACE -->
+  <main class="main-grid">
+    <!-- LEFT: SCULPTURAL 3D CORE + 3 CLEAN BENTO METRIC CARDS -->
+    <section class="left-stage">
+      <div class="stage-card">
+        <div class="plane1-type" id="monument-backdrop">
+          <div class="plane1-word">30B</div>
+          <div class="plane1-word">6.5GB</div>
         </div>
 
-        <!-- PLANE 2: THREE.JS PERSPECTIVE CAMERA STAGE -->
         <canvas id="three-canvas"></canvas>
 
-        <!-- PLANE 3: TRACKED CALLOUT CARDS & LIVE 3D CAM TELEMETRY -->
-        <div class="plane3-hud">
-          <div class="cam-telemetry-bar">
-            <div class="hud-badge" id="cam-coords">
-              3D CAM [0.0, 2.8, 9.2] · FOV 44° · <span class="coral">SPRING 120/14</span>
-            </div>
-            <div class="hud-badge">
-              2.212 BITS/PARAM
-            </div>
-          </div>
+        <div class="stage-overlay-top">
+          <span class="stage-label" id="cam-label">52-LAYER CORE · 3D CAM [3.4, 2.0, 7.6]</span>
+          <span class="stage-label" style="color:var(--coral)" id="pass-badge">IDLE · READY</span>
+        </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:8px;">
-            <div class="tracked-callout coral-border">
-              <div class="callout-kicker">o─── 20% THINKING ENGINE</div>
-              <div class="callout-title">10 SALIENT LAYERS (4.18b)</div>
-              <div class="callout-sub">L00–02, L24–27, L49–51 + FP16 SwiGLU</div>
-            </div>
-            <div class="tracked-callout">
-              <div class="callout-kicker" style="color:var(--fg)">───o 80% TRIVIA WAREHOUSE</div>
-              <div class="callout-title">42 BULK LAYERS (2.08b)</div>
-              <div class="callout-sub">Group-64 Affine · 8.98× Crush</div>
-            </div>
+        <div class="stage-overlay-bottom">
+          <div class="cam-pills">
+            <button class="cam-pill active" onclick="setCameraMode('orbit', this)">Orbit</button>
+            <button class="cam-pill" onclick="setCameraMode('cutaway', this)">Cutaway</button>
+            <button class="cam-pill" onclick="setCameraMode('tunnel', this)">Fly-Through</button>
           </div>
+          <span class="layer-legend-pill">■ 20% Thinking (4.18b) · ■ 80% Bulk (2.08b)</span>
         </div>
       </div>
 
-      <!-- CAMERA RIG SELECTOR -->
-      <div class="cam-controls">
-        <button class="cam-btn active" onclick="setCameraMode('orbit', this)">01 ORBIT</button>
-        <button class="cam-btn" onclick="setCameraMode('cutaway', this)">02 CUTAWAY</button>
-        <button class="cam-btn" onclick="setCameraMode('tunnel', this)">03 FLY-THRU</button>
-        <button class="cam-btn" onclick="setCameraMode('wall', this)">04 8GB WALL</button>
-      </div>
-
-      <!-- 52-LAYER LIVE ACTIVATION GRID -->
-      <div class="layer-map-panel">
-        <div class="layer-map-header">
-          <span>52-LAYER LIVE FORWARD PASS MATRIX (L00 → L51)</span>
-          <span style="color:var(--coral)" id="layer-pass-status">READY</span>
+      <!-- CLEAN APPLE-STYLE BENTO TELEMETRY -->
+      <div class="bento-grid">
+        <!-- Bento 1: GPU VRAM vs 8.00 GiB Wall -->
+        <div class="bento-card wide">
+          <div class="bento-kicker">
+            <span>GPU VRAM vs. 8.00 GiB Hardware Wall</span>
+            <span class="tag">PASS (&lt;= 8.00 GiB)</span>
+          </div>
+          <div class="bento-value-row">
+            <div>
+              <span class="bento-number" id="vram-pers">6.08</span>
+              <span class="bento-unit">GiB persistent</span>
+            </div>
+            <div>
+              <span class="bento-number coral" id="vram-peak">6.70</span>
+              <span class="bento-unit">GiB peak</span>
+            </div>
+          </div>
+          <div class="meter-track">
+            <div class="meter-fill-white"></div>
+            <div class="meter-fill-coral"></div>
+          </div>
+          <div class="bento-sub">
+            <span>59.90 GB FP16 → 6.53 GB Raw (8.98×)</span>
+            <span style="color:var(--fg)">1.30 GiB Free Headroom</span>
+          </div>
         </div>
-        <div class="layer-grid" id="layer-grid"></div>
-        <div class="layer-legend">
-          <span><strong style="color:var(--fg)">■</strong> 4.18b THINKING (L00-02, L24-27, L49-51)</span>
-          <span><strong>■</strong> 2.08b BULK (42 LAYERS)</span>
-          <span><strong style="color:var(--coral)">■</strong> ACTIVE PASS</span>
+
+        <!-- Bento 2: Parallel Host RAM -->
+        <div class="bento-card">
+          <div class="bento-kicker">
+            <span>Host RAM (Mac + A100)</span>
+            <span id="mac-cpu">CPU 8%</span>
+          </div>
+          <div>
+            <span class="bento-number" id="mac-ram-used">3.92</span>
+            <span class="bento-unit" id="mac-ram-total">/ 8.0 GiB</span>
+          </div>
+          <div class="bento-sub">
+            <span>A100 Host RAM</span>
+            <span style="color:var(--fg)">2.86 GB</span>
+          </div>
+        </div>
+
+        <!-- Bento 3: Inference Speed -->
+        <div class="bento-card">
+          <div class="bento-kicker">
+            <span>Token Throughput</span>
+            <span class="tag" id="ms-tok">85 ms/tok</span>
+          </div>
+          <div>
+            <span class="bento-number coral" id="tok-speed">11.7</span>
+            <span class="bento-unit">tok/s</span>
+          </div>
+          <div class="bento-sub">
+            <span>4 Shards (6.18 GiB)</span>
+            <span style="color:var(--fg)" id="last-toks">105 tokens</span>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- CENTER COLUMN: GPT-STYLE INTERACTIVE PROMPT & REASONING STREAM -->
-    <section class="col-chat">
-      <div class="preset-bar">
-        <span class="preset-label">BENCHMARK PRESETS:</span>
-        <button class="preset-chip" onclick="usePreset('A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How much does the ball cost? Show the algebra clearly.')">CRT: Bat &amp; Ball ($0.05)</button>
-        <button class="preset-chip" onclick="usePreset('If it takes 5 machines 5 minutes to make 5 widgets, how long would it take 100 machines to make 100 widgets? Explain step by step.')">CRT: 5 Machines / 5 Widgets</button>
-        <button class="preset-chip" onclick="usePreset('In a lake, there is a patch of lily pads. Every day, the patch doubles in size. If it takes 48 days for the patch to cover the entire lake, how many days would it take for the patch to cover half of the lake?')">CRT: Lily Pads (Day 47)</button>
-        <button class="preset-chip" onclick="usePreset('All A are B. Some B are C. Does it logically follow that some A are C? Prove why or why not.')">Syllogism Fallacy Check</button>
-      </div>
-
-      <div class="chat-stream" id="chat-stream">
-        <!-- Initial Verified Session Card -->
-        <div class="msg-card assistant">
-          <div class="msg-header">
-            <div class="msg-role">
-              <span class="role-badge coral">MUSE-GLIMMER-30B</span>
-              <span>52-LAYER PACKED ENGINE · READY</span>
-            </div>
-            <span>4 SHARDS · 6.18 GiB (6.64 GB)</span>
+    <!-- RIGHT: SPACIOUS CONVERSATIONAL CANVAS -->
+    <section class="right-chat">
+      <div class="chat-scroll" id="chat-scroll">
+        <div class="chat-column" id="chat-column">
+          <div class="hero-intro">
+            <div class="hero-kicker">20% Thinking Engine · 80% Trivia Warehouse</div>
+            <h1 class="hero-title">30-Billion Parameters inside an 8 GiB Wall.</h1>
+            <p class="hero-desc">
+              Ask any deductive reasoning, algebra, or cognitive reflection prompt below. Every prompt executes live across all 52 layers of <strong>Muse-Glimmer-30B</strong> while streaming GPU VRAM and Host RAM telemetry in parallel.
+            </p>
           </div>
-          <div class="msg-body">Welcome to the <strong>Muse-Glimmer-30B (LEAN Priced-Quanta v2)</strong> live command studio.
 
-• <strong>Model Footprint:</strong> 59.90 GB FP16 compressed <strong>8.98× → 6.53 GB</strong> raw payload (<strong>6.08 GiB</strong> persistent GPU VRAM / <strong>6.70 GiB</strong> peak with KV cache — strictly inside the <strong>8.00 GiB Hardware Wall</strong>).
-• <strong>Architecture:</strong> 52 Transformer layers (<code>d_model = 4096</code>, <code>d_ff = 6656</code>, <code>32Q / 8KV</code> GQA). The 20% Thinking Engine layers retain <strong>4.18 bits/param</strong> + FP16 SwiGLU outlier columns; the 80% Trivia Warehouse layers compress to <strong>2.08 bits/param</strong>.
-
-Select a benchmark preset above or enter any prompt below to watch the 52-layer forward pass, GPU VRAM wall, and host RAM telemetry in parallel.</div>
-          <div class="msg-footer">
-            <span>VRAM PERSISTENT: <strong>6.08 GiB</strong></span>
-            <span>VRAM PEAK: <span class="coral">6.70 GiB (&lt;= 8.00 GiB WALL)</span></span>
-            <span>THROUGHPUT: <strong>11.4–11.8 tok/s</strong></span>
-          </div>
-        </div>
-
-        <div class="msg-card user">
-          <div class="msg-header">
-            <div class="msg-role"><span class="role-badge">USER PROMPT</span></div>
-            <span>MAC CLIENT → A100 TUNNEL</span>
-          </div>
-          <div class="msg-body">A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How much does the ball cost? Show the algebra clearly.</div>
-        </div>
-
-        <div class="msg-card assistant">
-          <div class="msg-header">
-            <div class="msg-role">
-              <span class="role-badge coral">MUSE-GLIMMER-30B</span>
-              <span>52-LAYER PACKED ENGINE</span>
-            </div>
-            <span>SHARDS 01–04 ACTIVE</span>
-          </div>
-          <div class="msg-body">Let the ball cost $x.
+          <!-- Pre-verified Live Turn -->
+          <div class="turn">
+            <div class="turn-user">A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How much does the ball cost? Show the algebra clearly.</div>
+            <div class="turn-assistant">
+              <div class="assistant-header">
+                <span class="assistant-badge">MUSE-GLIMMER-30B</span>
+                <span>52-Layer Priced-Quanta v2</span>
+              </div>
+              <div class="assistant-body">Let the ball cost $x.
 
 Then the bat costs $x + 1.00.
 
-The total is $1.10.
-
-So x + (x + 1.00) = 1.10
+The total cost is $1.10:
+x + (x + 1.00) = 1.10
 2x + 1.00 = 1.10
 2x = 0.10
 x = $0.05
 
-The ball costs $0.05.
-Check: the bat costs $1.05, total $1.10.</div>
-          <div class="msg-footer">
-            <span>VRAM PERSISTENT: <strong>6.08 GiB</strong></span>
-            <span>VRAM PEAK: <span class="coral">6.70 GiB (&lt;= 8.00 GiB WALL)</span></span>
-            <span>GENERATED: <strong>105 TOKENS</strong></span>
-            <span>SPEED: <span class="coral">11.4 TOK/S</span> (10.33s RTT)</span>
+The ball costs $0.05 (and the bat costs $1.05, totaling $1.10).</div>
+              <div class="assistant-receipt">
+                <span>VRAM: <strong>6.08 GiB</strong> (<span class="coral">6.70 GiB peak</span>)</span>
+                <span>Speed: <span class="coral">11.4 tok/s</span></span>
+                <span>Generated: <strong>105 tokens</strong></span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- LAW 4: SINGLE-WORD ACTIVE HIGHLIGHT RAIL -->
-      <div class="word-rail">
-        <div class="word-rail-tokens" id="word-rail-tokens">
-          <span class="rail-word">MUSE-GLIMMER-30B</span>
-          <span class="rail-word">52-LAYER</span>
-          <span class="rail-word current">6.08-GiB</span>
-          <span class="rail-word">PRICED-QUANTA</span>
-          <span class="rail-word">ENGINE</span>
-          <span class="rail-word">LOCKED</span>
-          <span class="rail-word">AT</span>
-          <span class="rail-word">11.8</span>
-          <span class="rail-word">TOK/S</span>
+      <!-- FLOATING-FEEL COMPOSER DOCK -->
+      <div class="composer-dock">
+        <div class="composer-wrap">
+          <div class="preset-row">
+            <button class="preset-pill" onclick="runPreset('If it takes 5 machines 5 minutes to make 5 widgets, how long would it take 100 machines to make 100 widgets? Explain step by step.')">5 Machines / 5 Widgets</button>
+            <button class="preset-pill" onclick="runPreset('In a lake, there is a patch of lily pads. Every day, the patch doubles in size. If it takes 48 days for the patch to cover the entire lake, how many days would it take for the patch to cover half of the lake?')">Lily Pads Doubling (Day 47)</button>
+            <button class="preset-pill" onclick="runPreset('All A are B. Some B are C. Does it logically follow that some A are C? Explain why or why not.')">Syllogism Proof</button>
+          </div>
+          <form class="composer-box" onsubmit="submitPrompt(event)">
+            <input
+              type="text"
+              id="prompt-input"
+              class="composer-input"
+              placeholder="Message Muse-Glimmer-30B..."
+              autocomplete="off"
+            />
+            <button type="submit" class="send-btn" id="send-btn">Run Prompt ↑</button>
+          </form>
         </div>
-        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--coral); font-weight:700;" id="rail-counter">WORD-LOCKED STREAM</span>
       </div>
-
-      <!-- PROMPT COMPOSER -->
-      <form class="composer" onsubmit="submitPrompt(event)">
-        <textarea
-          id="prompt-input"
-          class="composer-input"
-          placeholder="Ask Muse-Glimmer-30B a deductive logic, algebra, or systems question (Press Enter to run on live 52-layer daemon)..."
-          onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); submitPrompt(event);}"
-        ></textarea>
-        <button type="submit" class="composer-send" id="send-btn">RUN 30B →</button>
-      </form>
     </section>
-
-    <!-- RIGHT COLUMN: PARALLEL REAL-TIME GPU VRAM & HOST RAM TELEMETRY -->
-    <aside class="col-telemetry">
-      <div class="section-header">
-        <span>PARALLEL HARDWARE TELEMETRY</span>
-        <span style="color:var(--coral)" id="telemetry-hz">LIVE 4.0 Hz</span>
-      </div>
-
-      <!-- MODULE 1: GPU VRAM VS 8.00 GiB HARDWARE WALL -->
-      <div class="stat-module">
-        <div class="stat-kicker">
-          <span>01 · GPU VRAM VS 8.00 GiB WALL</span>
-          <span class="alert">PASS (&lt;= 8.00 GiB)</span>
-        </div>
-        <div class="stat-hero-row">
-          <div>
-            <span class="stat-hero-num" id="vram-persistent-val">6.08</span>
-            <span class="stat-hero-unit">GiB PERSISTENT</span>
-          </div>
-          <div style="text-align:right;">
-            <span class="stat-hero-num coral" id="vram-peak-val">6.70</span>
-            <span class="stat-hero-unit">GiB PEAK</span>
-          </div>
-        </div>
-        <div class="wall-meter">
-          <div class="wall-fill-persistent" id="bar-vram-pers"></div>
-          <div class="wall-fill-peak" id="bar-vram-peak"></div>
-          <div class="wall-ceiling-line"></div>
-        </div>
-        <div class="meter-labels">
-          <span>0.00 GiB</span>
-          <span style="color:var(--fg)">WEIGHTS: 6.08 GiB</span>
-          <span style="color:var(--coral)">WALL: 8.00 GiB (1.30 GiB FREE)</span>
-        </div>
-      </div>
-
-      <!-- MODULE 2: PARALLEL HOST RAM (LOCAL MAC + A100 HOST) -->
-      <div class="stat-module">
-        <div class="stat-kicker">
-          <span>02 · PARALLEL HOST RAM TELEMETRY</span>
-          <span id="mac-cpu-label">CPU: 8.4%</span>
-        </div>
-
-        <div class="ram-row">
-          <div class="ram-row-top">
-            <span>LOCAL MAC CLIENT RAM</span>
-            <span id="mac-ram-text">3.92 / 8.00 GiB (4.08 GiB FREE)</span>
-          </div>
-          <div class="ram-bar-track">
-            <div class="ram-bar-fill" id="mac-ram-bar" style="width:49%;"></div>
-          </div>
-        </div>
-
-        <div class="ram-row" style="margin-top:12px;">
-          <div class="ram-row-top">
-            <span>A100 WORKER HOST RAM</span>
-            <span id="a100-ram-text">2.86 / 167.05 GB (1.7%)</span>
-          </div>
-          <div class="ram-bar-track">
-            <div class="ram-bar-fill coral" id="a100-ram-bar" style="width:6%;"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- MODULE 3: LIVE TOKEN SPEED & THROUGHPUT HISTORY -->
-      <div class="stat-module">
-        <div class="stat-kicker">
-          <span>03 · INFERENCE THROUGHPUT (52 LAYERS)</span>
-          <span id="ms-per-tok">85.4 ms/tok</span>
-        </div>
-        <div class="stat-hero-row">
-          <div>
-            <span class="stat-hero-num coral" id="tok-speed-val">11.7</span>
-            <span class="stat-hero-unit">TOK / SEC</span>
-          </div>
-          <div style="text-align:right;">
-            <span class="stat-hero-num" id="tok-count-val" style="font-size:32px;">155</span>
-            <span class="stat-hero-unit">LAST TOKENS</span>
-          </div>
-        </div>
-        <div class="spark-bars" id="spark-bars"></div>
-        <div class="meter-labels" style="margin-top:6px;">
-          <span>PRE-UNPACKED FAST BUFFER</span>
-          <span style="color:var(--fg)" id="req-count-label">100% ACCURACY</span>
-        </div>
-      </div>
-
-      <!-- MODULE 4: 4-SHARD SAFETENSORS RELEASE FOOTPRINT -->
-      <div class="stat-module" style="border-bottom:none;">
-        <div class="stat-kicker">
-          <span>04 · 4-SHARD SAFETENSORS FOOTPRINT</span>
-          <span style="color:var(--fg)">6.185 GiB (6.64 GB)</span>
-        </div>
-        <div class="shard-list" id="shard-list">
-          <div class="shard-item" id="shard-0">
-            <span class="shard-idx">S1</span>
-            <span>model_lean_30b-00001 (L00–L12)</span>
-            <strong>1.59 GiB</strong>
-          </div>
-          <div class="shard-item" id="shard-1">
-            <span class="shard-idx">S2</span>
-            <span>model_lean_30b-00002 (L13–L25)</span>
-            <strong>1.42 GiB</strong>
-          </div>
-          <div class="shard-item" id="shard-2">
-            <span class="shard-idx">S3</span>
-            <span>model_lean_30b-00003 (L26–L38)</span>
-            <strong>1.42 GiB</strong>
-          </div>
-          <div class="shard-item" id="shard-3">
-            <span class="shard-idx">S4</span>
-            <span>model_lean_30b-00004 (L39–L51)</span>
-            <strong>1.76 GiB</strong>
-          </div>
-        </div>
-      </div>
-    </aside>
   </main>
-
-  <!-- BOTTOM STATUS RAIL -->
-  <footer class="footer-rail">
-    <div>
-      <span>ARCH: <strong>52L × 4096D (GQA 32/8)</strong></span> ·
-      <span>COMPRESSION: <strong>59.90 GB → 6.53 GB RAW (8.98×)</strong></span> ·
-      <span>3B/7B VERIFIED: <strong>94.0% / 88.0% (Cliff's δ = 1.000)</strong></span>
-    </div>
-    <div id="footer-endpoint">TUNNEL: ACTIVE</div>
-  </footer>
 </div>
 
 <script>
   // =========================================================================
-  // 1. 52-LAYER MATRIX INITIALIZATION (20% THINKING vs 80% TRIVIA)
+  // 1. THREE.JS SCULPTURAL 52-LAYER CORE (FLAT MATTE + SPRING CAMERA)
   // =========================================================================
   const SALIENT_LAYERS = new Set([0, 1, 2, 24, 25, 26, 27, 49, 50, 51]);
-  const layerGridEl = document.getElementById('layer-grid');
-  const layerCells = [];
-
-  for (let i = 0; i < 52; i++) {
-    const cell = document.createElement('div');
-    const isSalient = SALIENT_LAYERS.has(i);
-    cell.className = 'layer-cell' + (isSalient ? ' salient' : '');
-    cell.textContent = (i < 10 ? '0' + i : '' + i);
-    cell.title = `Layer ${i}: ${isSalient ? '4.18-bit Salient Thinking Layer (+FP16 Outliers)' : '2.08-bit Trivia Bulk Layer'}`;
-    layerGridEl.appendChild(cell);
-    layerCells.push(cell);
-  }
-
-  // =========================================================================
-  // 2. THREE.JS ANTI-SLOP 3D STAGE (FLAT MATTE DIRECTIONAL SHADING + SPRINGS)
-  // =========================================================================
   const canvas = document.getElementById('three-canvas');
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100);
+  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
 
-  // Strict Flat Directional Face Shading via Discrete Directional Lights
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.58);
-  scene.add(ambientLight);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.62));
+  const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.55);
+  dirLight1.position.set(5, 10, 7);
+  scene.add(dirLight1);
+  const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.22);
+  dirLight2.position.set(-7, -4, -5);
+  scene.add(dirLight2);
 
-  const topLight = new THREE.DirectionalLight(0xffffff, 0.52);
-  topLight.position.set(4, 10, 6);
-  scene.add(topLight);
-
-  const sideLight = new THREE.DirectionalLight(0xffffff, 0.22);
-  sideLight.position.set(-8, -4, -5);
-  scene.add(sideLight);
-
-  // Structural Swiss Floor Grid
-  const gridHelper = new THREE.GridHelper(16, 16, 0x3A3A44, 0x26262B);
-  gridHelper.position.y = -3.4;
-  scene.add(gridHelper);
-
-  // 52-Layer 3D Tower Group
   const coreGroup = new THREE.Group();
-  coreGroup.scale.set(0.74, 0.74, 0.74);
-  coreGroup.position.y = 0.08;
+  coreGroup.scale.set(0.64, 0.64, 0.64);
+  coreGroup.position.y = 0.22;
   scene.add(coreGroup);
 
   const layerMeshes = [];
   const matCoral = new THREE.MeshLambertMaterial({ color: 0xFF5A5F });
   const matWhite = new THREE.MeshLambertMaterial({ color: 0xEAEAEA });
-  const matDark = new THREE.MeshLambertMaterial({ color: 0x2C2C34 });
-  const matActive = new THREE.MeshLambertMaterial({ color: 0xFF5A5F });
-  const edgeMatDark = new THREE.LineBasicMaterial({ color: 0x121214 });
-  const edgeMatGrid = new THREE.LineBasicMaterial({ color: 0x454552 });
+  const matDark = new THREE.MeshLambertMaterial({ color: 0x282830 });
+  const edgeDark = new THREE.LineBasicMaterial({ color: 0x121214 });
+  const edgeSubtle = new THREE.LineBasicMaterial({ color: 0x3D3D48 });
 
   for (let i = 0; i < 52; i++) {
     const isSalient = SALIENT_LAYERS.has(i);
-    const w = isSalient ? 2.55 : 2.10;
+    const w = isSalient ? 2.55 : 2.12;
     const h = 0.082;
-    const d = isSalient ? 2.55 : 2.10;
+    const d = isSalient ? 2.55 : 2.12;
     const geo = new THREE.BoxGeometry(w, h, d);
     const baseMat = isSalient ? (i >= 24 && i <= 27 ? matCoral : matWhite) : matDark;
     const mesh = new THREE.Mesh(geo, baseMat);
-
     const yPos = (i - 25.5) * 0.118;
     mesh.position.set(0, yPos, 0);
-    mesh.userData = { index: i, baseY: yPos, isSalient, baseMat, w, d };
+    mesh.userData = { index: i, baseY: yPos, isSalient, baseMat };
 
     const edges = new THREE.EdgesGeometry(geo);
-    const line = new THREE.LineSegments(edges, isSalient ? edgeMatDark : edgeMatGrid);
-    mesh.add(line);
-
+    mesh.add(new THREE.LineSegments(edges, isSalient ? edgeDark : edgeSubtle));
     coreGroup.add(mesh);
     layerMeshes.push(mesh);
   }
 
-  // 8.00 GiB Hardware Wall Wireframe Envelope
-  const wallGeo = new THREE.BoxGeometry(3.25, 6.5, 3.25);
-  const wallEdges = new THREE.EdgesGeometry(wallGeo);
-  const wallLine = new THREE.LineSegments(wallEdges, new THREE.LineBasicMaterial({ color: 0xFF5A5F }));
+  // Subtle 8.00 GiB Hardware Wall Wireframe
+  const wallGeo = new THREE.BoxGeometry(3.2, 6.4, 3.2);
+  const wallLine = new THREE.LineSegments(
+    new THREE.EdgesGeometry(wallGeo),
+    new THREE.LineBasicMaterial({ color: 0xFF5A5F })
+  );
   coreGroup.add(wallLine);
 
-  // Spring Physics State for Camera Rig (Snappy Spring: mass 0.5, stiffness 120, damping 14)
   let camMode = 'orbit';
-  const camTargetState = {
-    pos: new THREE.Vector3(3.6, 2.2, 7.8),
-    look: new THREE.Vector3(0, 0, 0),
-    fov: 44,
-    cutaway: 0
-  };
-  const camCurrState = {
-    pos: new THREE.Vector3(3.6, 2.2, 7.8),
-    vel: new THREE.Vector3(0, 0, 0),
-    look: new THREE.Vector3(0, 0, 0),
-    fov: 44,
-    cutaway: 0
-  };
+  const targetCam = { pos: new THREE.Vector3(3.4, 2.0, 7.6), look: new THREE.Vector3(0, 0, 0), cutaway: 0 };
+  const currCam = { pos: new THREE.Vector3(3.4, 2.0, 7.6), vel: new THREE.Vector3(), look: new THREE.Vector3(0, 0, 0), cutaway: 0 };
 
-  function setCameraMode(mode, btnEl) {
+  function setCameraMode(mode, btn) {
     camMode = mode;
-    document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
-    if (btnEl) btnEl.classList.add('active');
-
+    document.querySelectorAll('.cam-pill').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
     if (mode === 'orbit') {
-      camTargetState.pos.set(3.6, 2.2, 7.8);
-      camTargetState.look.set(0, 0, 0);
-      camTargetState.fov = 44;
-      camTargetState.cutaway = 0;
+      targetCam.pos.set(3.4, 2.0, 7.6);
+      targetCam.look.set(0, 0, 0);
+      targetCam.cutaway = 0;
     } else if (mode === 'cutaway') {
-      camTargetState.pos.set(2.5, 0.9, 5.2);
-      camTargetState.look.set(0, 0.1, 0);
-      camTargetState.fov = 40;
-      camTargetState.cutaway = 1;
+      targetCam.pos.set(2.6, 0.8, 5.4);
+      targetCam.look.set(0, 0, 0);
+      targetCam.cutaway = 1;
     } else if (mode === 'tunnel') {
-      camTargetState.pos.set(0.0, 3.8, 3.9);
-      camTargetState.look.set(0, -1.2, 0);
-      camTargetState.fov = 50;
-      camTargetState.cutaway = 0.5;
-    } else if (mode === 'wall') {
-      camTargetState.pos.set(-4.2, 1.4, 6.8);
-      camTargetState.look.set(0, 0, 0);
-      camTargetState.fov = 42;
-      camTargetState.cutaway = 0;
+      targetCam.pos.set(0, 3.6, 4.1);
+      targetCam.look.set(0, -1.0, 0);
+      targetCam.cutaway = 0.45;
     }
   }
 
@@ -1376,270 +929,170 @@ Check: the bat costs $1.05, total $1.10.</div>
   setTimeout(resizeThree, 20);
 
   let isGenerating = false;
-  let activeWaveLayer = -1;
-  let clockStart = performance.now();
+  const tStart = performance.now();
 
-  function animateThree(now) {
-    requestAnimationFrame(animateThree);
-    const t = (now - clockStart) * 0.001;
+  function animate(now) {
+    requestAnimationFrame(animate);
+    const t = (now - tStart) * 0.001;
 
-    // Gentle orbital drift when in orbit mode
     if (camMode === 'orbit') {
-      camTargetState.pos.x = Math.sin(t * 0.45) * 4.2;
-      camTargetState.pos.z = Math.cos(t * 0.45) * 7.4;
-      camTargetState.pos.y = 1.8 + Math.sin(t * 0.3) * 0.7;
+      targetCam.pos.x = Math.sin(t * 0.4) * 3.8;
+      targetCam.pos.z = Math.cos(t * 0.4) * 7.4;
+      targetCam.pos.y = 1.7 + Math.sin(t * 0.25) * 0.6;
     }
 
-    // Spring interpolation (stiffness 120, damping 14)
     const dt = 0.016;
-    const stiffness = 18.0;
-    const damping = 6.5;
-    ['x', 'y', 'z'].forEach(axis => {
-      const force = (camTargetState.pos[axis] - camCurrState.pos[axis]) * stiffness;
-      camCurrState.vel[axis] = (camCurrState.vel[axis] + force * dt) * Math.exp(-damping * dt);
-      camCurrState.pos[axis] += camCurrState.vel[axis] * dt;
-      camCurrState.look[axis] += (camTargetState.look[axis] - camCurrState.look[axis]) * 0.12;
+    ['x', 'y', 'z'].forEach(ax => {
+      const f = (targetCam.pos[ax] - currCam.pos[ax]) * 16.0;
+      currCam.vel[ax] = (currCam.vel[ax] + f * dt) * Math.exp(-6.0 * dt);
+      currCam.pos[ax] += currCam.vel[ax] * dt;
+      currCam.look[ax] += (targetCam.look[ax] - currCam.look[ax]) * 0.12;
     });
-    camCurrState.fov += (camTargetState.fov - camCurrState.fov) * 0.12;
-    camCurrState.cutaway += (camTargetState.cutaway - camCurrState.cutaway) * 0.12;
+    currCam.cutaway += (targetCam.cutaway - currCam.cutaway) * 0.12;
 
-    camera.position.copy(camCurrState.pos);
-    camera.lookAt(camCurrState.look);
-    camera.fov = camCurrState.fov;
-    camera.updateProjectionMatrix();
+    camera.position.copy(currCam.pos);
+    camera.lookAt(currCam.look);
 
-    // Update Plane 1 Monument Typography 3D Perspective Tilt
-    const rotY = (camera.position.x * 2.2).toFixed(1);
-    const rotX = (-camera.position.y * 1.8).toFixed(1);
-    const monEl = document.getElementById('monument-backdrop');
-    if (monEl) {
-      monEl.style.transform = `perspective(700px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    const mon = document.getElementById('monument-backdrop');
+    if (mon) {
+      mon.style.transform = `perspective(700px) rotateX(${(-camera.position.y * 1.6).toFixed(1)}deg) rotateY(${(camera.position.x * 2.0).toFixed(1)}deg)`;
     }
 
-    // Update Plane 3 Camera Telemetry Readout
-    const camHud = document.getElementById('cam-coords');
-    if (camHud) {
-      camHud.innerHTML = `3D CAM [${camera.position.x.toFixed(1)}, ${camera.position.y.toFixed(1)}, ${camera.position.z.toFixed(1)}] · FOV ${camera.fov.toFixed(0)}° · <span class="coral">${isGenerating ? 'FORWARD PASS' : 'SPRING 120/14'}</span>`;
+    const camLabel = document.getElementById('cam-label');
+    if (camLabel) {
+      camLabel.textContent = `52-LAYER CORE · CAM [${camera.position.x.toFixed(1)}, ${camera.position.y.toFixed(1)}, ${camera.position.z.toFixed(1)}]`;
     }
 
-    // Update 52 Layers (Cutaway expansion + Live Forward Pass Wave)
-    if (isGenerating) {
-      activeWaveLayer = Math.floor((t * 28) % 52);
-    } else {
-      activeWaveLayer = -1;
-    }
-
+    const activeWave = isGenerating ? Math.floor((t * 28) % 52) : -1;
     for (let i = 0; i < 52; i++) {
       const m = layerMeshes[i];
-      const isSal = m.userData.isSalient;
-      const spread = 1.0 + camCurrState.cutaway * 0.38;
-      m.position.y = m.userData.baseY * spread;
-
-      // In cutaway mode, slide salient layers forward to expose internal structure
-      const targetX = (camCurrState.cutaway > 0.1 && isSal) ? 0.45 * camCurrState.cutaway : 0;
-      m.position.x += (targetX - m.position.x) * 0.15;
-
-      const isWave = (isGenerating && Math.abs(i - activeWaveLayer) <= 2);
-      m.material = isWave ? matActive : m.userData.baseMat;
-
-      // Sync 2D 52-layer matrix cells and 4-shard highlight
-      if (layerCells[i]) {
-        if (isWave) {
-          layerCells[i].classList.add('firing');
-        } else {
-          layerCells[i].classList.remove('firing');
-        }
-      }
-    }
-
-    // Highlight active shard (0..3) during forward pass
-    for (let s = 0; s < 4; s++) {
-      const shEl = document.getElementById(`shard-${s}`);
-      if (shEl) {
-        const activeShard = isGenerating ? Math.floor(activeWaveLayer / 13) : -1;
-        if (s === activeShard) shEl.classList.add('active-shard');
-        else shEl.classList.remove('active-shard');
-      }
+      m.position.y = m.userData.baseY * (1 + currCam.cutaway * 0.34);
+      const tx = (currCam.cutaway > 0.05 && m.userData.isSalient) ? 0.42 * currCam.cutaway : 0;
+      m.position.x += (tx - m.position.x) * 0.15;
+      const isWave = isGenerating && Math.abs(i - activeWave) <= 2;
+      m.material = isWave ? matCoral : m.userData.baseMat;
     }
 
     renderer.render(scene, camera);
   }
-  requestAnimationFrame(animateThree);
+  requestAnimationFrame(animate);
 
   // =========================================================================
-  // 3. PARALLEL TELEMETRY POLLING (MAC RAM + A100 GPU VRAM + SPARKLINE)
+  // 2. LIVE PARALLEL TELEMETRY POLLING
   // =========================================================================
-  function renderSparkline(history) {
-    const container = document.getElementById('spark-bars');
-    if (!container || !history) return;
-    container.innerHTML = '';
-    const padded = history.slice(-10);
-    while (padded.length < 10) {
-      padded.unshift({ tok_s: 11.5 });
-    }
-    padded.forEach((item, idx) => {
-      const bar = document.createElement('div');
-      bar.className = 'spark-bar' + (idx === padded.length - 1 ? ' latest' : '');
-      const pct = Math.min(100, Math.max(15, (item.tok_s / 14.0) * 100));
-      bar.style.height = `${pct}%`;
-      bar.title = `${item.tok_s} tok/s`;
-      container.appendChild(bar);
-    });
-  }
-
   async function pollTelemetry() {
     try {
       const res = await fetch('/api/telemetry');
       const data = await res.json();
       if (!data.ok) return;
-
       const gpu = data.gpu_telemetry;
       const host = data.host_telemetry;
       const tp = data.throughput;
 
-      document.getElementById('vram-persistent-val').textContent = gpu.persistent_gib.toFixed(2);
-      document.getElementById('vram-peak-val').textContent = gpu.peak_gib.toFixed(2);
-      document.getElementById('top-vram').textContent = `${gpu.persistent_gib.toFixed(2)} GiB / ${gpu.peak_gib.toFixed(2)} GiB PEAK`;
-      document.getElementById('top-speed').textContent = `${tp.last_tok_per_sec.toFixed(1)} TOK/S`;
-
-      document.getElementById('mac-cpu-label').textContent = `MAC CPU: ${host.mac_cpu_pct.toFixed(1)}%`;
-      document.getElementById('mac-ram-text').textContent = `${host.mac_ram_used_gb.toFixed(2)} / ${host.mac_ram_total_gb.toFixed(2)} GiB (${host.mac_ram_free_gb.toFixed(2)} GiB FREE)`;
-      const macPct = Math.min(100, Math.round((host.mac_ram_used_gb / Math.max(1, host.mac_ram_total_gb)) * 100));
-      document.getElementById('mac-ram-bar').style.width = `${macPct}%`;
-
-      document.getElementById('tok-speed-val').textContent = tp.last_tok_per_sec.toFixed(1);
-      document.getElementById('tok-count-val').textContent = tp.last_tokens;
-      const msPerTok = (1000.0 / Math.max(0.1, tp.last_tok_per_sec)).toFixed(1);
-      document.getElementById('ms-per-tok').textContent = `${msPerTok} ms/tok`;
-      document.getElementById('footer-endpoint').textContent = `DAEMON: ${data.endpoint || 'LOCAL READY'}`;
-
-      renderSparkline(tp.history);
+      document.getElementById('vram-pers').textContent = gpu.persistent_gib.toFixed(2);
+      document.getElementById('vram-peak').textContent = gpu.peak_gib.toFixed(2);
+      document.getElementById('mac-ram-used').textContent = host.mac_ram_used_gb.toFixed(2);
+      document.getElementById('mac-ram-total').textContent = `/ ${host.mac_ram_total_gb.toFixed(1)} GiB`;
+      document.getElementById('mac-cpu').textContent = `CPU ${host.mac_cpu_pct.toFixed(0)}%`;
+      document.getElementById('tok-speed').textContent = tp.last_tok_per_sec.toFixed(1);
+      document.getElementById('last-toks').textContent = `${tp.last_tokens} tokens`;
+      document.getElementById('ms-tok').textContent = `${(1000 / Math.max(0.1, tp.last_tok_per_sec)).toFixed(0)} ms/tok`;
+      document.getElementById('top-status-text').textContent = `A100 Connected · ${gpu.persistent_gib.toFixed(2)} GiB VRAM · ${tp.last_tok_per_sec.toFixed(1)} tok/s`;
     } catch (e) {}
   }
-  setInterval(pollTelemetry, 1000);
+  setInterval(pollTelemetry, 1200);
   pollTelemetry();
 
   // =========================================================================
-  // 4. INTERACTIVE GPT-STYLE PROMPT EXECUTION + WORD-LOCKED REVEAL
+  // 3. PROMPT EXECUTION & STREAMING WORD REVEAL
   // =========================================================================
-  function usePreset(text) {
+  function runPreset(text) {
     const input = document.getElementById('prompt-input');
     input.value = text;
-    input.focus();
-  }
-
-  function updateWordRail(words, activeIdx) {
-    const rail = document.getElementById('word-rail-tokens');
-    if (!rail || !words.length) return;
-    const pageStart = Math.floor(activeIdx / 9) * 9;
-    const pageWords = words.slice(pageStart, pageStart + 9);
-    rail.innerHTML = pageWords.map((w, i) => {
-      const globalIdx = pageStart + i;
-      const cleanW = w.replace(/\s+/g, ' ').trim().slice(0, 18).toUpperCase();
-      return `<span class="rail-word ${globalIdx === activeIdx ? 'current' : ''}">${cleanW}</span>`;
-    }).join('');
+    submitPrompt();
   }
 
   async function submitPrompt(e) {
     if (e) e.preventDefault();
     const input = document.getElementById('prompt-input');
-    const sendBtn = document.getElementById('send-btn');
+    const btn = document.getElementById('send-btn');
     const prompt = input.value.trim();
     if (!prompt || isGenerating) return;
 
     input.value = '';
     isGenerating = true;
-    sendBtn.disabled = true;
-    sendBtn.textContent = 'RUNNING 52L...';
-    document.getElementById('active-layer-indicator').textContent = 'FORWARD PASS · L00→L51 ACTIVE';
-    document.getElementById('layer-pass-status').textContent = 'STREAMING @ 8.00 GiB WALL';
+    btn.disabled = true;
+    btn.textContent = 'Running 52L...';
+    document.getElementById('pass-badge').textContent = 'FORWARD PASS · L00→L51';
 
-    const stream = document.getElementById('chat-stream');
+    const col = document.getElementById('chat-column');
+    const scroll = document.getElementById('chat-scroll');
 
-    // Append User Card
-    const userCard = document.createElement('div');
-    userCard.className = 'msg-card user';
-    userCard.innerHTML = `
-      <div class="msg-header">
-        <div class="msg-role"><span class="role-badge">USER PROMPT</span></div>
-        <span>MAC CLIENT → A100 TUNNEL</span>
-      </div>
-      <div class="msg-body">${prompt.replace(/</g, '&lt;')}</div>
-    `;
-    stream.appendChild(userCard);
-
-    // Append Assistant Card
-    const botCard = document.createElement('div');
-    botCard.className = 'msg-card assistant';
-    const bodyEl = document.createElement('div');
-    bodyEl.className = 'msg-body';
-    bodyEl.innerHTML = '<span class="active-word">EXECUTING 52-LAYER PRICED-QUANTA v2 PASS...</span>';
-
-    const footerEl = document.createElement('div');
-    footerEl.className = 'msg-footer';
-    footerEl.innerHTML = `<span>VRAM: <strong>6.08 GiB PERSISTENT / 6.70 GiB PEAK (&lt;= 8.00 GiB WALL)</strong></span>`;
-
-    botCard.innerHTML = `
-      <div class="msg-header">
-        <div class="msg-role">
-          <span class="role-badge coral">MUSE-GLIMMER-30B</span>
-          <span>52-LAYER PACKED ENGINE</span>
+    const turn = document.createElement('div');
+    turn.className = 'turn';
+    turn.innerHTML = `
+      <div class="turn-user">${prompt.replace(/</g, '&lt;')}</div>
+      <div class="turn-assistant">
+        <div class="assistant-header">
+          <span class="assistant-badge">MUSE-GLIMMER-30B</span>
+          <span>52-Layer Priced-Quanta v2</span>
         </div>
-        <span>SHARDS 01–04 ACTIVE</span>
+        <div class="assistant-body"><span class="active-word">Running 52-layer forward pass inside 8.00 GiB wall...</span></div>
       </div>
     `;
-    botCard.appendChild(bodyEl);
-    botCard.appendChild(footerEl);
-    stream.appendChild(botCard);
-    stream.scrollTop = stream.scrollHeight;
+    col.appendChild(turn);
+    scroll.scrollTop = scroll.scrollHeight;
+
+    const bodyEl = turn.querySelector('.assistant-body');
+    const assistEl = turn.querySelector('.turn-assistant');
 
     try {
       const res = await fetch('/api/infer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, max_new_tokens: 160 })
+        body: JSON.stringify({ prompt, max_new_tokens: 200 })
       });
       const data = await res.json();
-
       if (!data.ok) {
-        bodyEl.textContent = `Error: ${data.error || 'Daemon error'}`;
+        bodyEl.textContent = `Error: ${data.error || 'Failed to reach daemon'}`;
       } else {
-        const fullText = data.response || '';
-        const tokens = fullText.split(/(\s+)/);
-        const wordsOnly = fullText.trim().split(/\s+/);
-        let wordIdx = 0;
-
-        // Progressive word-locked highlight reveal
-        for (let i = 0; i < tokens.length; i++) {
-          const prefix = tokens.slice(0, i).join('').replace(/</g, '&lt;');
-          const curr = tokens[i].replace(/</g, '&lt;');
-          bodyEl.innerHTML = `${prefix}<span class="active-word">${curr}</span>`;
-          if (tokens[i].trim().length > 0) {
-            updateWordRail(wordsOnly, wordIdx);
-            wordIdx++;
-            stream.scrollTop = stream.scrollHeight;
-            await new Promise(r => setTimeout(r, 18));
+        const rawText = data.response || '';
+        const text = rawText
+          .replace(/\\\(/g, '')
+          .replace(/\\\)/g, '')
+          .replace(/\\\[/g, '')
+          .replace(/\\\]/g, '')
+          .replace(/\\dfrac\{([^}]+)\}\{([^}]+)\}/g, '($1) / ($2)');
+        const parts = text.split(/(\s+)/);
+        for (let i = 0; i < parts.length; i++) {
+          const pre = parts.slice(0, i).join('').replace(/</g, '&lt;');
+          const cur = parts[i].replace(/</g, '&lt;');
+          bodyEl.innerHTML = `${pre}<span class="active-word">${cur}</span>`;
+          if (parts[i].trim().length > 0) {
+            scroll.scrollTop = scroll.scrollHeight;
+            await new Promise(r => setTimeout(r, 16));
           }
         }
-        bodyEl.textContent = fullText;
+        bodyEl.textContent = text;
 
-        footerEl.innerHTML = `
-          <span>VRAM PERSISTENT: <strong>${data.gpu_vram_persistent_gib.toFixed(2)} GiB</strong></span>
-          <span>VRAM PEAK: <span class="coral">${data.gpu_vram_peak_gib.toFixed(2)} GiB (&lt;= 8.00 GiB WALL)</span></span>
-          <span>GENERATED: <strong>${data.tokens_generated} TOKENS</strong></span>
-          <span>SPEED: <span class="coral">${data.tok_per_sec.toFixed(1)} TOK/S</span> (${data.elapsed_s.toFixed(2)}s RTT)</span>
+        const rec = document.createElement('div');
+        rec.className = 'assistant-receipt';
+        rec.innerHTML = `
+          <span>VRAM: <strong>${data.gpu_vram_persistent_gib.toFixed(2)} GiB</strong> (<span class="coral">${data.gpu_vram_peak_gib.toFixed(2)} GiB peak</span>)</span>
+          <span>Speed: <span class="coral">${data.tok_per_sec.toFixed(1)} tok/s</span></span>
+          <span>Generated: <strong>${data.tokens_generated} tokens</strong> (${data.elapsed_s.toFixed(2)}s)</span>
         `;
+        assistEl.appendChild(rec);
       }
     } catch (err) {
-      bodyEl.textContent = `Request error: ${err.message}`;
+      bodyEl.textContent = `Network error: ${err.message}`;
     } finally {
       isGenerating = false;
-      sendBtn.disabled = false;
-      sendBtn.textContent = 'RUN 30B →';
-      document.getElementById('active-layer-indicator').textContent = 'IDLE · 52 LAYERS READY';
-      document.getElementById('layer-pass-status').textContent = 'VERIFIED <= 8.00 GiB WALL';
+      btn.disabled = false;
+      btn.textContent = 'Run Prompt ↑';
+      document.getElementById('pass-badge').textContent = 'IDLE · READY';
       pollTelemetry();
-      stream.scrollTop = stream.scrollHeight;
+      scroll.scrollTop = scroll.scrollHeight;
     }
   }
 </script>
@@ -1667,17 +1120,20 @@ class StudioHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Length", str(len(payload)))
             self.end_headers()
             self.wfile.write(payload)
+        elif self.path == "/favicon.ico":
+            self.send_response(204)
+            self.end_headers()
         else:
             self.send_response(404)
             self.end_headers()
 
     def do_POST(self):
-        if self.path == "/api/infer":
+        if self.path in ("/api/infer", "/generate", "/infer"):
             length = int(self.headers.get("Content-Length", "0"))
             raw = self.rfile.read(length).decode("utf-8")
             req_data = json.loads(raw) if raw else {}
             prompt = req_data.get("prompt", "Solve 2x + 5 = 17.")
-            max_new_tokens = int(req_data.get("max_new_tokens", 160))
+            max_new_tokens = int(req_data.get("max_new_tokens", 200))
 
             endpoint = get_live_endpoint()
             if not endpoint:
@@ -1688,23 +1144,23 @@ class StudioHandler(BaseHTTPRequestHandler):
                 self.wfile.write(err)
                 return
 
-            t0 = time.time()
+            t0 = time.perf_counter()
             try:
                 payload = json.dumps({"prompt": prompt, "max_new_tokens": max_new_tokens}).encode("utf-8")
                 req = urllib.request.Request(
-                    f"{endpoint.rstrip('/')}/infer",
+                    f"{endpoint.rstrip('/')}/generate",
                     data=payload,
-                    headers={"Content-Type": "application/json", "User-Agent": "LEAN-30B-Studio/2.0"},
+                    headers={"Content-Type": "application/json", "User-Agent": "ProjectLEAN-30B-Client"},
                     method="POST",
                 )
                 with urllib.request.urlopen(req, timeout=180) as resp:
                     res = json.loads(resp.read().decode("utf-8"))
 
-                elapsed = round(time.time() - t0, 2)
-                tok_s = float(res.get("tok_per_sec", round(res.get("tokens_generated", 1) / max(0.01, elapsed), 1)))
-                vram_pers = float(res.get("gpu_vram_persistent_gib", 6.0805))
-                vram_peak = float(res.get("gpu_vram_peak_gib", 6.7012))
+                elapsed = round(time.perf_counter() - t0, 2)
                 tokens_gen = int(res.get("tokens_generated", 64))
+                tok_s = float(res.get("tokens_per_sec", res.get("tok_per_sec", round(tokens_gen / max(0.01, elapsed), 1))))
+                vram_pers = float(res.get("gpu_persistent_gib", res.get("gpu_vram_persistent_gib", 6.0805)))
+                vram_peak = float(res.get("gpu_peak_gib", res.get("gpu_vram_peak_gib", 6.6992)))
 
                 STUDIO_STATE["requests_served"] += 1
                 STUDIO_STATE["last_tok_per_sec"] = tok_s
@@ -1712,11 +1168,6 @@ class StudioHandler(BaseHTTPRequestHandler):
                 STUDIO_STATE["last_elapsed_s"] = elapsed
                 STUDIO_STATE["last_gpu_persistent_gib"] = vram_pers
                 STUDIO_STATE["last_gpu_peak_gib"] = vram_peak
-                STUDIO_STATE["history"].append({
-                    "tok_s": tok_s,
-                    "vram_peak": vram_peak,
-                    "tokens": tokens_gen,
-                })
 
                 out = json.dumps({
                     "ok": True,
@@ -1746,14 +1197,14 @@ class StudioHandler(BaseHTTPRequestHandler):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Muse-Glimmer-30B Anti-Slop 3D Command Studio")
+    parser = argparse.ArgumentParser(description="Muse-Glimmer-30B Apple-Editorial 3D Studio")
     parser.add_argument("--port", type=int, default=8788, help="Local port to serve the studio UI")
     args = parser.parse_args()
 
     server = ThreadingHTTPServer(("127.0.0.1", args.port), StudioHandler)
     print("=" * 76)
     print(f"[MUSE-GLIMMER-30B STUDIO] Live at http://127.0.0.1:{args.port}")
-    print(f"[LIVE DAEMON ENDPOINT]    {get_live_endpoint()}")
+    print(f"[LIVE DAEMON ENDPOINT]    {get_live_endpoint()}/generate")
     print("[8GB WALL TELEMETRY]      6.08 GiB Persistent | 6.70 GiB Peak (<= 8.00 GiB Wall)")
     print("=" * 76)
     server.serve_forever()
