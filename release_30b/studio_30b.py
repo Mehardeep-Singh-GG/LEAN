@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 """
-Muse-Glimmer-30B (LEAN Priced-Quanta v2) — Apple-Editorial Anti-Slop 3D Studio
-===============================================================================
-An airy, Apple-Keynote-inspired matte interface combining:
-  - A sculptural 3D 52-layer neural core (Three.js) with spring camera physics
-  - Clean, spacious parallel hardware telemetry (GPU VRAM vs 8.00 GiB Wall, Host RAM, tok/s)
-  - An effortless GPT-style conversational canvas wired directly to `/generate` on the live A100 daemon.
-
-Palette (MOTION.md & brand.md — Strict Flat Matte):
-  - #121214 Matte Obsidian Background
-  - #FF5A5F Signal Coral Primary Accent
-  - #EAEAEA Pure Off-White Foreground
-  - #8A8A96 Muted Technical Slate
-  - #26262B Structural Hairlines
+Muse-Glimmer-30B (LEAN Priced-Quanta v2) — Apple Daylight 3D Cutaway Studio
+===========================================================================
+An ultra-clean Apple-Keynote Daylight White (`#F7F7F5` / `#FFFFFF`) studio where:
+  1. Submitting any prompt physically OPENS UP the 52-layer 30B model in 3D:
+     - Outer casing peels open via snappy spring physics
+     - The 52 layers separate vertically into an Apple-Silicon-style exploded cutaway
+     - The 20% Thinking Engine layers (L00-02, L24-27, L49-51 at 4.18-bit + FP16 SwiGLU outlier pillars)
+       and 80% Trivia Warehouse layers (42 bulk layers compressed 4x to 2.08-bit group-64) are exposed
+     - A live quantization & forward-pass wave travels through L00 -> L51 with a real-time Layer Inspector HUD.
+  2. Parallel Hardware Telemetry (GPU VRAM vs 8.00 GiB Wall, Mac + A100 Host RAM, Token Speed) updates live.
 
 Usage:
   .venv/bin/python release_30b/studio_30b.py --port 8788
@@ -35,8 +32,8 @@ except ImportError:
 RELEASE_DIR = Path(__file__).resolve().parent
 
 STUDIO_STATE = {
-    "requests_served": 1,
-    "last_tok_per_sec": 11.7,
+    "requests_served": 2,
+    "last_tok_per_sec": 11.8,
     "last_tokens": 105,
     "last_elapsed_s": 10.33,
     "last_gpu_persistent_gib": 6.0805,
@@ -104,20 +101,21 @@ HTML_PAGE = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Muse-Glimmer-30B · LEAN Studio</title>
+<title>Muse-Glimmer-30B · Apple Daylight 3D Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
   :root {
-    --bg: #121214;
-    --surface: #17171B;
-    --surface-hover: #1E1E24;
+    --bg: #F6F6F3;
+    --card: #FFFFFF;
+    --surface-subtle: #EFEFEB;
+    --ink: #121214;
+    --muted: #6E6E77;
     --coral: #FF5A5F;
-    --fg: #EAEAEA;
-    --muted: #8A8A96;
-    --rule: #26262B;
+    --rule: #E2E2DC;
+    --rule-strong: #CFCFC8;
   }
 
   * {
@@ -132,7 +130,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
     width: 100%;
     height: 100%;
     background-color: var(--bg);
-    color: var(--fg);
+    color: var(--ink);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     overflow: hidden;
     -webkit-font-smoothing: antialiased;
@@ -140,33 +138,44 @@ HTML_PAGE = r"""<!DOCTYPE html>
 
   .app {
     display: grid;
-    grid-template-rows: 64px 1fr;
+    grid-template-rows: 62px 1fr;
     width: 100vw;
     height: 100vh;
     background: var(--bg);
   }
 
-  /* MINIMAL APPLE-STYLE TOP BAR */
+  /* APPLE STUDIO MINIMAL TOP BAR */
   .topbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 36px;
     border-bottom: 1px solid var(--rule);
-    background: var(--bg);
+    background: var(--card);
   }
 
   .brand {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 14px;
+  }
+
+  .brand-mark {
+    background: var(--ink);
+    color: var(--card);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 6px;
+    letter-spacing: 0.04em;
   }
 
   .brand-name {
     font-weight: 800;
     font-size: 18px;
     letter-spacing: -0.03em;
-    color: var(--fg);
+    color: var(--ink);
   }
 
   .brand-meta {
@@ -179,38 +188,38 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .status-pill {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
+    gap: 9px;
     padding: 6px 14px;
     border: 1px solid var(--rule);
     border-radius: 999px;
-    background: var(--surface);
+    background: var(--bg);
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     font-weight: 700;
-    color: var(--fg);
+    color: var(--ink);
   }
 
   .dot {
-    width: 7px;
-    height: 7px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     background: var(--coral);
   }
 
-  /* TWO-ZONE SPATIAL LAYOUT */
+  /* TWO-ZONE LAYOUT */
   .main-grid {
     display: grid;
-    grid-template-columns: 520px 1fr;
+    grid-template-columns: 560px 1fr;
     height: 100%;
     overflow: hidden;
   }
 
-  /* LEFT ZONE: SCULPTURAL 3D STAGE + PARALLEL BENTO METRICS */
+  /* LEFT ZONE: 3D SURGICAL CUTAWAY STAGE + BENTO TELEMETRY */
   .left-stage {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 28px 32px;
+    padding: 24px 28px;
     border-right: 1px solid var(--rule);
     background: var(--bg);
     overflow: hidden;
@@ -219,15 +228,15 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .stage-card {
     position: relative;
     flex: 1;
-    min-height: 320px;
+    min-height: 360px;
     border: 1px solid var(--rule);
-    border-radius: 16px;
-    background: var(--surface);
+    border-radius: 20px;
+    background: var(--card);
     overflow: hidden;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
   }
 
-  /* Plane 1: Giant World-Space Monument Backdrop */
+  /* Plane 1: Giant World-Space Monument Typography Behind 3D Weights */
   .plane1-type {
     position: absolute;
     inset: 0;
@@ -243,15 +252,19 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .plane1-word {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
-    font-size: 132px;
-    line-height: 0.82;
+    font-size: 138px;
+    line-height: 0.80;
     letter-spacing: -0.06em;
     color: transparent;
-    -webkit-text-stroke: 1.5px #25252C;
+    -webkit-text-stroke: 2px #ECECE6;
     text-transform: uppercase;
   }
 
-  /* Plane 2: Three.js Canvas */
+  .plane1-word.coral-stroke {
+    -webkit-text-stroke: 2px #FFE2E3;
+  }
+
+  /* Plane 2: Three.js WebGL Stage */
   #three-canvas {
     position: absolute;
     inset: 0;
@@ -261,8 +274,8 @@ HTML_PAGE = r"""<!DOCTYPE html>
     display: block;
   }
 
-  /* Plane 3: Minimal Floating Camera Header & Mode Switcher */
-  .stage-overlay-top {
+  /* Plane 3: Floating Apple Callout Pills & Live Layer Quantization Inspector */
+  .stage-top-bar {
     position: absolute;
     top: 16px;
     left: 18px;
@@ -274,20 +287,83 @@ HTML_PAGE = r"""<!DOCTYPE html>
     pointer-events: none;
   }
 
-  .stage-label {
+  .hud-pill {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
-    color: var(--muted);
+    color: var(--ink);
     background: var(--bg);
-    padding: 5px 10px;
-    border-radius: 8px;
-    border: 1px solid var(--rule);
+    padding: 6px 11px;
+    border-radius: 999px;
+    border: 1px solid var(--rule-strong);
   }
 
-  .stage-overlay-bottom {
+  .hud-pill.active-coral {
+    background: var(--coral);
+    color: var(--card);
+    border-color: var(--coral);
+  }
+
+  /* Live Quantization Layer Inspector Banner inside 3D Card */
+  .layer-inspector-bar {
     position: absolute;
-    bottom: 16px;
+    bottom: 56px;
+    left: 18px;
+    right: 18px;
+    z-index: 3;
+    background: var(--bg);
+    border: 1px solid var(--rule-strong);
+    border-radius: 10px;
+    padding: 7px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+    white-space: nowrap;
+    gap: 8px;
+  }
+
+  .inspector-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .inspector-layer-tag {
+    background: var(--ink);
+    color: var(--card);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 7px;
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+
+  .inspector-layer-tag.salient {
+    background: var(--coral);
+  }
+
+  .inspector-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .inspector-bits {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--coral);
+    flex-shrink: 0;
+  }
+
+  .stage-bottom-bar {
+    position: absolute;
+    bottom: 14px;
     left: 18px;
     right: 18px;
     z-index: 3;
@@ -298,11 +374,11 @@ HTML_PAGE = r"""<!DOCTYPE html>
 
   .cam-pills {
     display: inline-flex;
-    gap: 6px;
+    gap: 4px;
     background: var(--bg);
     padding: 4px;
     border-radius: 10px;
-    border: 1px solid var(--rule);
+    border: 1px solid var(--rule-strong);
   }
 
   .cam-pill {
@@ -318,33 +394,45 @@ HTML_PAGE = r"""<!DOCTYPE html>
   }
 
   .cam-pill.active {
-    background: var(--coral);
-    color: var(--bg);
+    background: var(--ink);
+    color: var(--card);
   }
 
-  .layer-legend-pill {
+  .cam-pill.active-coral {
+    background: var(--coral);
+    color: var(--card);
+  }
+
+  .legend-inline {
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
     font-weight: 700;
     color: var(--muted);
-    background: var(--bg);
-    padding: 6px 10px;
-    border-radius: 8px;
-    border: 1px solid var(--rule);
+    display: flex;
+    gap: 10px;
+    align-items: center;
   }
 
-  /* PARALLEL HARDWARE BENTO GRID */
+  .swatch {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    margin-right: 4px;
+  }
+
+  /* PARALLEL HARDWARE BENTO CARDS */
   .bento-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px;
+    gap: 12px;
   }
 
   .bento-card {
-    padding: 18px 20px;
+    padding: 16px 18px;
     border: 1px solid var(--rule);
-    border-radius: 14px;
-    background: var(--surface);
+    border-radius: 16px;
+    background: var(--card);
   }
 
   .bento-card.wide {
@@ -358,7 +446,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
     font-size: 11px;
     font-weight: 600;
     color: var(--muted);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .bento-kicker span.tag {
@@ -377,11 +465,11 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .bento-number {
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 700;
-    font-size: 38px;
+    font-size: 34px;
     line-height: 1;
     letter-spacing: -0.04em;
     font-variant-numeric: tabular-nums;
-    color: var(--fg);
+    color: var(--ink);
   }
 
   .bento-number.coral {
@@ -390,37 +478,36 @@ HTML_PAGE = r"""<!DOCTYPE html>
 
   .bento-unit {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     color: var(--muted);
-    margin-left: 6px;
+    margin-left: 5px;
   }
 
   .bento-sub {
-    font-size: 12px;
+    font-size: 11.5px;
+    font-weight: 500;
     color: var(--muted);
     margin-top: 8px;
     display: flex;
     justify-content: space-between;
   }
 
-  /* Minimal Meter Track */
   .meter-track {
     position: relative;
     height: 8px;
     border-radius: 999px;
-    background: var(--bg);
-    border: 1px solid var(--rule);
-    margin-top: 12px;
+    background: var(--surface-subtle);
+    margin-top: 10px;
     overflow: hidden;
   }
 
-  .meter-fill-white {
+  .meter-fill-ink {
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
-    background: var(--fg);
+    background: var(--ink);
     width: 76%;
   }
 
@@ -433,19 +520,19 @@ HTML_PAGE = r"""<!DOCTYPE html>
     width: 7.8%;
   }
 
-  /* RIGHT ZONE: APPLE-STYLE SPACIOUS CONVERSATIONAL CANVAS */
+  /* RIGHT ZONE: APPLE DAYLIGHT CONVERSATIONAL CANVAS */
   .right-chat {
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: var(--bg);
+    background: var(--card);
     overflow: hidden;
   }
 
   .chat-scroll {
     flex: 1;
     overflow-y: auto;
-    padding: 40px 48px 20px 48px;
+    padding: 38px 48px 20px 48px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -453,10 +540,10 @@ HTML_PAGE = r"""<!DOCTYPE html>
 
   .chat-column {
     width: 100%;
-    max-width: 740px;
+    max-width: 720px;
     display: flex;
     flex-direction: column;
-    gap: 28px;
+    gap: 26px;
   }
 
   .hero-intro {
@@ -471,56 +558,54 @@ HTML_PAGE = r"""<!DOCTYPE html>
     color: var(--coral);
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .hero-title {
     font-weight: 900;
-    font-size: 32px;
+    font-size: 30px;
     letter-spacing: -0.035em;
     line-height: 1.12;
-    color: var(--fg);
-    margin-bottom: 10px;
+    color: var(--ink);
+    margin-bottom: 8px;
   }
 
   .hero-desc {
-    font-size: 15px;
+    font-size: 14.5px;
     line-height: 1.6;
     color: var(--muted);
   }
 
-  /* Conversation Turns */
   .turn {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
   }
 
   .turn-user {
     align-self: flex-end;
-    max-width: 85%;
-    background: var(--surface);
+    max-width: 84%;
+    background: var(--bg);
     border: 1px solid var(--rule);
-    padding: 14px 18px;
-    border-radius: 16px 16px 4px 16px;
+    padding: 13px 18px;
+    border-radius: 18px 18px 4px 18px;
     font-size: 15px;
     line-height: 1.55;
-    color: var(--fg);
+    color: var(--ink);
     font-weight: 500;
   }
 
   .turn-assistant {
     align-self: flex-start;
     width: 100%;
-    background: transparent;
-    padding: 4px 0;
+    padding: 2px 0;
   }
 
   .assistant-header {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     font-weight: 700;
@@ -529,16 +614,16 @@ HTML_PAGE = r"""<!DOCTYPE html>
 
   .assistant-badge {
     background: var(--coral);
-    color: var(--bg);
+    color: var(--card);
     padding: 2px 8px;
-    border-radius: 6px;
+    border-radius: 5px;
     font-weight: 800;
   }
 
   .assistant-body {
-    font-size: 16px;
+    font-size: 15.5px;
     line-height: 1.68;
-    color: var(--fg);
+    color: var(--ink);
     white-space: pre-wrap;
     font-weight: 400;
   }
@@ -553,18 +638,18 @@ HTML_PAGE = r"""<!DOCTYPE html>
     display: inline-flex;
     flex-wrap: wrap;
     gap: 16px;
-    margin-top: 14px;
-    padding: 8px 14px;
+    margin-top: 12px;
+    padding: 7px 13px;
     border-radius: 10px;
     border: 1px solid var(--rule);
-    background: var(--surface);
+    background: var(--bg);
     font-family: 'JetBrains Mono', monospace;
     font-size: 11px;
     color: var(--muted);
   }
 
   .assistant-receipt strong {
-    color: var(--fg);
+    color: var(--ink);
   }
 
   .assistant-receipt .coral {
@@ -574,19 +659,20 @@ HTML_PAGE = r"""<!DOCTYPE html>
 
   /* COMPOSER DOCK */
   .composer-dock {
-    padding: 16px 48px 28px 48px;
+    padding: 14px 48px 26px 48px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: var(--bg);
+    background: var(--card);
+    border-top: 1px solid var(--rule);
   }
 
   .composer-wrap {
     width: 100%;
-    max-width: 740px;
+    max-width: 720px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
 
   .preset-row {
@@ -596,46 +682,45 @@ HTML_PAGE = r"""<!DOCTYPE html>
   }
 
   .preset-pill {
-    background: var(--surface);
-    color: var(--muted);
-    border: 1px solid var(--rule);
+    background: var(--bg);
+    color: var(--ink);
+    border: 1px solid var(--rule-strong);
     border-radius: 999px;
-    padding: 7px 14px;
+    padding: 6px 13px;
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
   }
 
   .preset-pill:hover {
-    color: var(--fg);
-    border-color: var(--fg);
-    background: var(--surface-hover);
+    border-color: var(--coral);
+    color: var(--coral);
   }
 
   .composer-box {
     display: flex;
     align-items: center;
-    background: var(--surface);
-    border: 1.5px solid var(--rule);
+    background: var(--bg);
+    border: 1.5px solid var(--rule-strong);
     border-radius: 16px;
-    padding: 8px 10px 8px 18px;
+    padding: 7px 9px 7px 18px;
     gap: 12px;
   }
 
   .composer-box:focus-within {
-    border-color: var(--fg);
+    border-color: var(--ink);
+    background: var(--card);
   }
 
   .composer-input {
     flex: 1;
     background: transparent;
-    color: var(--fg);
+    color: var(--ink);
     border: none;
     font-family: 'Inter', sans-serif;
     font-size: 15px;
     font-weight: 500;
     outline: none;
-    resize: none;
     height: 36px;
     line-height: 36px;
   }
@@ -645,26 +730,26 @@ HTML_PAGE = r"""<!DOCTYPE html>
   }
 
   .send-btn {
-    background: var(--coral);
-    color: var(--bg);
+    background: var(--ink);
+    color: var(--card);
     border: none;
     border-radius: 11px;
     padding: 10px 20px;
     font-family: 'Inter', sans-serif;
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: -0.01em;
     cursor: pointer;
     white-space: nowrap;
   }
 
   .send-btn:hover {
-    background: var(--fg);
-    color: var(--bg);
+    background: var(--coral);
+    color: var(--card);
   }
 
   .send-btn:disabled {
-    background: var(--rule);
+    background: var(--rule-strong);
     color: var(--muted);
     cursor: not-allowed;
   }
@@ -672,48 +757,64 @@ HTML_PAGE = r"""<!DOCTYPE html>
 </head>
 <body>
 <div class="app">
-  <!-- MINIMAL APPLE-STYLE TOP BAR -->
+  <!-- MINIMAL APPLE STUDIO TOP BAR -->
   <header class="topbar">
     <div class="brand">
+      <span class="brand-mark">LEAN v2.0</span>
       <span class="brand-name">Muse-Glimmer-30B</span>
-      <span class="brand-meta">LEAN Priced-Quanta v2 · 6.5 GB (4 Shards) · 52 Layers</span>
+      <span class="brand-meta">52-Layer Priced-Quanta · 6.5 GB (4 Shards) · &lt;= 8.00 GiB Wall</span>
     </div>
     <div class="status-pill">
       <span class="dot"></span>
-      <span id="top-status-text">A100 Connected · 6.08 GiB VRAM · 11.7 tok/s</span>
+      <span id="top-status-text">A100 Live · 6.08 GiB VRAM · 11.8 tok/s</span>
     </div>
   </header>
 
   <!-- TWO-ZONE WORKSPACE -->
   <main class="main-grid">
-    <!-- LEFT: SCULPTURAL 3D CORE + 3 CLEAN BENTO METRIC CARDS -->
+    <!-- LEFT: 3D SURGICAL WEIGHT CUTAWAY + PARALLEL BENTO METRICS -->
     <section class="left-stage">
       <div class="stage-card">
+        <!-- Plane 1: Giant World-Space Typography Behind 3D Model -->
         <div class="plane1-type" id="monument-backdrop">
           <div class="plane1-word">30B</div>
-          <div class="plane1-word">6.5GB</div>
+          <div class="plane1-word coral-stroke">6.08G</div>
         </div>
 
+        <!-- Plane 2: Three.js 3D Stage -->
         <canvas id="three-canvas"></canvas>
 
-        <div class="stage-overlay-top">
-          <span class="stage-label" id="cam-label">52-LAYER CORE · 3D CAM [3.4, 2.0, 7.6]</span>
-          <span class="stage-label" style="color:var(--coral)" id="pass-badge">IDLE · READY</span>
+        <!-- Plane 3: Top Camera & State Pills -->
+        <div class="stage-top-bar">
+          <span class="hud-pill" id="cam-label">3D CORE · CAM [3.4, 2.0, 7.6]</span>
+          <span class="hud-pill" id="pass-badge">ASSEMBLED · 52 LAYERS</span>
         </div>
 
-        <div class="stage-overlay-bottom">
-          <div class="cam-pills">
-            <button class="cam-pill active" onclick="setCameraMode('orbit', this)">Orbit</button>
-            <button class="cam-pill" onclick="setCameraMode('cutaway', this)">Cutaway</button>
-            <button class="cam-pill" onclick="setCameraMode('tunnel', this)">Fly-Through</button>
+        <!-- Plane 3: Live Layer Quantization Inspector (Shows exact layer opening up during prompt) -->
+        <div class="layer-inspector-bar" id="layer-inspector">
+          <div class="inspector-left">
+            <span class="inspector-layer-tag salient" id="insp-tag">L24–L27</span>
+            <span class="inspector-title" id="insp-title">20% Thinking Engine vs 80% Bulk</span>
           </div>
-          <span class="layer-legend-pill">■ 20% Thinking (4.18b) · ■ 80% Bulk (2.08b)</span>
+          <span class="inspector-bits" id="insp-bits">4.18b Salient / 2.08b Bulk</span>
+        </div>
+
+        <!-- Plane 3: Camera & Cutaway Controls -->
+        <div class="stage-bottom-bar">
+          <div class="cam-pills">
+            <button class="cam-pill active" id="btn-assembled" onclick="setCameraMode('orbit', this)">Assembled</button>
+            <button class="cam-pill" id="btn-open" onclick="setCameraMode('cutaway', this)">Open Model Weights</button>
+            <button class="cam-pill" id="btn-tunnel" onclick="setCameraMode('tunnel', this)">Layer Dive</button>
+          </div>
+          <div class="legend-inline">
+            <span><i class="swatch" style="background:#FF5A5F"></i>4.18b + FP16 Outliers</span>
+            <span><i class="swatch" style="background:#121214"></i>2.08b Group-64</span>
+          </div>
         </div>
       </div>
 
-      <!-- CLEAN APPLE-STYLE BENTO TELEMETRY -->
+      <!-- PARALLEL HARDWARE TELEMETRY BENTO -->
       <div class="bento-grid">
-        <!-- Bento 1: GPU VRAM vs 8.00 GiB Wall -->
         <div class="bento-card wide">
           <div class="bento-kicker">
             <span>GPU VRAM vs. 8.00 GiB Hardware Wall</span>
@@ -730,16 +831,15 @@ HTML_PAGE = r"""<!DOCTYPE html>
             </div>
           </div>
           <div class="meter-track">
-            <div class="meter-fill-white"></div>
+            <div class="meter-fill-ink"></div>
             <div class="meter-fill-coral"></div>
           </div>
           <div class="bento-sub">
-            <span>59.90 GB FP16 → 6.53 GB Raw (8.98×)</span>
-            <span style="color:var(--fg)">1.30 GiB Free Headroom</span>
+            <span>59.90 GB FP16 → 6.53 GB Raw (8.98× Compression)</span>
+            <span style="color:var(--ink); font-weight:700;">1.30 GiB Free Headroom</span>
           </div>
         </div>
 
-        <!-- Bento 2: Parallel Host RAM -->
         <div class="bento-card">
           <div class="bento-kicker">
             <span>Host RAM (Mac + A100)</span>
@@ -751,41 +851,39 @@ HTML_PAGE = r"""<!DOCTYPE html>
           </div>
           <div class="bento-sub">
             <span>A100 Host RAM</span>
-            <span style="color:var(--fg)">2.86 GB</span>
+            <span style="color:var(--ink); font-weight:700;">2.86 GB</span>
           </div>
         </div>
 
-        <!-- Bento 3: Inference Speed -->
         <div class="bento-card">
           <div class="bento-kicker">
-            <span>Token Throughput</span>
+            <span>Inference Speed</span>
             <span class="tag" id="ms-tok">85 ms/tok</span>
           </div>
           <div>
-            <span class="bento-number coral" id="tok-speed">11.7</span>
+            <span class="bento-number coral" id="tok-speed">11.8</span>
             <span class="bento-unit">tok/s</span>
           </div>
           <div class="bento-sub">
             <span>4 Shards (6.18 GiB)</span>
-            <span style="color:var(--fg)" id="last-toks">105 tokens</span>
+            <span style="color:var(--ink); font-weight:700;" id="last-toks">105 tokens</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- RIGHT: SPACIOUS CONVERSATIONAL CANVAS -->
+    <!-- RIGHT: APPLE DAYLIGHT CONVERSATIONAL CANVAS -->
     <section class="right-chat">
       <div class="chat-scroll" id="chat-scroll">
         <div class="chat-column" id="chat-column">
           <div class="hero-intro">
-            <div class="hero-kicker">20% Thinking Engine · 80% Trivia Warehouse</div>
-            <h1 class="hero-title">30-Billion Parameters inside an 8 GiB Wall.</h1>
+            <div class="hero-kicker">Interactive 3D Weight Cutaway · 2.212 Bits/Param</div>
+            <h1 class="hero-title">Watch the 30B Model Open Up as It Thinks.</h1>
             <p class="hero-desc">
-              Ask any deductive reasoning, algebra, or cognitive reflection prompt below. Every prompt executes live across all 52 layers of <strong>Muse-Glimmer-30B</strong> while streaming GPU VRAM and Host RAM telemetry in parallel.
+              Enter any prompt below. As <strong>Muse-Glimmer-30B</strong> generates tokens, the 3D stage on the left peels open its outer casing to expose the <strong>20% Thinking Engine</strong> (<code>4.18-bit</code> salient layers + <code>FP16</code> SwiGLU outlier pillars) and the <strong>80% Trivia Warehouse</strong> (<code>2.08-bit</code> compressed bulk layers) firing across all 52 layers.
             </p>
           </div>
 
-          <!-- Pre-verified Live Turn -->
           <div class="turn">
             <div class="turn-user">A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How much does the ball cost? Show the algebra clearly.</div>
             <div class="turn-assistant">
@@ -814,7 +912,7 @@ The ball costs $0.05 (and the bat costs $1.05, totaling $1.10).</div>
         </div>
       </div>
 
-      <!-- FLOATING-FEEL COMPOSER DOCK -->
+      <!-- COMPOSER DOCK -->
       <div class="composer-dock">
         <div class="composer-wrap">
           <div class="preset-row">
@@ -827,10 +925,10 @@ The ball costs $0.05 (and the bat costs $1.05, totaling $1.10).</div>
               type="text"
               id="prompt-input"
               class="composer-input"
-              placeholder="Message Muse-Glimmer-30B..."
+              placeholder="Ask Muse-Glimmer-30B anything (opens 3D layer quantization on run)..."
               autocomplete="off"
             />
-            <button type="submit" class="send-btn" id="send-btn">Run Prompt ↑</button>
+            <button type="submit" class="send-btn" id="send-btn">Run &amp; Open 3D ↑</button>
           </form>
         </div>
       </div>
@@ -840,7 +938,7 @@ The ball costs $0.05 (and the bat costs $1.05, totaling $1.10).</div>
 
 <script>
   // =========================================================================
-  // 1. THREE.JS SCULPTURAL 52-LAYER CORE (FLAT MATTE + SPRING CAMERA)
+  // 1. THREE.JS 52-LAYER SURGICAL CUTAWAY ENGINE (OPENS UP ON PROMPT)
   // =========================================================================
   const SALIENT_LAYERS = new Set([0, 1, 2, 24, 25, 26, 27, 49, 50, 51]);
   const canvas = document.getElementById('three-canvas');
@@ -848,75 +946,162 @@ The ball costs $0.05 (and the bat costs $1.05, totaling $1.10).</div>
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
   const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+  const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.62));
-  const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.55);
-  dirLight1.position.set(5, 10, 7);
-  scene.add(dirLight1);
-  const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.22);
-  dirLight2.position.set(-7, -4, -5);
-  scene.add(dirLight2);
+  // Clean Daylight Studio Directional Lighting
+  scene.add(new THREE.AmbientLight(0xffffff, 0.72));
+  const dir1 = new THREE.DirectionalLight(0xffffff, 0.45);
+  dir1.position.set(6, 12, 8);
+  scene.add(dir1);
+  const dir2 = new THREE.DirectionalLight(0xffffff, 0.20);
+  dir2.position.set(-8, -5, -6);
+  scene.add(dir2);
 
   const coreGroup = new THREE.Group();
-  coreGroup.scale.set(0.64, 0.64, 0.64);
-  coreGroup.position.y = 0.22;
+  coreGroup.scale.set(0.50, 0.50, 0.50);
+  coreGroup.position.y = 0.30;
   scene.add(coreGroup);
 
-  const layerMeshes = [];
+  // Materials (Strict Flat Matte Solids)
   const matCoral = new THREE.MeshLambertMaterial({ color: 0xFF5A5F });
-  const matWhite = new THREE.MeshLambertMaterial({ color: 0xEAEAEA });
-  const matDark = new THREE.MeshLambertMaterial({ color: 0x282830 });
-  const edgeDark = new THREE.LineBasicMaterial({ color: 0x121214 });
-  const edgeSubtle = new THREE.LineBasicMaterial({ color: 0x3D3D48 });
+  const matInk = new THREE.MeshLambertMaterial({ color: 0x16161A });
+  const matSlate = new THREE.MeshLambertMaterial({ color: 0xD8D8D2 });
+  const matActivePulse = new THREE.MeshLambertMaterial({ color: 0xFF5A5F });
+  const edgeInk = new THREE.LineBasicMaterial({ color: 0x121214 });
+  const edgeMuted = new THREE.LineBasicMaterial({ color: 0xA8A8A0 });
+  const busLineMat = new THREE.LineBasicMaterial({ color: 0xFF5A5F });
 
+  // Outer Casing Doors (Left & Right Halves that peel open when cutaway > 0)
+  const leftShellGroup = new THREE.Group();
+  const rightShellGroup = new THREE.Group();
+  coreGroup.add(leftShellGroup);
+  coreGroup.add(rightShellGroup);
+
+  const shellGeo = new THREE.BoxGeometry(0.08, 6.1, 2.55);
+  const shellEdges = new THREE.EdgesGeometry(shellGeo);
+  const leftDoor = new THREE.LineSegments(shellEdges, new THREE.LineBasicMaterial({ color: 0x121214 }));
+  leftDoor.position.set(-1.35, 0, 0);
+  leftShellGroup.add(leftDoor);
+
+  const rightDoor = new THREE.LineSegments(shellEdges, new THREE.LineBasicMaterial({ color: 0x121214 }));
+  rightDoor.position.set(1.35, 0, 0);
+  rightShellGroup.add(rightDoor);
+
+  // Build 52 Layers — Each layer has 3 Explodable Quantized Sub-Modules:
+  //   1. Left Wing: 4-Bit GQA Attention Block (Ink #16161A)
+  //   2. Center Core: 2-Bit Group-64 Compressed MLP Wafer (Slate #D8D8D2)
+  //   3. Right Wing: 4.18-Bit Salient Thinking / FP16 SwiGLU Outlier Block (Coral #FF5A5F)
+  const layerObjects = [];
   for (let i = 0; i < 52; i++) {
     const isSalient = SALIENT_LAYERS.has(i);
-    const w = isSalient ? 2.55 : 2.12;
-    const h = 0.082;
-    const d = isSalient ? 2.55 : 2.12;
-    const geo = new THREE.BoxGeometry(w, h, d);
-    const baseMat = isSalient ? (i >= 24 && i <= 27 ? matCoral : matWhite) : matDark;
-    const mesh = new THREE.Mesh(geo, baseMat);
-    const yPos = (i - 25.5) * 0.118;
-    mesh.position.set(0, yPos, 0);
-    mesh.userData = { index: i, baseY: yPos, isSalient, baseMat };
+    const layerGroup = new THREE.Group();
+    const baseY = (i - 25.5) * 0.112;
+    layerGroup.position.set(0, baseY, 0);
 
-    const edges = new THREE.EdgesGeometry(geo);
-    mesh.add(new THREE.LineSegments(edges, isSalient ? edgeDark : edgeSubtle));
-    coreGroup.add(mesh);
-    layerMeshes.push(mesh);
+    const h = isSalient ? 0.082 : 0.056;
+    const d = isSalient ? 2.25 : 1.92;
+
+    // 1. Left Sub-Module: 4-Bit Attention
+    const attnGeo = new THREE.BoxGeometry(0.72, h, d);
+    const attnMat = isSalient ? matInk : matSlate;
+    const attnMesh = new THREE.Mesh(attnGeo, attnMat);
+    attnMesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(attnGeo), edgeInk));
+    attnMesh.position.set(-0.74, 0, 0);
+    layerGroup.add(attnMesh);
+
+    // 2. Center Sub-Module: 2-Bit Group-64 Bulk MLP
+    const mlpGeo = new THREE.BoxGeometry(0.76, h * 0.78, d);
+    const mlpMat = isSalient ? (i >= 24 && i <= 27 ? matCoral : matInk) : matSlate;
+    const mlpMesh = new THREE.Mesh(mlpGeo, mlpMat);
+    mlpMesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(mlpGeo), isSalient ? edgeInk : edgeMuted));
+    mlpMesh.position.set(0, 0, 0);
+    layerGroup.add(mlpMesh);
+
+    // 3. Right Sub-Module: FP16 SwiGLU Outliers & 4.18b Thinking Crown
+    const outGeo = new THREE.BoxGeometry(0.72, h, d);
+    const outMat = isSalient ? matCoral : matSlate;
+    const outMesh = new THREE.Mesh(outGeo, outMat);
+    outMesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(outGeo), isSalient ? edgeInk : edgeMuted));
+    outMesh.position.set(0.74, 0, 0);
+    layerGroup.add(outMesh);
+
+    // Optical Connector Line across the 3 exploded sub-modules
+    const pts = [new THREE.Vector3(-2.1, 0, 0), new THREE.Vector3(2.1, 0, 0)];
+    const busGeo = new THREE.BufferGeometry().setFromPoints(pts);
+    const busLine = new THREE.Line(busGeo, busLineMat);
+    busLine.visible = isSalient;
+    layerGroup.add(busLine);
+
+    layerGroup.userData = {
+      index: i,
+      baseY,
+      isSalient,
+      attnMesh,
+      attnMat,
+      mlpMesh,
+      mlpMat,
+      outMesh,
+      outMat,
+      busLine
+    };
+    coreGroup.add(layerGroup);
+    layerObjects.push(layerGroup);
   }
 
-  // Subtle 8.00 GiB Hardware Wall Wireframe
-  const wallGeo = new THREE.BoxGeometry(3.2, 6.4, 3.2);
+  // 8.00 GiB Hardware Wall Wireframe Envelope
+  const wallGeo = new THREE.BoxGeometry(3.2, 6.2, 2.8);
   const wallLine = new THREE.LineSegments(
     new THREE.EdgesGeometry(wallGeo),
     new THREE.LineBasicMaterial({ color: 0xFF5A5F })
   );
   coreGroup.add(wallLine);
 
+  // Camera & Cutaway Spring State
   let camMode = 'orbit';
-  const targetCam = { pos: new THREE.Vector3(3.4, 2.0, 7.6), look: new THREE.Vector3(0, 0, 0), cutaway: 0 };
-  const currCam = { pos: new THREE.Vector3(3.4, 2.0, 7.6), vel: new THREE.Vector3(), look: new THREE.Vector3(0, 0, 0), cutaway: 0 };
+  const targetCam = { pos: new THREE.Vector3(3.4, 1.9, 7.6), look: new THREE.Vector3(0, 0, 0), cutaway: 0 };
+  const currCam = { pos: new THREE.Vector3(3.4, 1.9, 7.6), vel: new THREE.Vector3(), look: new THREE.Vector3(0, 0, 0), cutaway: 0 };
 
   function setCameraMode(mode, btn) {
     camMode = mode;
-    document.querySelectorAll('.cam-pill').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
+    document.querySelectorAll('.cam-pill').forEach(b => {
+      b.classList.remove('active');
+      b.classList.remove('active-coral');
+    });
+    if (btn) {
+      btn.classList.add(mode === 'cutaway' ? 'active-coral' : 'active');
+    }
+
+    const badge = document.getElementById('pass-badge');
     if (mode === 'orbit') {
-      targetCam.pos.set(3.4, 2.0, 7.6);
+      targetCam.pos.set(3.4, 1.9, 7.6);
       targetCam.look.set(0, 0, 0);
       targetCam.cutaway = 0;
+      if (!isGenerating && badge) {
+        badge.textContent = 'ASSEMBLED · 52 LAYERS';
+        badge.className = 'hud-pill';
+      }
     } else if (mode === 'cutaway') {
-      targetCam.pos.set(2.6, 0.8, 5.4);
-      targetCam.look.set(0, 0, 0);
-      targetCam.cutaway = 1;
+      targetCam.pos.set(2.7, 0.9, 5.5);
+      targetCam.look.set(0, 0.05, 0);
+      targetCam.cutaway = 1.0;
+      if (badge) {
+        badge.textContent = 'MODEL OPENED · 4.18b vs 2.08b EXPOSED';
+        badge.className = 'hud-pill active-coral';
+      }
     } else if (mode === 'tunnel') {
-      targetCam.pos.set(0, 3.6, 4.1);
-      targetCam.look.set(0, -1.0, 0);
-      targetCam.cutaway = 0.45;
+      targetCam.pos.set(0.0, 3.6, 4.3);
+      targetCam.look.set(0, -0.9, 0);
+      targetCam.cutaway = 0.65;
+      if (badge) {
+        badge.textContent = 'LAYER DIVE · GQA 32Q/8KV';
+        badge.className = 'hud-pill active-coral';
+      }
     }
+  }
+
+  // URL parameter ?open=1 opens cutaway immediately for inspection/screenshots
+  if (window.location.search.includes('open=1')) {
+    setTimeout(() => setCameraMode('cutaway', document.getElementById('btn-open')), 50);
   }
 
   function resizeThree() {
@@ -931,16 +1116,56 @@ The ball costs $0.05 (and the bat costs $1.05, totaling $1.10).</div>
   let isGenerating = false;
   const tStart = performance.now();
 
+  function updateInspectorHUD(layerIdx) {
+    const tagEl = document.getElementById('insp-tag');
+    const titleEl = document.getElementById('insp-title');
+    const bitsEl = document.getElementById('insp-bits');
+    if (!tagEl || !titleEl || !bitsEl) return;
+
+    if (layerIdx < 0) {
+      if (currCam.cutaway > 0.3) {
+        tagEl.textContent = 'OPENED';
+        tagEl.className = 'inspector-layer-tag salient';
+        titleEl.textContent = '10 Salient Thinking Layers Expanded';
+        bitsEl.textContent = '4.18b + FP16 SwiGLU vs 2.08b Bulk';
+      } else {
+        tagEl.textContent = 'L00–L51';
+        tagEl.className = 'inspector-layer-tag';
+        titleEl.textContent = '20% Thinking Engine vs 80% Bulk';
+        bitsEl.textContent = '6.08 GiB Inside 8.00 GiB Wall';
+      }
+      return;
+    }
+
+    const isSal = SALIENT_LAYERS.has(layerIdx);
+    const shardNum = Math.floor(layerIdx / 13) + 1;
+    const lStr = layerIdx < 10 ? '0' + layerIdx : '' + layerIdx;
+    tagEl.textContent = `LAYER ${lStr}/51`;
+    tagEl.className = 'inspector-layer-tag' + (isSal ? ' salient' : '');
+    if (isSal) {
+      titleEl.textContent = `Salient Thinking Layer (Shard 0${shardNum}/04)`;
+      bitsEl.textContent = '4.18-BIT + FP16 SWIGLU OUTLIERS';
+    } else {
+      titleEl.textContent = `Compressed Bulk Layer (Shard 0${shardNum}/04)`;
+      bitsEl.textContent = '2.08-BIT GROUP-64 (4× CRUSH)';
+    }
+  }
+
   function animate(now) {
     requestAnimationFrame(animate);
     const t = (now - tStart) * 0.001;
 
-    if (camMode === 'orbit') {
-      targetCam.pos.x = Math.sin(t * 0.4) * 3.8;
-      targetCam.pos.z = Math.cos(t * 0.4) * 7.4;
-      targetCam.pos.y = 1.7 + Math.sin(t * 0.25) * 0.6;
+    if (camMode === 'orbit' && !isGenerating) {
+      targetCam.pos.x = Math.sin(t * 0.38) * 3.6;
+      targetCam.pos.z = Math.cos(t * 0.38) * 7.4;
+      targetCam.pos.y = 1.6 + Math.sin(t * 0.25) * 0.5;
+    } else if (camMode === 'cutaway' || isGenerating) {
+      targetCam.pos.x = 2.6 + Math.sin(t * 0.6) * 0.55;
+      targetCam.pos.z = 5.4 + Math.cos(t * 0.6) * 0.35;
+      targetCam.pos.y = 0.85 + Math.sin(t * 0.4) * 0.35;
     }
 
+    // Snappy Spring Physics (Stiffness 120, Damping 14)
     const dt = 0.016;
     ['x', 'y', 'z'].forEach(ax => {
       const f = (targetCam.pos[ax] - currCam.pos[ax]) * 16.0;
@@ -953,6 +1178,11 @@ The ball costs $0.05 (and the bat costs $1.05, totaling $1.10).</div>
     camera.position.copy(currCam.pos);
     camera.lookAt(currCam.look);
 
+    // Peel open left & right outer casing doors as cutaway increases
+    leftShellGroup.position.x = -currCam.cutaway * 1.15;
+    rightShellGroup.position.x = currCam.cutaway * 1.15;
+
+    // Tilt Plane 1 Monument Typography behind 3D model
     const mon = document.getElementById('monument-backdrop');
     if (mon) {
       mon.style.transform = `perspective(700px) rotateX(${(-camera.position.y * 1.6).toFixed(1)}deg) rotateY(${(camera.position.x * 2.0).toFixed(1)}deg)`;
@@ -960,17 +1190,36 @@ The ball costs $0.05 (and the bat costs $1.05, totaling $1.10).</div>
 
     const camLabel = document.getElementById('cam-label');
     if (camLabel) {
-      camLabel.textContent = `52-LAYER CORE · CAM [${camera.position.x.toFixed(1)}, ${camera.position.y.toFixed(1)}, ${camera.position.z.toFixed(1)}]`;
+      camLabel.textContent = `3D CORE · CAM [${camera.position.x.toFixed(1)}, ${camera.position.y.toFixed(1)}, ${camera.position.z.toFixed(1)}]`;
     }
 
-    const activeWave = isGenerating ? Math.floor((t * 28) % 52) : -1;
+    // Active Layer Wave during Prompt Execution (or gentle scan when cutaway is open)
+    const activeWave = (isGenerating || currCam.cutaway > 0.5)
+      ? Math.floor((t * (isGenerating ? 24 : 8)) % 52)
+      : -1;
+
+    updateInspectorHUD(activeWave);
+
     for (let i = 0; i < 52; i++) {
-      const m = layerMeshes[i];
-      m.position.y = m.userData.baseY * (1 + currCam.cutaway * 0.34);
-      const tx = (currCam.cutaway > 0.05 && m.userData.isSalient) ? 0.42 * currCam.cutaway : 0;
-      m.position.x += (tx - m.position.x) * 0.15;
-      const isWave = isGenerating && Math.abs(i - activeWave) <= 2;
-      m.material = isWave ? matCoral : m.userData.baseMat;
+      const grp = layerObjects[i];
+      const u = grp.userData;
+      // Vertical exploded separation when cutaway opens
+      grp.position.y = u.baseY * (1.0 + currCam.cutaway * 0.24);
+
+      // Explode each layer into 3 parallel 3D columns:
+      // Left: 4-Bit Attention | Center: 2-Bit Compressed MLP | Right: FP16 SwiGLU Outliers
+      const wingSpread = 0.74 + currCam.cutaway * 1.05 + (u.isSalient ? currCam.cutaway * 0.22 : 0);
+      u.attnMesh.position.x = -wingSpread;
+      u.outMesh.position.x = wingSpread;
+      u.busLine.visible = (currCam.cutaway > 0.25 && u.isSalient);
+
+      const isWave = activeWave >= 0 && Math.abs(i - activeWave) <= 1;
+      const targetZ = (u.isSalient ? 0.35 * currCam.cutaway : -0.10 * currCam.cutaway) + (isWave ? 0.36 : 0);
+      grp.position.z += (targetZ - grp.position.z) * 0.18;
+
+      u.attnMesh.material = isWave ? matActivePulse : u.attnMat;
+      u.mlpMesh.material = isWave ? matActivePulse : u.mlpMat;
+      u.outMesh.material = isWave ? matActivePulse : u.outMat;
     }
 
     renderer.render(scene, camera);
@@ -997,14 +1246,14 @@ The ball costs $0.05 (and the bat costs $1.05, totaling $1.10).</div>
       document.getElementById('tok-speed').textContent = tp.last_tok_per_sec.toFixed(1);
       document.getElementById('last-toks').textContent = `${tp.last_tokens} tokens`;
       document.getElementById('ms-tok').textContent = `${(1000 / Math.max(0.1, tp.last_tok_per_sec)).toFixed(0)} ms/tok`;
-      document.getElementById('top-status-text').textContent = `A100 Connected · ${gpu.persistent_gib.toFixed(2)} GiB VRAM · ${tp.last_tok_per_sec.toFixed(1)} tok/s`;
+      document.getElementById('top-status-text').textContent = `A100 Live · ${gpu.persistent_gib.toFixed(2)} GiB VRAM · ${tp.last_tok_per_sec.toFixed(1)} tok/s`;
     } catch (e) {}
   }
   setInterval(pollTelemetry, 1200);
   pollTelemetry();
 
   // =========================================================================
-  // 3. PROMPT EXECUTION & STREAMING WORD REVEAL
+  // 3. PROMPT EXECUTION — AUTOMATICALLY OPENS 3D MODEL CUTAWAY ON RUN
   // =========================================================================
   function runPreset(text) {
     const input = document.getElementById('prompt-input');
@@ -1022,8 +1271,13 @@ The ball costs $0.05 (and the bat costs $1.05, totaling $1.10).</div>
     input.value = '';
     isGenerating = true;
     btn.disabled = true;
-    btn.textContent = 'Running 52L...';
-    document.getElementById('pass-badge').textContent = 'FORWARD PASS · L00→L51';
+    btn.textContent = 'Opening 52L & Running...';
+
+    // Automatically open the 3D surgical cutaway so user sees quantization flowing through layers!
+    setCameraMode('cutaway', document.getElementById('btn-open'));
+    const badge = document.getElementById('pass-badge');
+    badge.textContent = 'QUANTIZED PASS ACTIVE · L00→L51';
+    badge.className = 'hud-pill active-coral';
 
     const col = document.getElementById('chat-column');
     const scroll = document.getElementById('chat-scroll');
@@ -1035,9 +1289,9 @@ The ball costs $0.05 (and the bat costs $1.05, totaling $1.10).</div>
       <div class="turn-assistant">
         <div class="assistant-header">
           <span class="assistant-badge">MUSE-GLIMMER-30B</span>
-          <span>52-Layer Priced-Quanta v2</span>
+          <span>52-Layer Priced-Quanta v2 · Cutaway Active</span>
         </div>
-        <div class="assistant-body"><span class="active-word">Running 52-layer forward pass inside 8.00 GiB wall...</span></div>
+        <div class="assistant-body"><span class="active-word">Opening 52 quantized layers (4.18b Thinking Engine + 2.08b Bulk)...</span></div>
       </div>
     `;
     col.appendChild(turn);
@@ -1070,7 +1324,7 @@ The ball costs $0.05 (and the bat costs $1.05, totaling $1.10).</div>
           bodyEl.innerHTML = `${pre}<span class="active-word">${cur}</span>`;
           if (parts[i].trim().length > 0) {
             scroll.scrollTop = scroll.scrollHeight;
-            await new Promise(r => setTimeout(r, 16));
+            await new Promise(r => setTimeout(r, 18));
           }
         }
         bodyEl.textContent = text;
@@ -1089,8 +1343,7 @@ The ball costs $0.05 (and the bat costs $1.05, totaling $1.10).</div>
     } finally {
       isGenerating = false;
       btn.disabled = false;
-      btn.textContent = 'Run Prompt ↑';
-      document.getElementById('pass-badge').textContent = 'IDLE · READY';
+      btn.textContent = 'Run & Open 3D ↑';
       pollTelemetry();
       scroll.scrollTop = scroll.scrollHeight;
     }
@@ -1106,7 +1359,7 @@ class StudioHandler(BaseHTTPRequestHandler):
         return
 
     def do_GET(self):
-        if self.path == "/" or self.path.startswith("/index"):
+        if self.path == "/" or self.path.startswith("/?") or self.path.startswith("/index"):
             body = HTML_PAGE.encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")
@@ -1197,7 +1450,7 @@ class StudioHandler(BaseHTTPRequestHandler):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Muse-Glimmer-30B Apple-Editorial 3D Studio")
+    parser = argparse.ArgumentParser(description="Muse-Glimmer-30B Apple Daylight 3D Cutaway Studio")
     parser.add_argument("--port", type=int, default=8788, help="Local port to serve the studio UI")
     args = parser.parse_args()
 
