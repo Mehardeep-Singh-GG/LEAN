@@ -1,0 +1,4 @@
+=== MILESTONE M17: 5-DOMAIN AGENTIC STRESS TEST ON meta-models/Muse-Glimmer-30B (cuda) ===
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Fetching 8 files: 100%|██████████| 8/8 [00:00<00:00, 1678.98it/s]
+  [M17 A100] Running live forward passes & autoregressive decode receipts on FP16_REF, LEAN_PQv2, UNIFORM_MATCHED...
+[M17 DONE] Saved results to /content/lean_30b_worker/repo/results/m17_30b_agentic_multidomain_results.json | all_gates_passed=False

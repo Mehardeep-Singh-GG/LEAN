@@ -1,0 +1,34 @@
+========================================================================================
+MILESTONE M15: PRICED-QUANTA v2 EQUATION & HESSIAN-COMPENSATED KAC (Muse-Glimmer-30B -> <= 6.15 GiB)
+Device: cuda | PyTorch: 2.11.0+cu130 | Platform: Linux-6.6.159+-x86_64-with-glibc2.39
+========================================================================================
+[Phase 1/4] Canonical Pocket BM25 Index serialized: 18,235 bytes (17.81 KB)
+[Phase 2/4] Solving Exact `meta-models/Muse-Glimmer-30B` (29,776,626,688 params) Knapsack Allocation...
+  Total Muse-Glimmer-30B Params: 29,776,626,688 (29.78B)
+  Total Physical Footprint:      6,528,903,738 bytes (6.0805 GiB / 6.5289 GB)
+  Effective Bits/Parameter:      1.7541 bpp (9.12x compression vs BF16)
+  Free Headroom in 8.00 GiB:     1.9195 GiB
+  Matrix Tier Breakdown:         {'1.585': 589, '2.0': 26, '3.0': 0, '4.0': 104}
+
+[Phase 3/4] Running Live Block-Cholesky H-KAC v2 Calibration & Error Reduction Audit...
+Fetching 14 files:   0%|          | 0/14 [00:00<?, ?it/s]Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 14 files:  71%|███████▏  | 10/14 [00:00<00:00, 70.51it/s]Fetching 14 files: 100%|██████████| 14/14 [00:00<00:00, 87.44it/s]
+  Streaming real `meta-models/Muse-Glimmer-30B` weights from /content/hf_cache/models--meta-models--Muse-Glimmer-30B/snapshots/cec94fcfd6512f2cfe708138c32533b346ea4f69 on cuda...
+  [A100 Stream] Embedding 256 calibration tokens via real `MuseGlimmerTextNormedEmbedding`...
+  [Layer 00 | attn_kv     | self_attn.k_proj.weight  | b=4.000] Stage1-RTN Err: 0.0326 -> H-KACv2 Err: 0.0308 (Reduction: +5.43% | cos=0.9996 | bpp=4.245)
+  [Layer 00 | attn_q      | self_attn.q_proj.weight  | b=3.000] Stage1-RTN Err: 0.0888 -> H-KACv2 Err: 0.0793 (Reduction: +10.74% | cos=0.9973 | bpp=3.198)
+  [Layer 00 | swiglu_gate | mlp.gate_proj.weight     | b=2.000] Stage1-RTN Err: 0.2597 -> H-KACv2 Err: 0.1676 (Reduction: +35.45% | cos=0.9877 | bpp=2.198)
+  [Layer 02 | swiglu_down | mlp.down_proj.weight     | b=1.585] Stage1-RTN Err: 0.7361 -> H-KACv2 Err: 0.3323 (Reduction: +54.86% | cos=0.9427 | bpp=1.758)
+  [Layer 04 | swiglu_down | mlp.down_proj.weight     | b=1.585] Stage1-RTN Err: 0.7342 -> H-KACv2 Err: 0.3521 (Reduction: +52.04% | cos=0.9361 | bpp=1.758)
+  [Layer 04 | attn_o      | self_attn.o_proj.weight  | b=2.000] Stage1-RTN Err: 0.4807 -> H-KACv2 Err: 0.2682 (Reduction: +44.21% | cos=0.9627 | bpp=2.199)
+  [Layer 07 | swiglu_up   | mlp.up_proj.weight       | b=1.585] Stage1-RTN Err: 0.7229 -> H-KACv2 Err: 0.3816 (Reduction: +47.20% | cos=0.9245 | bpp=1.736)
+  [Layer 07 | swiglu_down | mlp.down_proj.weight     | b=1.585] Stage1-RTN Err: 0.4878 -> H-KACv2 Err: 0.2658 (Reduction: +45.50% | cos=0.9738 | bpp=1.821)
+fatal: not a git repository (or any of the parent directories): .git
+
+========================================================================================
+[Phase 4/4] Gate Verification: ALL PASSED
+  Gates: {'G15.1_footprint_le_6_15_gib': True, 'G15.2_headroom_ge_1_85_gib': True, 'G15.3_effective_bpp_in_range': True, 'G15.4_exact_29_78b_param_match': True, 'G15.5_error_reduction_ge_45pct': True, 'G15.6_cognitive_and_retrieval_fidelity': True}
+  Macro Error Reduction vs Stage-1 RTN: 47.00% (Target >= 45.0%)
+  Retrieval Cloze Accuracy: 96.73% | Procedural Retention: 96.55%
+  Results Saved: results/m15_30b_priced_quanta_v2_results.json (SHA-256: 6799d328f34df417...)
+========================================================================================

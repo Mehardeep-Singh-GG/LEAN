@@ -8,3 +8,7 @@ scratch/
 *.zip
 *.safetensors
 release/*.safetensors
+release_30b/*.safetensors
+.coverage
+hackathon-video/node_modules/
+hackathon-video/out/

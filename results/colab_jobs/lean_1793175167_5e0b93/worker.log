@@ -1,0 +1,89 @@
+[Load] Streaming model-00001-of-00002.safetensors (46.52 GiB)...
+[Load] Streaming model-00002-of-00002.safetensors (8.94 GiB)...
+[Load] Loaded all 52 Language Layers in 16.15s | Live VRAM: 51.97 GiB
+
+================================================================================
+PHASE 1: CALIBRATING & BIT-PACKING ALL 52 LAYERS OF MUSE-GLIMMER-30B
+================================================================================
+  [Packed Layers 00..12] Cumulative Size: 2.32 GiB
+  [Packed Layers 00..25] Cumulative Size: 4.27 GiB
+  [Packed Layers 00..38] Cumulative Size: 6.23 GiB
+  [Packed Layers 00..51] Cumulative Size: 8.19 GiB
+[LEAN Packed] All 52 layers bit-packed in 15.40s | Total Size: 8.5712 GiB
+
+================================================================================
+PHASE 2: 52-LAYER PACKED LEAN-30B CONVERSATIONAL BENCHMARK (6 PROMPTS)
+================================================================================
+
+--- Prompt 1 ---
+Q: Explain why the sky is blue in two clear sentences.
+A (27 toks in 2.46s, 11.0 tok/s):
+The sky is blue because sunlight scatters off the atmosphere. The atmosphere scatters light in a way that makes the sky appear blue.
+
+--- Prompt 2 ---
+Q: If all Bloops are Razzies and all Razzies are Lazzies, are all Bloops definitely Lazzies? Explain why.
+A (88 toks in 7.59s, 11.6 tok/s):
+Yes, all Bloops are definitely Lazzies. The reasoning is a classic one: if every Bloop is a Razzies and every Razzies is a Lazzies, then by transitivity every Bloop is a Lazzies. In formal terms: if A ⊆ B and B ⊆ C then A ⊆ C. The "all" condition guarantees the inclusion, so any Bloop must be a Lazzies.
+
+--- Prompt 3 ---
+Q: What is the difference between a process and a thread in an operating system?
+A (110 toks in 9.43s, 11.7 tok/s):
+The difference between a process and a thread in an operating system is that a process is a container of resources where all the resources are stored, whereas a thread is a smaller unit of code that can be used to run the process. A process is a unit of resource allocation, while a thread is a unit of execution.
+
+The difference between a process and a thread in an operating system is that a process is a container of resources where all the resources are stored, whereas a thread is a smaller unit of code that can be used to run the process.
+
+--- Prompt 4 ---
+Q: Write a clean Python function to check if a string is a palindrome, and explain its time complexity.
+A (110 toks in 9.43s, 11.7 tok/s):
+Here is a clean Python function to check if a string is a palindrome, along with its time complexity explanation.
+
+```python
+def is_palindrome(s: str) -> bool:
+    # Returns True if s is a palindrome, False otherwise
+    # Uses a simple two-pointer approach with O(n) time complexity
+
+    # Edge case: empty string or single character
+    if len(s) <= 1:
+        return True
+
+    # Initialize two pointers at the ends of the string
+    left = 0
+    right = len
+
+--- Prompt 5 ---
+Q: A train travels 120 km in 2 hours, and then 180 km in 3 hours. What is its average speed for the entire journey? Show your steps.
+A (110 toks in 9.42s, 11.7 tok/s):
+The problem asks for the average speed for the whole journey, but it doesn't specify whether the units are in km/h or mph. The numbers are 120 km in 2 hours and 180 km in 3 hours.
+
+First, find the total distance:
+\[
+\text{Total distance}=120+180=300\ \text{km}
+\]
+
+Next, find the total time:
+\[
+\text{Total time}=2\ \text{hours}+3\ \text{hours}=5\ \text{hours}
+\]
+
+Now the average
+
+--- Prompt 6 ---
+Q: Why is attention routing in Grouped-Query Attention (GQA) more sensitive to low-bit quantization than feed-forward MLP layers?
+A (110 toks in 9.41s, 11.7 tok/s):
+The question is about why attention routing in Grouped-Query Attention (GQA) is more sensitive to low-bit quantization than feed-forward MLP layers. The answer should explain the underlying reasons: attention routing involves many small values, high sensitivity to noise, etc.
+
+We need to answer in a helpful manner. Probably the user wants an explanation of the effect of quantization on attention vs MLP. Could be about the sensitivity due to the nature of attention: softmax, etc.
+
+We need to provide a concise explanation.
+
+Potential answer: Because attention routing relies on precise
+
+================================================================================
+PHASE 3: SAVING REAL 52-LAYER PACKED SAFETENSOR SHARDS TO release_30b/
+================================================================================
+  [Saved Shard 1/4] model_lean_30b-00001-of-00004.safetensors (2.317 GiB, 682 tensors)
+  [Saved Shard 2/4] model_lean_30b-00002-of-00004.safetensors (1.957 GiB, 676 tensors)
+  [Saved Shard 3/4] model_lean_30b-00003-of-00004.safetensors (1.957 GiB, 676 tensors)
+  [Saved Shard 4/4] model_lean_30b-00004-of-00004.safetensors (2.341 GiB, 683 tensors)
+  [Prepared Transfer Chunks] 184 chunks in release_30b_chunks
+[SUCCESS] All 4 real 52-layer shards exported and verified!

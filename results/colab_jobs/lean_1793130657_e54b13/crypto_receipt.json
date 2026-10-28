@@ -1,0 +1,97 @@
+{
+  "job_id": "lean_1793130657_e54b13",
+  "milestone": "M17",
+  "script": "experiments/run_m17_30b_agentic_and_multidomain_battery.py",
+  "script_sha256": "91ea1367e73d4c07b36286bf5bf50c4956c2b21c8e34e106a9c64900e6a1bef7",
+  "args": [
+    "--model-id",
+    "meta-models/Muse-Glimmer-30B",
+    "--num-eval-layers",
+    "8",
+    "--output-json",
+    "results/m17_30b_agentic_multidomain_results.json"
+  ],
+  "return_code": 1,
+  "wall_clock_seconds": 295.593,
+  "peak_vram_mib": 39036.0,
+  "peak_host_ram_gb": 16.992,
+  "hardware_start": {
+    "timestamp_utc": "2026-10-27T19:50:57Z",
+    "hostname": "ea9b93791beb",
+    "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+    "python_version": "3.13.16",
+    "cpu_count": 12,
+    "disk_free_gb": 76.528,
+    "host_ram": {
+      "total_gb": 167.052,
+      "available_gb": 163.475,
+      "used_gb": 2.05,
+      "percent": 2.1
+    },
+    "gpu_devices": [
+      {
+        "index": 0,
+        "gpu_uuid": "GPU-40979fa0-0ce0-e7eb-85fd-ff247b6b0054",
+        "name": "NVIDIA A100-SXM4-80GB",
+        "driver_version": "580.82.07",
+        "pci_bus_id": "00000000:00:05.0",
+        "vram_total_mib": 81920.0,
+        "vram_used_mib": 6.0,
+        "vram_free_mib": 81148.0,
+        "utilization_gpu_pct": "0",
+        "temperature_c": "31",
+        "power_draw_w": "51.47"
+      }
+    ],
+    "torch_info": {
+      "torch_version": "2.11.0+cu130",
+      "cuda_available": true,
+      "cuda_version": "13.0",
+      "device_count": 1,
+      "device_name": "NVIDIA A100-SXM4-80GB"
+    },
+    "hardware_fingerprint_sha256": "d56664143cbfcfd5c2369e0d1513d589e394496b8ad9c2ed9ce49ddb85c3db4e"
+  },
+  "hardware_end": {
+    "timestamp_utc": "2026-10-27T19:55:53Z",
+    "hostname": "ea9b93791beb",
+    "platform": "Linux-6.6.159+-x86_64-with-glibc2.39",
+    "python_version": "3.13.16",
+    "cpu_count": 12,
+    "disk_free_gb": 21.036,
+    "host_ram": {
+      "total_gb": 167.052,
+      "available_gb": 163.496,
+      "used_gb": 2.029,
+      "percent": 2.1
+    },
+    "gpu_devices": [
+      {
+        "index": 0,
+        "gpu_uuid": "GPU-40979fa0-0ce0-e7eb-85fd-ff247b6b0054",
+        "name": "NVIDIA A100-SXM4-80GB",
+        "driver_version": "580.82.07",
+        "pci_bus_id": "00000000:00:05.0",
+        "vram_total_mib": 81920.0,
+        "vram_used_mib": 6.0,
+        "vram_free_mib": 81148.0,
+        "utilization_gpu_pct": "100",
+        "temperature_c": "33",
+        "power_draw_w": "77.65"
+      }
+    ],
+    "torch_info": {
+      "torch_version": "2.11.0+cu130",
+      "cuda_available": true,
+      "cuda_version": "13.0",
+      "device_count": 1,
+      "device_name": "NVIDIA A100-SXM4-80GB"
+    },
+    "hardware_fingerprint_sha256": "d56664143cbfcfd5c2369e0d1513d589e394496b8ad9c2ed9ce49ddb85c3db4e"
+  },
+  "output_artifacts": {},
+  "log_sha256": "f56f727f658202ee19214c36a1b3213c3232a506a12ed4df81ff6a6ea151eddb",
+  "completed_utc": "2026-10-27T19:55:53Z",
+  "prev_receipt_sha256": "620333f4007c11cbfb9be9d23d3d534b2558d078b097c60cac2ba24424684d63",
+  "receipt_sha256": "39d372ad73458dc3a405a75ea061410d0effba4a52592fd8f4fb58dd3008c147"
+}

@@ -1,0 +1,33 @@
+========================================================================================
+MILESTONE M16: 30B ITERATIVE CALIBRATION & >=80% ACCURACY RECOVERY LOOP
+Target Model: meta-models/Muse-Glimmer-30B | Device: cuda
+========================================================================================
+[Phase 1/4] Enforcing Cryptographic Three-Way Data Firewall (0.00% 8-gram overlap)...
+  [Firewall PASS] Calib Seqs: 128 | 8-gram Overlap: 0.0000% | Entity Leaks: 0
+
+[Phase 2/4] Executing 5-Rung Iterative Calibration Ladder on Real `Muse-Glimmer-30B` Shards...
+Fetching 14 files:   0%|          | 0/14 [00:00<?, ?it/s]Fetching 14 files: 100%|██████████| 14/14 [00:00<00:00, 1934.13it/s]
+  [M16 A100] Embedding Calibration (384 tokens) & Evaluation (256 tokens) via `MuseGlimmerTextNormedEmbedding`...
+  [Layer 01/08] Rel L2 Drift -> R0:0.7692 | R1:0.6637 | R2:0.4466 | R3:0.3080 | R4:0.3025
+  [Layer 02/08] Rel L2 Drift -> R0:1.0038 | R1:0.9146 | R2:0.6667 | R3:0.4815 | R4:0.4713
+  [Layer 03/08] Rel L2 Drift -> R0:1.1442 | R1:1.0715 | R2:0.8349 | R3:0.6216 | R4:0.6076
+  [Layer 04/08] Rel L2 Drift -> R0:1.2216 | R1:1.1591 | R2:0.9763 | R3:0.7337 | R4:0.7178
+  [Layer 05/08] Rel L2 Drift -> R0:1.2697 | R1:1.2111 | R2:1.1151 | R3:0.8091 | R4:0.7897
+  [Layer 06/08] Rel L2 Drift -> R0:1.2872 | R1:1.2337 | R2:1.2268 | R3:0.8561 | R4:0.8369
+  [Layer 07/08] Rel L2 Drift -> R0:1.3107 | R1:1.2594 | R2:1.3414 | R3:0.9010 | R4:0.8787
+  [Layer 08/08] Rel L2 Drift -> R0:1.3297 | R1:1.2810 | R2:1.4626 | R3:0.9353 | R4:0.9101
+  [Rung 0: Uncalibrated Priced-] KL=31.2809 nats | Delta_PPL=+103.444 | RAG Cloze=28.91% | Procedural=21.02% | Size=6.0358 GiB
+  [Rung 1: Multi-Domain AWQ v1 ] KL=29.5297 nats | Delta_PPL=+103.444 | RAG Cloze=25.78% | Procedural=20.02% | Size=6.0507 GiB
+  [Rung 2: Block-Cholesky Hessi] KL=29.9733 nats | Delta_PPL=+103.444 | RAG Cloze=29.30% | Procedural=23.43% | Size=6.0805 GiB
+  [Rung 3: +GQA KV-4bit Promoti] KL=16.6341 nats | Delta_PPL=+103.444 | RAG Cloze=30.86% | Procedural=38.93% | Size=6.0805 GiB
+  [Rung 4: +Closed-Form Residua] KL=16.3257 nats | Delta_PPL=+103.444 | RAG Cloze=28.91% | Procedural=37.93% | Size=6.0818 GiB
+
+[Phase 3/4] Sealing Winning Rung 4 Configuration into `prereg/M16_30B_SEALED_CONFIG.json`...
+  Sealed Config Written: prereg/M16_30B_SEALED_CONFIG.json (SHA-256: f75a7e27b4f1a115...)
+
+========================================================================================
+[Phase 4/4] M16 Gate Verification: FAILED
+  Gates: {'G16.1_footprint_le_6_15_gib': True, 'G16.2_zero_firewall_overlap': True, 'G16.3_rag_retrieval_cloze_ge_80pct': False, 'G16.4_procedural_skill_ge_80pct': False, 'G16.5_delta_ppl_le_1_25': False, 'G16.6_logit_kl_le_0_18_nats': False, 'G16.7_all_5_rungs_logged_and_monotonic_kl': False}
+  Rung 0 -> Rung 4 RAG Cloze Trajectory: 28.9% -> 25.8% -> 29.3% -> 30.9% -> 28.9%
+  Saved Results: results/m16/m16_30b_accuracy_ladder_results.json (SHA-256: 96974ba3884897ef...)
+========================================================================================

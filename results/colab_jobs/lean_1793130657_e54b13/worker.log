@@ -1,0 +1,22 @@
+=== MILESTONE M17: 5-DOMAIN AGENTIC STRESS TEST ON meta-models/Muse-Glimmer-30B (cuda) ===
+Fetching 8 files:   0%|          | 0/8 [00:00<?, ?it/s]Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Fetching 8 files:  12%|█▎        | 1/8 [00:00<00:00,  7.63it/s]Fetching 8 files:  75%|███████▌  | 6/8 [00:02<00:00,  2.26it/s]Fetching 8 files:  88%|████████▊ | 7/8 [01:11<00:14, 14.15s/it]Fetching 8 files: 100%|██████████| 8/8 [02:50<00:00, 33.15s/it]Fetching 8 files: 100%|██████████| 8/8 [02:50<00:00, 21.37s/it]
+Traceback (most recent call last):
+  File "/content/lean_30b_worker/repo/experiments/run_m17_30b_agentic_and_multidomain_battery.py", line 936, in <module>
+    main()
+    ~~~~^^
+  File "/content/lean_30b_worker/repo/experiments/run_m17_30b_agentic_and_multidomain_battery.py", line 831, in main
+    fp16_model, lean_model, unif_model, tokenizer, storage_report = load_muse_glimmer_30b_models(
+                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        model_id=args.model_id,
+        ^^^^^^^^^^^^^^^^^^^^^^^
+        num_eval_layers=args.num_eval_layers,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        device=device,
+        ^^^^^^^^^^^^^^
+    )
+    ^
+  File "/content/lean_30b_worker/repo/experiments/run_m17_30b_agentic_and_multidomain_battery.py", line 460, in load_muse_glimmer_30b_models
+    knapsack = PricedQuantaV2KnapsackSolver().solve_allocation()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'PricedQuantaV2KnapsackSolver' object has no attribute 'solve_allocation'. Did you mean: 'solve_30b_allocation'?

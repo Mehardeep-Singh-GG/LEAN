@@ -1,0 +1,31 @@
+========================================================================================
+[M14] Meta Muse-Glimmer-30B Anatomy & Half-Life Scaling Audit | Target: meta-models/Muse-Glimmer-30B
+      Device: cuda | GPU: NVIDIA A100-SXM4-80GB (GPU-40979fa0-0ce0-e7eb-85fd-ff247b6b0054)
+========================================================================================
+Downloading snapshot for meta-models/Muse-Glimmer-30B (cache_dir=/content/hf_cache)...
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 1813.27it/s]
+[Phase 1/5] Verifying Muse-Glimmer-30B Safetensor Shards Cryptographically...
+  Verified 2 shards (55.4635 GiB, 1436 tensors).
+[Phase 2/5] Profiling 50-Layer Vision Tower (`model.vision_tower`)...
+  Vision Tower: 50 layers, 1,921,845,760 params (3.5797 GiB BF16).
+[Phase 3/5] Initializing Calibration Probe Input Embeddings (`MuseGlimmerTextNormedEmbedding`)...
+[Phase 4/5] Streaming & Profiling 52 Language Layers (8 projections/layer) on cuda...
+  [Layer 04/52 | full_attention   ] h_proc=0.50b | h_fact=7.00b | Delta_h=+6.50b | Peak VRAM=7696.1 MiB
+  [Layer 08/52 | full_attention   ] h_proc=2.43b | h_fact=5.00b | Delta_h=+2.57b | Peak VRAM=7696.1 MiB
+  [Layer 12/52 | full_attention   ] h_proc=2.49b | h_fact=7.00b | Delta_h=+4.51b | Peak VRAM=7696.1 MiB
+  [Layer 16/52 | full_attention   ] h_proc=2.50b | h_fact=7.00b | Delta_h=+4.50b | Peak VRAM=7696.1 MiB
+  [Layer 20/52 | full_attention   ] h_proc=2.41b | h_fact=7.00b | Delta_h=+4.59b | Peak VRAM=7696.1 MiB
+  [Layer 24/52 | full_attention   ] h_proc=2.71b | h_fact=7.00b | Delta_h=+4.29b | Peak VRAM=7696.1 MiB
+  [Layer 28/52 | full_attention   ] h_proc=2.54b | h_fact=7.00b | Delta_h=+4.46b | Peak VRAM=7696.1 MiB
+  [Layer 32/52 | full_attention   ] h_proc=2.50b | h_fact=5.00b | Delta_h=+2.50b | Peak VRAM=7696.1 MiB
+  [Layer 36/52 | full_attention   ] h_proc=2.50b | h_fact=7.00b | Delta_h=+4.50b | Peak VRAM=7696.1 MiB
+  [Layer 40/52 | full_attention   ] h_proc=2.50b | h_fact=7.00b | Delta_h=+4.50b | Peak VRAM=7696.1 MiB
+  [Layer 44/52 | full_attention   ] h_proc=2.46b | h_fact=7.00b | Delta_h=+4.54b | Peak VRAM=7696.1 MiB
+  [Layer 48/52 | full_attention   ] h_proc=2.44b | h_fact=7.00b | Delta_h=+4.56b | Peak VRAM=7696.1 MiB
+  [Layer 52/52 | full_attention   ] h_proc=2.31b | h_fact=7.00b | Delta_h=+4.69b | Peak VRAM=7696.1 MiB
+[Phase 5/5] Computing Cross-Scale Half-Life Law Fit & Stage-1 30B Byte Audit...
+========================================================================================
+[M14 COMPLETE] Saved to results/m14_30b_anatomy_and_baseline_kac.json | SHA-256: a87a0baa817279b1...
+  Muse-Glimmer-30B Mean Delta h_1/2: +4.721 bits (min=+2.500b) | Stage-1 Size: 15.85 GiB
+  Gates: {'G14_1_shard_integrity': True, 'G14_2_delta_h_positive_zero_clamps': True, 'G14_3_all_layers_profiled': True, 'G14_4_stage1_overflow_proven': True, 'G14_5_memory_bounded': True}
+========================================================================================

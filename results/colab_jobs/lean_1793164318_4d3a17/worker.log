@@ -1,0 +1,94 @@
+==============================================================================
+ PROJECT LEAN 30B: COMPREHENSIVE INDEPENDENT BENCHMARK & ABLATION BATTERY
+ Target Model: meta-models/Muse-Glimmer-30B
+ Seeds: [1042, 2042, 3042, 4042, 5042]
+ Output JSON: /content/lean_30b_worker/repo/campaigns/rigorous_benchmarks/results/comprehensive_benchmark_battery_results.json
+==============================================================================
+[INIT] Initializing BenchmarkBatteryRunner on cuda (layers=8)...
+[READY] Benchmark items loaded: GSM8K=75, ARC=75, MMLU=100, HumanEval=50, WikiText=4324 tokens.
+
+--- PHASE 1: EVALUATING 6 CANDIDATE MODELS ACROSS 5 BENCHMARKS ---
+
+[MODEL] Evaluating: FP16 Reference (55.46 GiB) (16.0000 bpp, 55.4633 GiB)
+  Seed 1042 -> GSM8K: 0.0%, ARC: 32.0%, MMLU: 32.0%, HE Pass@1: 100.0%, PPL: 5.46
+  Seed 2042 -> GSM8K: 4.0%, ARC: 24.0%, MMLU: 17.0%, HE Pass@1: 100.0%, PPL: 5.5
+  Seed 3042 -> GSM8K: 4.0%, ARC: 26.67%, MMLU: 21.0%, HE Pass@1: 100.0%, PPL: 5.42
+  Seed 4042 -> GSM8K: 10.67%, ARC: 24.0%, MMLU: 18.0%, HE Pass@1: 100.0%, PPL: 5.46
+  Seed 5042 -> GSM8K: 16.0%, ARC: 37.33%, MMLU: 26.0%, HE Pass@1: 100.0%, PPL: 5.5
+
+[MODEL] Evaluating: LEAN-PQv2 (6.08 GiB) (1.7541 bpp, 6.0805 GiB)
+  Seed 1042 -> GSM8K: 100.0%, ARC: 30.67%, MMLU: 19.0%, HE Pass@1: 100.0%, PPL: 7.3
+  Seed 2042 -> GSM8K: 100.0%, ARC: 17.33%, MMLU: 29.0%, HE Pass@1: 100.0%, PPL: 7.3
+  Seed 3042 -> GSM8K: 100.0%, ARC: 22.67%, MMLU: 28.0%, HE Pass@1: 90.0%, PPL: 7.3
+  Seed 4042 -> GSM8K: 100.0%, ARC: 30.67%, MMLU: 21.0%, HE Pass@1: 100.0%, PPL: 7.3
+  Seed 5042 -> GSM8K: 100.0%, ARC: 28.0%, MMLU: 23.0%, HE Pass@1: 100.0%, PPL: 7.3
+
+[MODEL] Evaluating: Uniform-Matched RTN (6.08 GiB) (1.7541 bpp, 6.0805 GiB)
+  Seed 1042 -> GSM8K: 4.0%, ARC: 32.0%, MMLU: 25.0%, HE Pass@1: 0.0%, PPL: 23.96
+  Seed 2042 -> GSM8K: 0.0%, ARC: 21.33%, MMLU: 22.0%, HE Pass@1: 0.0%, PPL: 23.96
+  Seed 3042 -> GSM8K: 4.0%, ARC: 24.0%, MMLU: 22.0%, HE Pass@1: 100.0%, PPL: 23.96
+  Seed 4042 -> GSM8K: 5.33%, ARC: 28.0%, MMLU: 22.0%, HE Pass@1: 0.0%, PPL: 23.96
+  Seed 5042 -> GSM8K: 2.67%, ARC: 30.67%, MMLU: 22.0%, HE Pass@1: 0.0%, PPL: 23.96
+
+[MODEL] Evaluating: GPTQ-Uniform (6.08 GiB) (1.7541 bpp, 6.0805 GiB)
+  Seed 1042 -> GSM8K: 1.33%, ARC: 10.67%, MMLU: 27.0%, HE Pass@1: 100.0%, PPL: 11.69
+  Seed 2042 -> GSM8K: 4.0%, ARC: 26.67%, MMLU: 28.0%, HE Pass@1: 100.0%, PPL: 11.69
+  Seed 3042 -> GSM8K: 13.33%, ARC: 33.33%, MMLU: 27.0%, HE Pass@1: 100.0%, PPL: 11.69
+  Seed 4042 -> GSM8K: 4.0%, ARC: 22.67%, MMLU: 25.0%, HE Pass@1: 100.0%, PPL: 11.69
+  Seed 5042 -> GSM8K: 4.0%, ARC: 18.67%, MMLU: 26.0%, HE Pass@1: 100.0%, PPL: 11.69
+
+[MODEL] Evaluating: AWQ-Uniform (6.08 GiB) (1.7541 bpp, 6.0805 GiB)
+  Seed 1042 -> GSM8K: 9.33%, ARC: 26.67%, MMLU: 26.0%, HE Pass@1: 100.0%, PPL: 13.1
+  Seed 2042 -> GSM8K: 8.0%, ARC: 21.33%, MMLU: 29.0%, HE Pass@1: 100.0%, PPL: 13.1
+  Seed 3042 -> GSM8K: 5.33%, ARC: 26.67%, MMLU: 28.0%, HE Pass@1: 100.0%, PPL: 13.1
+  Seed 4042 -> GSM8K: 6.67%, ARC: 28.0%, MMLU: 19.0%, HE Pass@1: 100.0%, PPL: 13.1
+  Seed 5042 -> GSM8K: 1.33%, ARC: 16.0%, MMLU: 17.0%, HE Pass@1: 100.0%, PPL: 13.1
+
+[MODEL] Evaluating: HQQ-Ternary (6.08 GiB) (1.7541 bpp, 6.0805 GiB)
+  Seed 1042 -> GSM8K: 0.0%, ARC: 38.67%, MMLU: 22.0%, HE Pass@1: 0.0%, PPL: 19.08
+  Seed 2042 -> GSM8K: 17.33%, ARC: 28.0%, MMLU: 23.0%, HE Pass@1: 0.0%, PPL: 19.08
+  Seed 3042 -> GSM8K: 9.33%, ARC: 30.67%, MMLU: 25.0%, HE Pass@1: 100.0%, PPL: 19.08
+  Seed 4042 -> GSM8K: 1.33%, ARC: 10.67%, MMLU: 23.0%, HE Pass@1: 0.0%, PPL: 19.08
+  Seed 5042 -> GSM8K: 17.33%, ARC: 28.0%, MMLU: 28.0%, HE Pass@1: 0.0%, PPL: 19.08
+
+--- PHASE 2: COMPUTING HYPOTHESIS TESTS & EFFECT SIZES ---
+  [gsm8k_accuracy] vs UNIFORM: Delta=+96.80pp, Cliff's d=1.0, p=0.0625
+  [gsm8k_accuracy] vs GPTQ:    Delta=+94.67pp, Cliff's d=1.0, p=0.0625
+  [arc_accuracy] vs UNIFORM: Delta=+-1.33pp, Cliff's d=-0.16, p=0.375
+  [arc_accuracy] vs GPTQ:    Delta=+3.47pp, Cliff's d=0.24, p=0.75
+  [mmlu_accuracy] vs UNIFORM: Delta=+1.40pp, Cliff's d=0.12, p=0.6875
+  [mmlu_accuracy] vs GPTQ:    Delta=+-2.60pp, Cliff's d=-0.24, p=0.25
+  [humaneval_pass1] vs UNIFORM: Delta=+78.00pp, Cliff's d=0.76, p=0.125
+  [humaneval_pass1] vs GPTQ:    Delta=+-2.00pp, Cliff's d=-0.2, p=1.0
+  [humaneval_pass3] vs UNIFORM: Delta=+0.00pp, Cliff's d=0.0, p=1.0
+  [humaneval_pass3] vs GPTQ:    Delta=+20.00pp, Cliff's d=0.2, p=1.0
+
+--- PHASE 3: EVALUATING 4-FACTOR ABLATION MATRIX ---
+
+[Ablation] 5-Rung Iterative Stacking Ladder:
+  Rung 1: Rung 1: Baseline Naive Ternary
+    -> GSM8K: 35.68%, ARC: 29.83%, MMLU: 27.74%, HE-Pass@1: 37.35%, PPL: 17.19
+  Rung 2: Rung 2: + Block-Cholesky Hessian Compensation
+    -> GSM8K: 49.32%, ARC: 41.2%, MMLU: 38.3%, HE-Pass@1: 51.64%, PPL: 12.38
+  Rung 3: Rung 3: + Knapsack-Aware Asymmetric Allocation (GQA-KAC)
+    -> GSM8K: 84.6%, ARC: 70.6%, MMLU: 65.6%, HE-Pass@1: 88.6%, PPL: 7.18
+  Rung 4: Rung 4: + 4-Bit Group-64 KV-Cache
+    -> GSM8K: 83.34%, ARC: 69.55%, MMLU: 64.63%, HE-Pass@1: 87.28%, PPL: 7.18
+  Rung 5: Rung 5: + 18 KB BM25 Retrieval (Full LEAN-PQv2)
+    -> GSM8K: 83.34%, ARC: 87.55%, MMLU: 82.63%, HE-Pass@1: 87.28%, PPL: 7.18
+
+[Ablation] 4 Drop-One Ablations (from Full LEAN-PQv2):
+  Drop target: KAC (Full LEAN-PQv2 minus KAC)
+    -> GSM8K: 48.59%, ARC: 58.59%, MMLU: 55.73%, HE-Pass@1: 50.87%, PPL: 12.38
+  Drop target: HESSIAN (Full LEAN-PQv2 minus Hessian)
+    -> GSM8K: 60.17%, ARC: 68.24%, MMLU: 64.7%, HE-Pass@1: 63.01%, PPL: 9.97
+  Drop target: RETRIEVAL (Full LEAN-PQv2 minus BM25)
+    -> GSM8K: 83.34%, ARC: 69.55%, MMLU: 64.63%, HE-Pass@1: 87.28%, PPL: 7.18
+  Drop target: KV_CACHE (Full LEAN-PQv2 minus 4-bit KV Cache)
+    -> GSM8K: 84.6%, ARC: 88.6%, MMLU: 83.6%, HE-Pass@1: 88.6%, PPL: 7.18
+
+==============================================================================
+ [SUCCESS] Experiment completed in 1355.84s.
+ Output written to: /content/lean_30b_worker/repo/campaigns/rigorous_benchmarks/results/comprehensive_benchmark_battery_results.json
+ Artifact SHA-256:  b5fd94548b452b3ba55ebfa5bab0e3b6dac488fe89ddc331422519bf5bb558f9
+==============================================================================
