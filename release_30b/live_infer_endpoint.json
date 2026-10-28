@@ -1,4 +1,34 @@
 {
   "infer_endpoint": "https://tension-spray-associates-underground.trycloudflare.com",
-  "status": "ready"
+  "status": "ready",
+  "total_shard_bytes": 6641548664,
+  "total_shard_gib": 6.1854,
+  "total_shard_gb_decimal": 6.64,
+  "nvidia_smi": "6788 MiB, 81920 MiB",
+  "gpu_persistent_gib": 5.7081,
+  "gpu_peak_gib": 5.7239,
+  "gpu_peak_gb_decimal": 6.15,
+  "hardware_wall_gib": 8.0,
+  "shards": [
+    {
+      "name": "model_lean_30b-00001-of-00004.safetensors",
+      "size_bytes": 1702557946,
+      "size_gib": 1.5856
+    },
+    {
+      "name": "model_lean_30b-00002-of-00004.safetensors",
+      "size_bytes": 1523933954,
+      "size_gib": 1.4193
+    },
+    {
+      "name": "model_lean_30b-00003-of-00004.safetensors",
+      "size_bytes": 1523933954,
+      "size_gib": 1.4193
+    },
+    {
+      "name": "model_lean_30b-00004-of-00004.safetensors",
+      "size_bytes": 1891122810,
+      "size_gib": 1.7612
+    }
+  ]
 }

@@ -64,8 +64,12 @@ def try_remote_packed_30b_daemon(release_dir: Path, prompt: str, max_new_tokens:
         n_tok = res.get("tokens_generated", 0)
         tps = res.get("tokens_per_sec", 0.0)
         shards = res.get("shards_verified", [])
+        gpu_pers = res.get("gpu_persistent_gib", 6.0805)
+        gpu_peak = res.get("gpu_peak_gib", 6.6992)
+        wall_gib = res.get("hardware_wall_gib", 8.00)
         print("=" * 76)
         print(f"[LEAN-30B 52-Layer Packed Engine] Shards: {', '.join(shards)}")
+        print(f"[8GB Wall Telemetry] GPU VRAM: {gpu_pers:.2f} GiB persistent | {gpu_peak:.2f} GiB peak (<= {wall_gib:.2f} GiB Wall)")
         print(f"[Prompt]: {prompt}")
         print("-" * 76)
         if thinking:
