@@ -1,0 +1,31 @@
+[6.5GB Export] Saved model_lean_30b-00001-of-00004.safetensors: 2,043,441,040 bytes (1.9031 GiB / 2.043 GB)
+[6.5GB Export] Saved model_lean_30b-00002-of-00004.safetensors: 1,696,713,096 bytes (1.5802 GiB / 1.697 GB)
+[6.5GB Export] Saved model_lean_30b-00003-of-00004.safetensors: 1,696,713,096 bytes (1.5802 GiB / 1.697 GB)
+[6.5GB Export] Saved model_lean_30b-00004-of-00004.safetensors: 2,063,901,944 bytes (1.9222 GiB / 2.064 GB)
+[6.5GB Export] Total across 4 shards: 7,500,769,176 bytes (6.9856 GiB / 7.501 GB)
+[Daemon Log Tail]
+(Path("release_30b"), Path("/content/lean_30b_backing"))
+  File "/tmp/lean_30b_infer_daemon.py", line 144, in __init__
+    self._load_all()
+    ~~~~~~~~~~~~~~^^
+  File "/tmp/lean_30b_infer_daemon.py", line 154, in _load_all
+    self.embed_w_cpu = unpack_lean_linear_to_cpu_pinned(
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sf, "model.language_model.embed_tokens", self.vocab_size, self.hidden_size, self.device
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/usr/local/lib/python3.13/dist-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "/tmp/lean_30b_infer_daemon.py", line 75, in unpack_lean_linear_to_cpu_pinned
+    q = torch.stack([q0, q1, q2, q3], dim=-1).view(-1, group_size)
+        ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 5.01 GiB. GPU 0 has a total capacity of 79.25 GiB of which 72.47 GiB is free. Including non-PyTorch memory, this process has 6.77 GiB memory in use. 7.86 GiB allowed; Of the allocated memory 6.27 GiB is allocated by PyTorch, and 26.64 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+
+Traceback (most recent call last):
+  File "/content/lean_30b_worker/repo/experiments/rebuild_6_5gb_release_and_daemon.py", line 558, in <module>
+    main()
+    ~~~~^^
+  File "/content/lean_30b_worker/repo/experiments/rebuild_6_5gb_release_and_daemon.py", line 535, in main
+    raise RuntimeError("8GB-Wall Daemon did not become ready within 120s")
+RuntimeError: 8GB-Wall Daemon did not become ready within 120s
