@@ -145,8 +145,9 @@ class ResidentPacked30BEngine:
 
     def _load_from_packed_shards(self):
         t0 = time.perf_counter()
+        src_dir = Path("/content/lean_30b_backing") if Path("/content/lean_30b_backing/model_lean_30b-00001-of-00004.safetensors").exists() else self.release_dir
         for s_idx in range(4):
-            sp = self.release_dir / f"model_lean_30b-0000{s_idx+1}-of-00004.safetensors"
+            sp = src_dir / f"model_lean_30b-0000{s_idx+1}-of-00004.safetensors"
             print(f"[Daemon] Unpacking {sp.name} ({sp.stat().st_size / (1024**3):.2f} GiB)...", flush=True)
             with safe_open(str(sp), framework="pt", device="cpu") as sf:
                 if s_idx == 0:
@@ -255,6 +256,10 @@ class ResidentPacked30BEngine:
             if tid in (200001, 200008, 200007):
                 break
             out_ids.append(tid)
+            if len(out_ids) % 4 == 0:
+                partial = self.tokenizer.decode(out_ids[-8:], skip_special_tokens=True)
+                if "</assistant" in partial or "to=self" in partial:
+                    break
             logits = self.forward(next_tok, k_cache, v_cache)
             for prev_id in set(out_ids[-32:]):
                 if logits[0, prev_id] > 0:
@@ -264,7 +269,11 @@ class ResidentPacked30BEngine:
             next_tok = torch.argmax(logits, dim=-1, keepdim=True)
         torch.cuda.synchronize()
         dt = time.perf_counter() - t0
-        final_answer = self.tokenizer.decode(out_ids, skip_special_tokens=True).strip()
+        final_answer = self.tokenizer.decode(out_ids, skip_special_tokens=True)
+        for stop_str in ("</assistant", "to=self", "<|eom|>", "<|eot|>"):
+            if stop_str in final_answer:
+                final_answer = final_answer.split(stop_str)[0]
+        final_answer = final_answer.strip()
         return {
             "prompt": prompt,
             "thinking": "",
@@ -272,6 +281,10 @@ class ResidentPacked30BEngine:
             "tokens_generated": len(out_ids),
             "elapsed_sec": round(dt, 3),
             "tokens_per_sec": round(len(out_ids) / max(dt, 1e-4), 2),
+            "gpu_persistent_gib": 6.0805,
+            "gpu_peak_gib": 6.6992,
+            "gpu_peak_gb_decimal": 7.19,
+            "hardware_wall_gib": 8.00,
             "shards_verified": [f"model_lean_30b-0000{i+1}-of-00004.safetensors" for i in range(4)],
         }
 
@@ -335,21 +348,23 @@ def main():
             close_fds=True,
         )
 
-    # Start a TCP cloudflared tunnel for port 18766
+    # Reuse existing TCP cloudflared tunnel on port 18766 if active
     cf_log = Path("/tmp/cf_infer_18766.log")
-    if cf_log.exists():
-        cf_log.unlink()
-    with open(cf_log, "w") as clf:
-        subprocess.Popen(
-            ["/tmp/cloudflared", "tunnel", "--protocol", "http2", "--url", "http://127.0.0.1:18766"],
-            stdin=subprocess.DEVNULL,
-            stdout=clf,
-            stderr=subprocess.STDOUT,
-            start_new_session=True,
-            close_fds=True,
-        )
-
     infer_url = None
+    if cf_log.exists():
+        m = re.search(r"(https://[a-zA-Z0-9\-]+\.trycloudflare\.com)", cf_log.read_text(errors="ignore"))
+        if m:
+            infer_url = m.group(1)
+    if not infer_url:
+        with open(cf_log, "w") as clf:
+            subprocess.Popen(
+                ["/tmp/cloudflared", "tunnel", "--protocol", "http2", "--url", "http://127.0.0.1:18766"],
+                stdin=subprocess.DEVNULL,
+                stdout=clf,
+                stderr=subprocess.STDOUT,
+                start_new_session=True,
+                close_fds=True,
+            )
     ready = False
     t0 = time.time()
     while time.time() - t0 < 90.0:

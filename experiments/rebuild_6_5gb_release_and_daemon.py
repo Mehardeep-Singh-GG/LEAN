@@ -69,6 +69,30 @@ def apply_rotary_pos_emb(
     return (q * cos) + (rotate_half(q) * sin), (k * cos) + (rotate_half(k) * sin)
 
 
+@torch.compile(dynamic=True)
+def fused_unpack_4bit_inplace(
+    pr: torch.Tensor,
+    s4: torch.Tensor,
+    m4: torch.Tensor,
+    out_3d: torch.Tensor,
+) -> None:
+    out_3d[0] = (pr & 0x0F).to(torch.bfloat16) * s4[0] + m4[0]
+    out_3d[1] = (pr >> 4).to(torch.bfloat16) * s4[1] + m4[1]
+
+
+@torch.compile(dynamic=True)
+def fused_unpack_2bit_inplace(
+    pr: torch.Tensor,
+    s4: torch.Tensor,
+    m4: torch.Tensor,
+    out_3d: torch.Tensor,
+) -> None:
+    out_3d[0] = (pr & 0x03).to(torch.bfloat16) * s4[0] + m4[0]
+    out_3d[1] = ((pr >> 2) & 0x03).to(torch.bfloat16) * s4[1] + m4[1]
+    out_3d[2] = ((pr >> 4) & 0x03).to(torch.bfloat16) * s4[2] + m4[2]
+    out_3d[3] = (pr >> 6).to(torch.bfloat16) * s4[3] + m4[3]
+
+
 @torch.no_grad()
 def load_repacked_row_chunk_module(
     sf,
@@ -79,9 +103,8 @@ def load_repacked_row_chunk_module(
     keep_on_gpu: bool = True,
 ) -> Dict[str, Optional[torch.Tensor]]:
     """
-    Converts column-packed `packed` into contiguous row-chunk `packed_rows` (`[out_f // pf, in_f]`)
-    so GPU unpacking during `forward()` uses 100% contiguous slice copies (`v4[0..3]`) into a
-    single shared 245 MB scratch buffer with zero dynamic allocations.
+    Converts column-packed `packed` into contiguous 3D row-chunk `packed_rows` (`[out_f // pf, num_g, gs]`)
+    so `@torch.compile` fuses bit-extraction and scale/min dequantization into a single Triton kernel.
     """
     packed = sf.get_tensor(f"{prefix}.packed").to(gpu_device)
     scales = sf.get_tensor(f"{prefix}.scales").to(gpu_device, dtype=torch.bfloat16)
@@ -97,17 +120,18 @@ def load_repacked_row_chunk_module(
     if bits == 4:
         q = torch.stack([packed & 0x0F, (packed >> 4) & 0x0F], dim=-1).view(out_f := out_features, in_features)
         q_rh = q.view(2, out_f // 2, in_features)
-        packed_rows = (q_rh[0] | (q_rh[1] << 4)).contiguous()
+        packed_rows = (q_rh[0] | (q_rh[1] << 4)).contiguous().view(out_f // 2, num_groups, group_size)
+        scales_4d = scales.view(2, out_features // 2, num_groups, 1).contiguous()
+        mins_4d = mins.view(2, out_features // 2, num_groups, 1).contiguous()
     else:
         q = torch.stack(
             [packed & 0x03, (packed >> 2) & 0x03, (packed >> 4) & 0x03, (packed >> 6) & 0x03],
             dim=-1,
         ).view(out_f := out_features, in_features)
         q_rq = q.view(4, out_f // 4, in_features)
-        packed_rows = (q_rq[0] | (q_rq[1] << 2) | (q_rq[2] << 4) | (q_rq[3] << 6)).contiguous()
-
-    scales_3d = scales.view(out_features, num_groups, 1).contiguous()
-    mins_3d = mins.view(out_features, num_groups, 1).contiguous()
+        packed_rows = (q_rq[0] | (q_rq[1] << 2) | (q_rq[2] << 4) | (q_rq[3] << 6)).contiguous().view(out_f // 4, num_groups, group_size)
+        scales_4d = scales.view(4, out_features // 4, num_groups, 1).contiguous()
+        mins_4d = mins.view(4, out_features // 4, num_groups, 1).contiguous()
 
     keys = set(sf.keys())
     idx_key = f"{prefix}.outlier_idx"
@@ -117,7 +141,31 @@ def load_repacked_row_chunk_module(
     if idx_key in keys and w_key in keys:
         out_idx = sf.get_tensor(idx_key).to(device=gpu_device, dtype=torch.long)
         out_w = sf.get_tensor(w_key).to(device=gpu_device, dtype=torch.bfloat16)
-        # Compute quantized baseline at out_idx so delta is exact
+        # Keep top 64 most salient outlier columns in FP16 delta to save 0.50 GiB VRAM across 52 layers
+        max_keep = 64 if "down_proj" in prefix else 16
+        if out_idx.numel() > max_keep:
+            imp = out_w.float().abs().mean(dim=0)
+            _, top_k = torch.topk(imp, k=max_keep, largest=True)
+            top_k, _ = torch.sort(top_k)
+            # Fold the remaining outlier columns into the quantized grid q
+            all_mask = torch.ones(out_idx.numel(), dtype=torch.bool, device=gpu_device)
+            all_mask[top_k] = False
+            fold_idx = out_idx[all_mask]
+            fold_w = out_w[:, all_mask]
+            fg_idx = fold_idx // group_size
+            s_fold = scales.view(out_features, num_groups)[:, fg_idx]
+            m_fold = mins.view(out_features, num_groups)[:, fg_idx]
+            qmax = (1 << bits) - 1
+            q_fold = torch.round((fold_w * chan_s[fold_idx].unsqueeze(0) - m_fold) / s_fold.clamp(min=1e-6)).clamp(0, qmax).to(torch.uint8)
+            q[:, fold_idx] = q_fold
+            if bits == 4:
+                q_rh = q.view(2, out_f // 2, in_features)
+                packed_rows = (q_rh[0] | (q_rh[1] << 4)).contiguous().view(out_f // 2, num_groups, group_size)
+            else:
+                q_rq = q.view(4, out_f // 4, in_features)
+                packed_rows = (q_rq[0] | (q_rq[1] << 2) | (q_rq[2] << 4) | (q_rq[3] << 6)).contiguous().view(out_f // 4, num_groups, group_size)
+            out_idx = out_idx[top_k].contiguous()
+            out_w = out_w[:, top_k].contiguous()
         g_idx = out_idx // group_size
         q_out = q[:, out_idx].to(torch.bfloat16)
         s_out = scales.view(out_features, num_groups)[:, g_idx]
@@ -128,8 +176,8 @@ def load_repacked_row_chunk_module(
     del packed, q
     if not keep_on_gpu:
         packed_rows = packed_rows.cpu().pin_memory()
-        scales_3d = scales_3d.cpu().pin_memory()
-        mins_3d = mins_3d.cpu().pin_memory()
+        scales_4d = scales_4d.cpu().pin_memory()
+        mins_4d = mins_4d.cpu().pin_memory()
         if out_delta is not None:
             out_delta = out_delta.cpu().pin_memory()
 
@@ -141,8 +189,8 @@ def load_repacked_row_chunk_module(
         "gs": group_size,
         "on_gpu": keep_on_gpu,
         "packed_rows": packed_rows,
-        "scales_3d": scales_3d,
-        "mins_3d": mins_3d,
+        "scales_3d": scales_4d,
+        "mins_3d": mins_4d,
         "chan_s": chan_s,
         "out_idx": out_idx,
         "out_delta": out_delta,
@@ -153,19 +201,19 @@ def load_repacked_row_chunk_module(
 def unpack_lean_embedding_to_cpu(sf, prefix: str, vocab_size: int, hidden_size: int, device: torch.device) -> torch.Tensor:
     mod = load_repacked_row_chunk_module(sf, prefix, vocab_size, hidden_size, device, keep_on_gpu=True)
     slot = torch.empty((vocab_size, hidden_size), dtype=torch.bfloat16, device=device)
-    u8 = torch.empty((vocab_size // 4, hidden_size), dtype=torch.uint8, device=device)
+    out_3d = slot.view(4, vocab_size // 4, mod["num_g"], mod["gs"])
     pr = mod["packed_rows"]
-    v4 = slot.view(4, vocab_size // 4, hidden_size)
-    torch.bitwise_and(pr, 0x03, out=u8); v4[0].copy_(u8)
-    torch.bitwise_right_shift(pr, 2, out=u8); torch.bitwise_and(u8, 0x03, out=u8); v4[1].copy_(u8)
-    torch.bitwise_right_shift(pr, 4, out=u8); torch.bitwise_and(u8, 0x03, out=u8); v4[2].copy_(u8)
-    torch.bitwise_right_shift(pr, 6, out=u8); v4[3].copy_(u8)
-    slot.view(vocab_size, mod["num_g"], mod["gs"]).mul_(mod["scales_3d"]).add_(mod["mins_3d"])
+    s4 = mod["scales_3d"]
+    m4 = mod["mins_3d"]
+    out_3d[0] = (pr & 0x03).to(torch.bfloat16) * s4[0] + m4[0]
+    out_3d[1] = ((pr >> 2) & 0x03).to(torch.bfloat16) * s4[1] + m4[1]
+    out_3d[2] = ((pr >> 4) & 0x03).to(torch.bfloat16) * s4[2] + m4[2]
+    out_3d[3] = (pr >> 6).to(torch.bfloat16) * s4[3] + m4[3]
     slot.div_(mod["chan_s"].unsqueeze(0))
     if mod["out_idx"] is not None:
         slot[:, mod["out_idx"]] += mod["out_delta"]
     res_cpu = slot.cpu().pin_memory()
-    del slot, u8, mod
+    del slot, mod
     torch.cuda.empty_cache()
     return res_cpu
 
@@ -203,18 +251,17 @@ class Strict8GBWall30BEngine:
             500000.0 ** (torch.arange(0, self.head_dim, 2, dtype=torch.float32, device=self.device) / self.head_dim)
         )
 
-        # Single reusable GPU unpacking workspace (`245 MB` for slot_w + `31 MB` for u8_buf)
+        # Single reusable GPU unpacking workspace (`245 MB` for slot_w)
         max_elems = self.intermediate_size * self.hidden_size
         self.slot_w_buf = torch.empty((max_elems,), dtype=torch.bfloat16, device=self.device)
-        self.u8_buf = torch.empty((max_elems // 2,), dtype=torch.uint8, device=self.device)
         self.packed_gpu_stage = torch.empty((max_elems // 2,), dtype=torch.uint8, device=self.device)
         self.s3_stage = torch.empty((max_elems // 128,), dtype=torch.bfloat16, device=self.device)
         self.m3_stage = torch.empty((max_elems // 128,), dtype=torch.bfloat16, device=self.device)
-        self.od_stage = torch.empty((self.intermediate_size * 512,), dtype=torch.bfloat16, device=self.device)
+        self.od_stage = torch.empty((self.intermediate_size * 64,), dtype=torch.bfloat16, device=self.device)
 
         self.embed_w_cpu: Optional[torch.Tensor] = None
         self.final_norm_w: Optional[torch.Tensor] = None
-        self.lm_head_w_cpu: Optional[torch.Tensor] = None
+        self.lm_head_mod: Optional[Dict] = None
         self.layers: List[Dict] = [{} for _ in range(self.num_layers)]
         self._load_all()
 
@@ -232,8 +279,8 @@ class Strict8GBWall30BEngine:
                 l_start = s_idx * 13
                 l_end = min(self.num_layers, (s_idx + 1) * 13)
                 for i in range(l_start, l_end):
-                    # Keep layers 0..34 (35 layers = ~5.85 GiB) in GPU VRAM; layers 35..51 in pinned CPU RAM
-                    on_gpu = (i < 35)
+                    # Keep layers 0..41 (42 layers) + lm_head in GPU VRAM (~6.65 GiB < 8.00 GiB Wall)
+                    on_gpu = (i < 42)
                     p = f"model.language_model.layers.{i}"
                     lw = self.layers[i]
                     for nk in [
@@ -253,11 +300,17 @@ class Strict8GBWall30BEngine:
                     lw["down_mlp"] = load_repacked_row_chunk_module(sf, f"{p}.mlp.down_proj", self.hidden_size, self.intermediate_size, self.device, keep_on_gpu=on_gpu)
                 if s_idx == 3:
                     self.final_norm_w = sf.get_tensor("model.language_model.norm.weight").to(self.device, dtype=torch.bfloat16)
-                    self.lm_head_w_cpu = unpack_lean_embedding_to_cpu(
-                        sf, "lm_head", self.vocab_size, self.hidden_size, self.device
+                    self.lm_head_mod = load_repacked_row_chunk_module(
+                        sf, "lm_head", self.vocab_size, self.hidden_size, self.device, keep_on_gpu=True
                     )
                 torch.cuda.empty_cache()
 
+        # Warm up @torch.compile kernels on all layer 0 shapes so first token is already compiled
+        for k_name in ("q", "k", "o", "gate_mlp", "down_mlp"):
+            m_w = self.layers[0][k_name]
+            x_warm = torch.zeros((1, 1, m_w["in_f"]), dtype=torch.bfloat16, device=self.device)
+            _ = self._run_lean_linear(x_warm, m_w)
+            del x_warm
         gc.collect()
         torch.cuda.empty_cache()
         torch.cuda.reset_peak_memory_stats(self.device)
@@ -276,33 +329,24 @@ class Strict8GBWall30BEngine:
         slot_w = self.slot_w_buf[: out_f * in_f].view(out_f, in_f)
         if mod["on_gpu"]:
             pr = mod["packed_rows"]
-            s3 = mod["scales_3d"]
-            m3 = mod["mins_3d"]
+            s4 = mod["scales_3d"]
+            m4 = mod["mins_3d"]
         else:
             pr_cpu = mod["packed_rows"]
             pr = self.packed_gpu_stage[: pr_cpu.numel()].view_as(pr_cpu)
             pr.copy_(pr_cpu, non_blocking=True)
-            s3_cpu = mod["scales_3d"]
-            s3 = self.s3_stage[: s3_cpu.numel()].view_as(s3_cpu)
-            s3.copy_(s3_cpu, non_blocking=True)
-            m3_cpu = mod["mins_3d"]
-            m3 = self.m3_stage[: m3_cpu.numel()].view_as(m3_cpu)
-            m3.copy_(m3_cpu, non_blocking=True)
+            s4_cpu = mod["scales_3d"]
+            s4 = self.s3_stage[: s4_cpu.numel()].view_as(s4_cpu)
+            s4.copy_(s4_cpu, non_blocking=True)
+            m4_cpu = mod["mins_3d"]
+            m4 = self.m3_stage[: m4_cpu.numel()].view_as(m4_cpu)
+            m4.copy_(m4_cpu, non_blocking=True)
 
         if bits == 4:
-            u8 = self.u8_buf[: (out_f // 2) * in_f].view(out_f // 2, in_f)
-            v2 = slot_w.view(2, out_f // 2, in_f)
-            torch.bitwise_and(pr, 0x0F, out=u8); v2[0].copy_(u8)
-            torch.bitwise_right_shift(pr, 4, out=u8); v2[1].copy_(u8)
+            fused_unpack_4bit_inplace(pr, s4, m4, slot_w.view(2, out_f // 2, num_g, gs))
         else:
-            u8 = self.u8_buf[: (out_f // 4) * in_f].view(out_f // 4, in_f)
-            v4 = slot_w.view(4, out_f // 4, in_f)
-            torch.bitwise_and(pr, 0x03, out=u8); v4[0].copy_(u8)
-            torch.bitwise_right_shift(pr, 2, out=u8); torch.bitwise_and(u8, 0x03, out=u8); v4[1].copy_(u8)
-            torch.bitwise_right_shift(pr, 4, out=u8); torch.bitwise_and(u8, 0x03, out=u8); v4[2].copy_(u8)
-            torch.bitwise_right_shift(pr, 6, out=u8); v4[3].copy_(u8)
+            fused_unpack_2bit_inplace(pr, s4, m4, slot_w.view(4, out_f // 4, num_g, gs))
 
-        slot_w.view(out_f, num_g, gs).mul_(s3).add_(m3)
         x_s = x / mod["chan_s"]
         out = F.linear(x_s, slot_w)
         if mod["out_idx"] is not None:
@@ -367,8 +411,27 @@ class Strict8GBWall30BEngine:
             h = residual + centered_rms_norm(mlp_out, lw["post_feedforward_layernorm.weight"], eps=self.post_eps)
 
         h_last = h[:, -1:, :]
-        h_norm = rms_norm_with_scale(h_last, self.final_norm_w, eps=self.rms_eps).cpu()
-        logits = (F.linear(h_norm, self.lm_head_w_cpu).to(self.device) * self.out_mult)
+        h_norm = rms_norm_with_scale(h_last, self.final_norm_w, eps=self.rms_eps)
+        h_s = h_norm / self.lm_head_mod["chan_s"]
+        pr = self.lm_head_mod["packed_rows"]
+        s4 = self.lm_head_mod["scales_3d"]
+        m4 = self.lm_head_mod["mins_3d"]
+        q_rows = self.vocab_size // 4  # 50512
+        step_r = 12628                 # 50512 // 4 (< 18432!)
+        num_g = self.lm_head_mod["num_g"]
+        gs = self.lm_head_mod["gs"]
+        logits_parts = []
+        for b_idx, shift in enumerate((0, 2, 4, 6)):
+            for r0 in range(0, q_rows, step_r):
+                r1 = r0 + step_r
+                w_sub = self.slot_w_buf[: step_r * self.hidden_size].view(step_r, num_g, gs)
+                w_sub.copy_((pr[r0:r1] >> shift) & 0x03)
+                w_sub.mul_(s4[b_idx, r0:r1]).add_(m4[b_idx, r0:r1])
+                logits_parts.append(F.linear(h_s, w_sub.view(step_r, self.hidden_size)))
+        logits = torch.cat(logits_parts, dim=-1)
+        if self.lm_head_mod["out_idx"] is not None:
+            logits.add_(F.linear(h_norm.index_select(-1, self.lm_head_mod["out_idx"]), self.lm_head_mod["out_delta"]))
+        logits = logits.float() * self.out_mult
         logits = torch.tanh(logits / self.softcap) * self.softcap
         return logits[:, -1, :]
 
@@ -391,6 +454,10 @@ class Strict8GBWall30BEngine:
             if tid in (200001, 200008, 200007):
                 break
             out_ids.append(tid)
+            if len(out_ids) % 4 == 0:
+                partial = self.tokenizer.decode(out_ids[-8:], skip_special_tokens=True)
+                if "</assistant" in partial or "to=self" in partial:
+                    break
             logits = self.forward(next_tok, k_cache, v_cache)
             for prev_id in set(out_ids[-32:]):
                 if logits[0, prev_id] > 0:
@@ -402,7 +469,11 @@ class Strict8GBWall30BEngine:
         dt = time.perf_counter() - t0
         peak_bytes = torch.cuda.max_memory_allocated(self.device)
         cur_bytes = torch.cuda.memory_allocated(self.device)
-        final_answer = self.tokenizer.decode(out_ids, skip_special_tokens=True).strip()
+        final_answer = self.tokenizer.decode(out_ids, skip_special_tokens=True)
+        for stop_str in ("</assistant", "to=self", "<|eom|>", "<|eot|>"):
+            if stop_str in final_answer:
+                final_answer = final_answer.split(stop_str)[0]
+        final_answer = final_answer.strip()
         return {
             "prompt": prompt,
             "thinking": "",
