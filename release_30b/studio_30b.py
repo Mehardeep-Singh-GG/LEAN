@@ -648,6 +648,93 @@ HTML_PAGE = r"""<!DOCTYPE html>
     margin-top: 7px;
   }
 
+  /* 2B. TOP-STAGE FPV COCKPIT TRACKING HUD PILL */
+  .fpv-hud {
+    position: absolute;
+    top: 78px;
+    left: 635px;
+    transform: translateX(-50%) translateY(-10px);
+    background: var(--panel);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 9px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), left 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 14;
+  }
+  .fpv-hud.active {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+  }
+  .fpv-hud.full-stage {
+    left: 50%;
+  }
+  .fpv-hud-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--blue);
+    flex-shrink: 0;
+  }
+  .fpv-hud-main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 248px;
+  }
+  .fpv-hud-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+  .fpv-hud-sub {
+    color: var(--blue);
+  }
+  .fpv-hud-track {
+    width: 100%;
+    height: 4px;
+    background: var(--border-subtle);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .fpv-hud-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--blue);
+    border-radius: 999px;
+    transition: width 0.08s ease-out;
+  }
+  .fpv-cam-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px 9px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .fpv-cam-btn:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
   /* 3. BOTTOM-LEFT CAMERA & ARCHITECTURE STAGE DOCK */
   .bottom-dock {
     position: absolute;
@@ -1035,6 +1122,21 @@ HTML_PAGE = r"""<!DOCTYPE html>
     <button class="toggle-panel-btn" id="toggle-sheet-btn" onclick="toggleChatSheet()">Full 3D View</button>
   </header>
 
+  <!-- Top-Stage FPV Cockpit Tracking HUD (Active during FPV Mode & Prompt Flight) -->
+  <div class="fpv-hud" id="fpv-hud">
+    <span class="fpv-hud-pulse" id="fpv-hud-pulse"></span>
+    <div class="fpv-hud-main">
+      <div class="fpv-hud-row">
+        <span id="fpv-hud-title">FPV CANYON FLIGHT · LAYER 26 / 52</span>
+        <span class="fpv-hud-sub" id="fpv-hud-sub">DMA RING · 50%</span>
+      </div>
+      <div class="fpv-hud-track">
+        <div class="fpv-hud-fill" id="fpv-hud-fill"></div>
+      </div>
+    </div>
+    <button class="fpv-cam-btn" id="fpv-cam-btn" onclick="toggleFpvCamera()">Cam: FPV Inside</button>
+  </div>
+
   <!-- Single Contextual 3D-Tracked Layer Inspector Card (Zero Crowding!) -->
   <aside class="floating-node-card" id="node-inspector">
     <div class="fn-header">
@@ -1094,11 +1196,12 @@ HTML_PAGE = r"""<!DOCTYPE html>
     </div>
 
     <div class="stage-director">
-      <button class="dir-btn" id="btn-portal" onclick="returnToPortal()">✦ Particle Portal</button>
-      <button class="dir-btn" id="btn-monolith" onclick="setStageMode('monolith')">00 Sealed Chip</button>
-      <button class="dir-btn" id="btn-fracture" onclick="setStageMode('fracture')">01 Break FP16 (59.9 GB)</button>
-      <button class="dir-btn active" id="btn-quantize" onclick="setStageMode('quantize')">02 Quantize Crush (6.53 GB)</button>
-      <button class="dir-btn" id="btn-dive" onclick="setStageMode('dive')">03 Macro Tensor Dive</button>
+      <button class="dir-btn" id="btn-portal" onclick="returnToPortal()">✦ Portal</button>
+      <button class="dir-btn" id="btn-monolith" onclick="setStageMode('monolith')">00 Sealed</button>
+      <button class="dir-btn" id="btn-fracture" onclick="setStageMode('fracture')">01 Break FP16</button>
+      <button class="dir-btn active" id="btn-quantize" onclick="setStageMode('quantize')">02 Quantize 6.53 GB</button>
+      <button class="dir-btn" id="btn-dive" onclick="setStageMode('dive')">03 Tensor Dive</button>
+      <button class="dir-btn" id="btn-fpv" onclick="setStageMode('fpv')">04 FPV Flight</button>
     </div>
   </div>
 
@@ -1494,15 +1597,29 @@ Check: bat costs $1.05, total $1.10</div>
   pcieController.add(new THREE.LineSegments(new THREE.EdgesGeometry(pcieController.geometry), new THREE.LineBasicMaterial({ color: 0x0E5830 })));
   siliconWorld.add(pcieController);
 
-  // Top Logit Output Crown Cap + 8 Output LM-Head Crystal Banks (202,048 Vocab Projection)
+  // Top Logit Output Crown Cap (Split-Wing Skylight Portal!) + 8 Output LM-Head Crystal Banks (202,048 Vocab Projection)
   const topCrownGroup = new THREE.Group();
-  const topCrownCap = new THREE.Mesh(new THREE.BoxGeometry(3.55, 0.14, 2.50), matAnodizedDark);
-  topCrownCap.add(new THREE.LineSegments(new THREE.EdgesGeometry(topCrownCap.geometry), new THREE.LineBasicMaterial({ color: 0x0066CC })));
-  topCrownGroup.add(topCrownCap);
+  const crownHalfGeo = new THREE.BoxGeometry(1.775, 0.14, 2.50);
+  const topCrownCapL = new THREE.Mesh(crownHalfGeo, matAnodizedDark);
+  topCrownCapL.position.set(-0.8875, 0, 0);
+  topCrownCapL.add(new THREE.LineSegments(new THREE.EdgesGeometry(crownHalfGeo), new THREE.LineBasicMaterial({ color: 0x0066CC })));
+  const topCrownCapR = new THREE.Mesh(crownHalfGeo, matAnodizedDark);
+  topCrownCapR.position.set(0.8875, 0, 0);
+  topCrownCapR.add(new THREE.LineSegments(new THREE.EdgesGeometry(crownHalfGeo), new THREE.LineBasicMaterial({ color: 0x0066CC })));
+  const crownPortalRing = new THREE.Mesh(
+    new THREE.RingGeometry(0.36, 0.44, 48),
+    new THREE.MeshBasicMaterial({ color: 0x2997FF, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
+  );
+  crownPortalRing.rotation.x = Math.PI * 0.5;
+  crownPortalRing.position.set(0, -0.02, 0);
+  topCrownGroup.add(topCrownCapL, topCrownCapR, crownPortalRing);
+  const headBanks = [];
   for (let b = 0; b < 8; b++) {
+    const baseX = -1.19 + b * 0.34;
     const headBank = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.10, 1.75), b % 2 === 0 ? matBlueAccent : matBrushedAlum);
-    headBank.position.set(-1.19 + b * 0.34, 0.12, 0);
+    headBank.position.set(baseX, 0.12, 0);
     topCrownGroup.add(headBank);
+    headBanks.push({ mesh: headBank, baseX });
   }
   topCrownGroup.position.set(0, 2.95, 0);
   siliconWorld.add(topCrownGroup);
@@ -1512,6 +1629,7 @@ Check: bat costs $1.05, total $1.10</div>
     [-1.68, -1.16], [1.68, -1.16],
     [-1.68,  1.16], [1.68,  1.16]
   ];
+  const guideCols = [];
   colPositions.forEach(([cx, cz]) => {
     const colMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.030, 0.030, 5.95, 12), matBrushedAlum);
     colMesh.position.set(cx, -0.02, cz);
@@ -1524,6 +1642,8 @@ Check: bat costs $1.05, total $1.10</div>
     const collarTop = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.09, 12), matCopperMetal);
     collarTop.position.set(cx, 2.84, cz);
     siliconWorld.add(collarTop);
+
+    guideCols.push({ colMesh, collarTop });
   });
 
   // 8.00 GiB Hardware Wall Precision Perimeter Frame
@@ -1721,18 +1841,171 @@ Check: bat costs $1.05, total $1.10</div>
   );
   siliconWorld.add(streamPoints);
 
+  // H. 3D Crystalline Prompt Token Carrier + Gyroscopic Bit-Rings + 16-Arc Interior Synapse Web (FPV Tracking!)
+  const promptPacketGroup = new THREE.Group();
+  promptPacketGroup.visible = false;
+  siliconWorld.add(promptPacketGroup);
+
+  const pktCoreMat = new THREE.MeshStandardMaterial({
+    color: 0x0066CC,
+    emissive: 0x004499,
+    emissiveIntensity: 0.55,
+    roughness: 0.18,
+    metalness: 0.35
+  });
+  const pktCoreMesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.145, 0), pktCoreMat);
+  promptPacketGroup.add(pktCoreMesh);
+
+  const pktCageGeo = new THREE.IcosahedronGeometry(0.225, 0);
+  const pktCageWire = new THREE.LineSegments(
+    new THREE.EdgesGeometry(pktCageGeo),
+    new THREE.LineBasicMaterial({ color: 0x2997FF, transparent: true, opacity: 0.88 })
+  );
+  promptPacketGroup.add(pktCageWire);
+
+  const pktRingCopper = new THREE.Mesh(
+    new THREE.TorusGeometry(0.29, 0.0085, 8, 56),
+    new THREE.MeshBasicMaterial({ color: 0xE5A024 })
+  );
+  promptPacketGroup.add(pktRingCopper);
+
+  const pktRingEmerald = new THREE.Mesh(
+    new THREE.TorusGeometry(0.355, 0.0075, 8, 56),
+    new THREE.MeshBasicMaterial({ color: 0x30D158 })
+  );
+  promptPacketGroup.add(pktRingEmerald);
+
+  const pktScanHalo = new THREE.Mesh(
+    new THREE.RingGeometry(0.46, 0.485, 56),
+    new THREE.MeshBasicMaterial({ color: 0x2997FF, side: THREE.DoubleSide, transparent: true, opacity: 0.42 })
+  );
+  pktScanHalo.rotation.x = Math.PI * 0.5;
+  promptPacketGroup.add(pktScanHalo);
+
+  // 140 Wake Quanta Particles Trailing Downward Behind the Prompt Carrier
+  const WAKE_COUNT = 140;
+  const wakeGeo = new THREE.BufferGeometry();
+  const wakePos = new Float32Array(WAKE_COUNT * 3);
+  const wakePhase = new Float32Array(WAKE_COUNT);
+  for (let i = 0; i < WAKE_COUNT; i++) {
+    const ang = Math.random() * Math.PI * 2;
+    const rad = 0.03 + Math.random() * 0.24;
+    wakePos[i * 3]     = Math.cos(ang) * rad;
+    wakePos[i * 3 + 1] = -0.08 - Math.random() * 1.45;
+    wakePos[i * 3 + 2] = Math.sin(ang) * rad;
+    wakePhase[i] = Math.random();
+  }
+  wakeGeo.setAttribute('position', new THREE.BufferAttribute(wakePos, 3));
+  const wakePoints = new THREE.Points(
+    wakeGeo,
+    new THREE.PointsMaterial({ color: 0x2997FF, size: 0.038, transparent: true, opacity: 0.78 })
+  );
+  promptPacketGroup.add(wakePoints);
+
+  // Crisp 4x Retina Compact Prompt Carrier Tag Sprite (Moves with the 3D Prompt Carrier!)
+  const promptTagCnv = document.createElement('canvas');
+  promptTagCnv.width = 1024;
+  promptTagCnv.height = 128;
+  const promptTagCtx = promptTagCnv.getContext('2d');
+  const promptTagTex = new THREE.CanvasTexture(promptTagCnv);
+  promptTagTex.anisotropy = 4;
+  const promptTagSpr = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: promptTagTex, transparent: true, depthTest: false })
+  );
+  promptTagSpr.scale.set(0.72, 0.090, 1);
+  promptTagSpr.position.set(0, 0.42, 0);
+  promptPacketGroup.add(promptTagSpr);
+  const promptTagMeta = {
+    spr: promptTagSpr,
+    cnv: promptTagCnv,
+    ctx: promptTagCtx,
+    tex: promptTagTex,
+    label: 'L24 · 6,656-D RESIDUAL',
+    lightAccentHex: '#0066CC',
+    darkAccentHex: '#2997FF'
+  };
+  function updatePromptTagText(text, darkNow) {
+    promptTagMeta.label = text;
+    const cw = 1024, ch = 128;
+    const ctx = promptTagCtx;
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.font = '700 40px "JetBrains Mono", -apple-system, monospace';
+    const textW = Math.min(cw - 140, ctx.measureText(text).width);
+    const pillW = Math.max(380, textW + 124);
+    const x0 = (cw - pillW) * 0.5;
+    const x1 = x0 + pillW;
+
+    ctx.fillStyle = darkNow ? 'rgba(18, 18, 24, 0.94)' : 'rgba(255, 255, 255, 0.95)';
+    ctx.strokeStyle = darkNow ? '#2997FF' : '#0066CC';
+    ctx.lineWidth = 4.5;
+    const r = 34;
+    ctx.beginPath();
+    ctx.moveTo(x0 + r, 14); ctx.lineTo(x1 - r, 14);
+    ctx.quadraticCurveTo(x1 - 6, 14, x1 - 6, 14 + r);
+    ctx.lineTo(x1 - 6, ch - 14 - r);
+    ctx.quadraticCurveTo(x1 - 6, ch - 14, x1 - r, ch - 14);
+    ctx.lineTo(x0 + r, ch - 14);
+    ctx.quadraticCurveTo(x0 + 6, ch - 14, x0 + 6, ch - 14 - r);
+    ctx.lineTo(x0 + 6, 14 + r);
+    ctx.quadraticCurveTo(x0 + 6, 14, x0 + r, 14);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = darkNow ? '#30D158' : '#157F46';
+    ctx.beginPath();
+    ctx.arc(x0 + 44, ch / 2, 13, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = darkNow ? '#F4F4F8' : '#141416';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, x0 + 74, ch / 2 + 2);
+    promptTagTex.needsUpdate = true;
+  }
+  updatePromptTagText(promptTagMeta.label, false);
+
+  // 16 Dynamic Interior Bezier Synapse Arcs Connecting Canyon Subsystems -> Prompt Carrier!
+  const fpvSynapseGroup = new THREE.Group();
+  fpvSynapseGroup.visible = false;
+  siliconWorld.add(fpvSynapseGroup);
+  const fpvSynapseArcs = [];
+  for (let s = 0; s < 16; s++) {
+    // 0..5: Left GQA Attention (Blue), 6..11: Parted Gate/Up MLP Canyon Walls (Emerald/Blue), 12..15: Right Copper Outlier Pins (Copper)
+    const colHex = s < 6 ? 0x2997FF : (s < 12 ? 0x30D158 : 0xE5A024);
+    const geom = new THREE.BufferGeometry();
+    geom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(21 * 3), 3));
+    const line = new THREE.Line(
+      geom,
+      new THREE.LineBasicMaterial({ color: colHex, transparent: true, opacity: 0.86 })
+    );
+    fpvSynapseGroup.add(line);
+    fpvSynapseArcs.push({ line, geom, idx: s });
+  }
+  const synStart = new THREE.Vector3();
+  const synMid   = new THREE.Vector3();
+  const synEnd   = new THREE.Vector3();
+  const synTmp   = new THREE.Vector3();
+
   // =========================================================================
-  // 3. STATE MACHINE: PORTAL <-> SILICON MODES & FULL GROUND-TO-CROWN CAMERA
+  // 3. STATE MACHINE: PORTAL <-> SILICON MODES & FPV INTERIOR CANYON RIG
   // =========================================================================
   const urlParams = new URLSearchParams(window.location.search);
   let inPortal = !urlParams.has('studio');
-  let stageMode = urlParams.get('mode') || 'quantize'; // 'monolith' | 'fracture' | 'quantize' | 'dive'
+  let stageMode = urlParams.get('mode') || 'quantize'; // 'monolith' | 'fracture' | 'quantize' | 'dive' | 'fpv'
+  const fixedUParam = urlParams.has('u') ? parseFloat(urlParams.get('u')) : null;
   let selectedLayer = 26;
   let hoveredLayer = -1;
   let isGenerating = false;
   let liveWaveLayer = -1;
   let liveDmaLayer = 26;
   let sheetCollapsed = false;
+
+  // FPV Prompt Tracking & Interior Canyon State
+  let promptFpvActive = false;   // True during Phases 3 & 4 of prompt execution
+  let fpvCamEnabled = true;      // User can toggle FPV Inside <-> Exterior anytime via #fpv-cam-btn
+  let fpvClimbU = 0.0;           // 0.0 (Base Input Embedding) -> 1.0 (Top LM Head Crown)
+  let fpvBlend = (stageMode === 'fpv' && !inPortal) ? 1.0 : 0.0;
+  let activePromptSnippet = '6,656-D RESIDUAL';
 
   // Camera Spherical Orbit Targets (dist = 12.6 frames full Grounded Pedestal -> Top Crown with air!)
   const camTarget = {
@@ -1744,7 +2017,7 @@ Check: bat costs $1.05, total $1.10</div>
     lookZ: 0.0
   };
 
-  // Neural Disassembly & Quantization Spring Parameters
+  // Neural Disassembly, Quantization & Interior Canyon Spring Parameters
   const rigTarget = {
     implode: inPortal ? 0.0 : 1.0,
     portalFade: inPortal ? 1.0 : 0.0,
@@ -1752,12 +2025,46 @@ Check: bat costs $1.05, total $1.10</div>
     fp16Bloated: 0.0,    // 1 = 59.90 GB Uncompressed Cloud, 0 = 6.53 GB Crushed Wafers
     wingSpread: 1.0,
     pinExtract: 1.0,
-    layerGap: 0.09
+    layerGap: 0.09,
+    fpvTunnel: 0.0       // 1 = Parts the 6x4 MLP wafers down the center to open the 52-story FPV Silicon Canyon!
   };
+
+  function toggleFpvCamera() {
+    fpvCamEnabled = !fpvCamEnabled;
+    const btn = document.getElementById('fpv-cam-btn');
+    if (btn) btn.textContent = fpvCamEnabled ? 'Cam: FPV Inside' : 'Cam: Exterior';
+  }
+
+  function updateFpvHud(layerIdx, progress01, customPhaseLabel) {
+    const hud = document.getElementById('fpv-hud');
+    const titleEl = document.getElementById('fpv-hud-title');
+    const subEl = document.getElementById('fpv-hud-sub');
+    const fillEl = document.getElementById('fpv-hud-fill');
+    if (!hud) return;
+
+    const showHud = !inPortal && (stageMode === 'fpv' || promptFpvActive);
+    hud.classList.toggle('active', showHud);
+    hud.classList.toggle('full-stage', sheetCollapsed);
+    if (!showHud) return;
+
+    const lClamped = Math.max(0, Math.min(51, layerIdx));
+    const pad = lClamped < 10 ? '0' + lClamped : '' + lClamped;
+    const pct = Math.round(Math.max(0, Math.min(1, progress01)) * 100);
+    if (customPhaseLabel) {
+      titleEl.textContent = customPhaseLabel;
+    } else {
+      titleEl.textContent = `FPV PROMPT TRACKING · LAYER ${pad} / 51`;
+    }
+    const roleTag = SALIENT_CROWN.has(lClamped)
+      ? '4-BIT CROWN'
+      : (DMA_SET.has(lClamped) ? 'ASYNC DMA RING' : '2-BIT SWIGLU');
+    subEl.textContent = `${roleTag} · ${pct}%`;
+    fillEl.style.width = `${pct}%`;
+  }
 
   function setStageMode(mode) {
     stageMode = mode;
-    ['monolith', 'fracture', 'quantize', 'dive'].forEach(m => {
+    ['monolith', 'fracture', 'quantize', 'dive', 'fpv'].forEach(m => {
       const b = document.getElementById('btn-' + m);
       if (b) b.classList.toggle('active', m === mode);
     });
@@ -1769,6 +2076,7 @@ Check: bat costs $1.05, total $1.10</div>
       rigTarget.wingSpread = 0.0;
       rigTarget.pinExtract = 0.0;
       rigTarget.layerGap = 0.0;
+      rigTarget.fpvTunnel = 0.0;
       camTarget.dist = 12.6;
       camTarget.pitch = 0.20;
       camTarget.lookX = lookXBase;
@@ -1779,6 +2087,7 @@ Check: bat costs $1.05, total $1.10</div>
       rigTarget.wingSpread = 0.95;
       rigTarget.pinExtract = 0.30;
       rigTarget.layerGap = 0.11;
+      rigTarget.fpvTunnel = 0.0;
       camTarget.dist = 13.4;
       camTarget.pitch = 0.24;
       camTarget.lookX = lookXBase;
@@ -1789,6 +2098,7 @@ Check: bat costs $1.05, total $1.10</div>
       rigTarget.wingSpread = 1.0;
       rigTarget.pinExtract = 1.0;
       rigTarget.layerGap = 0.09;
+      rigTarget.fpvTunnel = 0.0;
       camTarget.dist = 12.5;
       camTarget.pitch = 0.22;
       camTarget.lookX = lookXBase;
@@ -1799,13 +2109,29 @@ Check: bat costs $1.05, total $1.10</div>
       rigTarget.wingSpread = 1.32;
       rigTarget.pinExtract = 1.30;
       rigTarget.layerGap = 0.22;
+      rigTarget.fpvTunnel = 0.0;
       const selY = (-2.52 + (selectedLayer / 51) * 5.04) * 1.22;
       camTarget.dist = 5.4;
       camTarget.pitch = 0.34;
       camTarget.lookX = sheetCollapsed ? 0.0 : 0.55;
       camTarget.lookY = selY;
+    } else if (mode === 'fpv') {
+      fpvCamEnabled = true;
+      const camBtn = document.getElementById('fpv-cam-btn');
+      if (camBtn) camBtn.textContent = 'Cam: FPV Inside';
+      rigTarget.shellOpen = 1.42;
+      rigTarget.fp16Bloated = 0.0;
+      rigTarget.wingSpread = 1.30;
+      rigTarget.pinExtract = 1.26;
+      rigTarget.layerGap = 0.24;
+      rigTarget.fpvTunnel = 1.0;
+      camTarget.dist = 12.8;
+      camTarget.pitch = 0.22;
+      camTarget.lookX = lookXBase;
+      camTarget.lookY = 0.85;
     }
     updateNodeInspector(selectedLayer);
+    updateFpvHud(selectedLayer, fpvClimbU);
   }
 
   if (!inPortal) {
@@ -1835,14 +2161,18 @@ Check: bat costs $1.05, total $1.10</div>
 
   function returnToPortal() {
     inPortal = true;
+    promptFpvActive = false;
     document.getElementById('portal-overlay').classList.remove('hidden');
     document.getElementById('studio-ui').classList.remove('active');
+    const hud = document.getElementById('fpv-hud');
+    if (hud) hud.classList.remove('active');
     leaderSvg.innerHTML = '';
 
     portalRingsGroup.visible = true;
     siliconWorld.visible = false;
     rigTarget.implode = 0.0;
     rigTarget.portalFade = 1.0;
+    rigTarget.fpvTunnel = 0.0;
     camTarget.yaw = 0.0;
     camTarget.pitch = 0.0;
     camTarget.dist = 12.6;
@@ -1854,7 +2184,9 @@ Check: bat costs $1.05, total $1.10</div>
     sheetCollapsed = !sheetCollapsed;
     const sheet = document.getElementById('chat-sheet');
     const btn = document.getElementById('toggle-sheet-btn');
+    const hud = document.getElementById('fpv-hud');
     sheet.classList.toggle('collapsed', sheetCollapsed);
+    if (hud) hud.classList.toggle('full-stage', sheetCollapsed);
     btn.textContent = sheetCollapsed ? 'Show Console' : 'Full 3D View';
     camTarget.lookX = sheetCollapsed ? 0.0 : (stageMode === 'dive' ? 0.55 : 1.08);
   }
@@ -2067,6 +2399,9 @@ Check: bat costs $1.05, total $1.10</div>
     colCopperPin.setHex(isDarkTheme ? 0xE5A024 : 0xCE8B1E);
 
     cadSpriteMetas.forEach(m => renderCadSpriteCanvas(m, isDarkTheme));
+    updatePromptTagText(promptTagMeta.label, isDarkTheme);
+    pktCoreMat.color.setHex(isDarkTheme ? 0x2997FF : 0x0066CC);
+    pktCoreMat.emissive.setHex(isDarkTheme ? 0x0A58CA : 0x003E80);
   }
 
   function toggleTheme() {
@@ -2084,17 +2419,36 @@ Check: bat costs $1.05, total $1.10</div>
   applyTheme(initialDark);
 
   // =========================================================================
-  // 4. MASTER 60FPS RENDER LOOP
+  // 4. MASTER 60FPS RENDER LOOP (ORBITAL + INTERIOR FPV CANYON FLIGHT)
   // =========================================================================
   const clockStart = performance.now();
+  let lastPromptTagLayer = -1;
+
   function animate(now) {
     requestAnimationFrame(animate);
     const t = (now - clockStart) * 0.001;
     portalUniforms.uTime.value = t;
 
-    // Gentle orbital motion when idle in Studio
-    if (!inPortal && !isDragging) {
-      camTarget.yaw += isGenerating ? 0.0038 : 0.0011;
+    const wantCanyonFlight = !inPortal && (stageMode === 'fpv' || promptFpvActive);
+    const wantFpvCamera = wantCanyonFlight && fpvCamEnabled;
+    fpvBlend += ((wantFpvCamera ? 1.0 : 0.0) - fpvBlend) * 0.085;
+
+    // Continuous autonomous interior climb when user selects "04 FPV Flight"
+    if (!inPortal && stageMode === 'fpv' && !promptFpvActive) {
+      fpvClimbU = (fixedUParam !== null && !isNaN(fixedUParam))
+        ? Math.max(0.0, Math.min(1.0, fixedUParam))
+        : ((t * 0.092) % 1.0);
+      liveWaveLayer = Math.min(51, Math.floor(fpvClimbU * 52));
+      if (Math.floor(t * 15) % 2 === 0 || fixedUParam !== null) {
+        selectedLayer = liveWaveLayer;
+        updateNodeInspector(selectedLayer);
+        updateFpvHud(selectedLayer, fpvClimbU, `FPV CANYON FLIGHT · LAYER ${selectedLayer < 10 ? '0' + selectedLayer : selectedLayer} / 51`);
+      }
+    }
+
+    // Gentle orbital motion when idle in exterior Studio view
+    if (!inPortal && !isDragging && fpvBlend < 0.25) {
+      camTarget.yaw += isGenerating ? 0.0028 : 0.0011;
     }
 
     // Smooth Spring Damping
@@ -2102,14 +2456,33 @@ Check: bat costs $1.05, total $1.10</div>
       camCurr[k] += (camTarget[k] - camCurr[k]) * 0.085;
     }
     for (const k of Object.keys(rigTarget)) {
-      rigCurr[k] += (rigTarget[k] - rigCurr[k]) * 0.095;
+      rigCurr[k] += (rigTarget[k] - rigCurr[k]) * 0.085;
     }
 
     portalUniforms.uImplode.value = rigCurr.implode;
     portalUniforms.uOpacity.value = Math.max(0.0, 1.0 - rigCurr.implode * 0.92);
     portalPoints.visible = portalUniforms.uOpacity.value > 0.02;
 
+    // Superstructure Vertical Expansion & Grounded Interposer Anchor
+    const stackScale = 1.0 + rigCurr.layerGap + rigCurr.fpvTunnel * 0.20;
+    const baseLift = rigCurr.fpvTunnel * (2.52 * (stackScale - 1.0) + 0.14);
+    const topCrownY = 2.95 * stackScale + baseLift;
+    const botInterposerY = floorY + 0.30;
+
+    // Prompt Token Carrier 3D Trajectory Along the 52-Layer Central Canyon
+    const pktBotY = floorY + 0.46;
+    const pktTopY = topCrownY + 0.20;
+    const pktY = pktBotY + fpvClimbU * (pktTopY - pktBotY);
+    const pktX = Math.sin(fpvClimbU * Math.PI * 3.0) * 0.115 * rigCurr.fpvTunnel;
+    const pktZ = Math.cos(fpvClimbU * Math.PI * 2.0) * 0.085 * rigCurr.fpvTunnel;
+
     if (inPortal) {
+      camera.up.set(0, 1, 0);
+      if (camera.view && camera.view.enabled) {
+        camera.clearViewOffset();
+        camera.fov = 40;
+        camera.updateProjectionMatrix();
+      }
       camera.position.set(
         pointerNDC.x * 1.1,
         pointerNDC.y * 0.85,
@@ -2122,53 +2495,106 @@ Check: bat costs $1.05, total $1.10</div>
       portalRingsGroup.rotation.x = tiltNow;
     } else {
       portalPoints.rotation.x = -0.34 * (1.0 - rigCurr.implode);
-      const cx = camCurr.lookX + Math.sin(camCurr.yaw) * Math.cos(camCurr.pitch) * camCurr.dist;
-      const cy = camCurr.lookY + Math.sin(camCurr.pitch) * camCurr.dist;
-      const cz = camCurr.lookZ + Math.cos(camCurr.yaw) * Math.cos(camCurr.pitch) * camCurr.dist;
-      camera.position.set(cx, cy, cz);
-      camera.lookAt(camCurr.lookX, camCurr.lookY, camCurr.lookZ);
+
+      // Exterior Orbital Camera Pose
+      const ox = camCurr.lookX + Math.sin(camCurr.yaw) * Math.cos(camCurr.pitch) * camCurr.dist;
+      const oy = camCurr.lookY + Math.sin(camCurr.pitch) * camCurr.dist;
+      const oz = camCurr.lookZ + Math.cos(camCurr.yaw) * Math.cos(camCurr.pitch) * camCurr.dist;
+
+      // Interior Tight Chase FPV Camera Pose (Inside the Parted 52-Layer Canyon!)
+      const fx = pktX * 0.65 + pointerNDC.x * 0.075;
+      const fy = Math.max(floorY + 0.26, pktY - 0.84) + pointerNDC.y * 0.055;
+      const fz = pktZ + 1.05;
+      const ftx = pktX * 1.15;
+      const fty = pktY + 0.92;
+      const ftz = pktZ - 0.30;
+
+      const b = fpvBlend * fpvBlend * (3.0 - 2.0 * fpvBlend);
+      camera.position.set(ox + (fx - ox) * b, oy + (fy - oy) * b, oz + (fz - oz) * b);
+      const bankRoll = Math.cos(fpvClimbU * Math.PI * 3.0) * 0.052 * b;
+      camera.up.set(bankRoll, 1.0, 0.0).normalize();
+      camera.lookAt(
+        camCurr.lookX + (ftx - camCurr.lookX) * b,
+        camCurr.lookY + (fty - camCurr.lookY) * b,
+        camCurr.lookZ + (ftz - camCurr.lookZ) * b
+      );
+
+      const desiredFov = 40.0 + 16.0 * b;
+      if (Math.abs(camera.fov - desiredFov) > 0.02 || b > 0.004) {
+        camera.fov = desiredFov;
+        if (b > 0.004 && !sheetCollapsed) {
+          const shiftLeftPx = Math.round(window.innerWidth * 0.062 * b);
+          camera.setViewOffset(window.innerWidth, window.innerHeight, shiftLeftPx, 0, window.innerWidth, window.innerHeight);
+        } else {
+          camera.clearViewOffset();
+        }
+        camera.updateProjectionMatrix();
+      } else if (camera.view && camera.view.enabled) {
+        camera.clearViewOffset();
+        camera.updateProjectionMatrix();
+      }
     }
 
-    // Update Silicon Superchip Voxels when visible
+    // Update Silicon Superchip Voxels & FPV Prompt Carrier when visible
     if (siliconWorld.visible) {
-      const activeWave = isGenerating
-        ? (liveWaveLayer >= 0 ? liveWaveLayer : Math.floor((t * 26) % 52))
+      const activeWave = (isGenerating || stageMode === 'fpv')
+        ? (liveWaveLayer >= 0 ? liveWaveLayer : Math.floor((t * 16) % 52))
         : (stageMode === 'dive' ? selectedLayer : -1);
 
-      if (isGenerating && activeWave >= 0 && Math.floor(t * 14) % 3 === 0) {
+      if (isGenerating && activeWave >= 0 && Math.floor(t * 14) % 2 === 0) {
         selectedLayer = activeWave;
         updateNodeInspector(selectedLayer);
       }
 
+      // Sync Top Logit Crown, Parted LM-Head Skylight Portal, Titanium Guide Columns & 8.00 GiB Cage
+      topCrownGroup.position.y = topCrownY;
+      topCrownCapL.position.x = -0.8875 - 0.54 * rigCurr.fpvTunnel;
+      topCrownCapR.position.x =  0.8875 + 0.54 * rigCurr.fpvTunnel;
+      crownPortalRing.visible = rigCurr.fpvTunnel > 0.15;
+      headBanks.forEach(hb => {
+        hb.mesh.position.x = hb.baseX + (hb.baseX < 0 ? -1 : 1) * 0.54 * rigCurr.fpvTunnel;
+      });
+      const spanH = topCrownY - botInterposerY;
+      guideCols.forEach(gc => {
+        gc.colMesh.scale.y = spanH / 5.95;
+        gc.colMesh.position.y = (botInterposerY + topCrownY) * 0.5;
+        gc.collarTop.position.y = topCrownY - 0.11;
+      });
+      wallWire.scale.y = spanH / 5.82;
+      wallWire.position.y = (botInterposerY + topCrownY) * 0.5;
+
       // 1. Animate 4-Shard Heat-Spreader Shields
       shardShields.forEach(sh => {
-        const xDist = 1.56 + rigCurr.shellOpen * 0.85 + rigCurr.fp16Bloated * 0.65;
+        const xDist = 1.56 + rigCurr.shellOpen * 0.85 + rigCurr.fp16Bloated * 0.65 + rigCurr.fpvTunnel * 0.22;
         sh.lShield.position.x = -xDist;
         sh.rShield.position.x =  xDist;
-        sh.lShield.position.y = sh.baseY * (1 + rigCurr.layerGap * 0.7);
-        sh.rShield.position.y = sh.baseY * (1 + rigCurr.layerGap * 0.7);
+        sh.lShield.position.y = sh.baseY * stackScale + baseLift;
+        sh.rShield.position.y = sh.baseY * stackScale + baseLift;
       });
 
       // 2. Animate All 2,496 Tensor Voxel Instances Across 52 Layers
       let aIdx = 0;
       let mIdx = 0;
       let pIdx = 0;
+      let waveLayerWorldY = 0.0;
 
       for (let i = 0; i < NUM_LAYERS; i++) {
         const isCrown = SALIENT_CROWN.has(i);
         const isMid   = SALIENT_MID.has(i);
         const isDma   = DMA_SET.has(i);
-        const isWave  = activeWave >= 0 && Math.abs(i - activeWave) <= 1;
+        const waveBand = wantCanyonFlight ? 2 : 1;
+        const isWave  = activeWave >= 0 && Math.abs(i - activeWave) <= waveBand;
         const isSel   = (i === selectedLayer) || (i === hoveredLayer);
 
         const shardGap = (Math.floor(i / 13) - 1.5) * 0.14 * rigCurr.layerGap;
-        const ly = (-2.52 + (i / 51) * 5.04) * (1.0 + rigCurr.layerGap) + shardGap;
-        const popZ = (isWave ? 0.24 : 0) + (isSel ? 0.14 : 0);
+        const ly = (-2.52 + (i / 51) * 5.04) * stackScale + shardGap + baseLift;
+        if (i === Math.max(0, activeWave)) waveLayerWorldY = ly;
+        const popZ = ((isWave ? 0.22 : 0) + (isSel ? 0.12 : 0)) * (1.0 - fpvBlend * 0.82);
 
         hitSlabs[i].position.set(0, ly, 0);
 
         // A. Left Subsystem: 8 GQA Attention Head Clusters (2x4 Grid)
-        const attnBaseX = -(0.68 + rigCurr.wingSpread * 0.52 + rigCurr.fp16Bloated * 0.45);
+        const attnBaseX = -(0.68 + rigCurr.wingSpread * 0.52 + rigCurr.fp16Bloated * 0.45 + rigCurr.fpvTunnel * 0.16);
         for (let h = 0; h < ATTN_PER_L; h++) {
           const col = h % 2;
           const row = Math.floor(h / 2);
@@ -2186,8 +2612,7 @@ Check: bat costs $1.05, total $1.10</div>
         }
 
         // B. Center Subsystem: 24 SwiGLU MLP Matrix Voxels (6x4 Voxel Lattice!)
-        //    In Stage 1 (Fracture FP16), spreads 3.2x wide to burst past the 8.00 GiB cage!
-        //    In Stage 2 (Quantize Crush), packs 8x tighter into dense crystalline 2-bit/4-bit cores!
+        //    When fpvTunnel -> 1.0, splits left 3 cols (Gate_proj) & right 3 cols (Up_proj) open into a 52-story canyon!
         const crushedSpanX = isCrown ? 0.145 : 0.095;
         const bloatedSpanX = 0.44;
         const spanX = crushedSpanX + (bloatedSpanX - crushedSpanX) * rigCurr.fp16Bloated;
@@ -2197,14 +2622,15 @@ Check: bat costs $1.05, total $1.10</div>
         for (let m = 0; m < MLP_PER_L; m++) {
           const gx = (m % 6) - 2.5;
           const gz = Math.floor(m / 6) - 1.5;
+          const canyonSplit = (gx < 0 ? -1 : 1) * 0.54 * rigCurr.fpvTunnel;
           const jitterY = rigCurr.fp16Bloated * Math.sin(i * 1.7 + m) * 0.025;
-          dummyObj.position.set(gx * spanX, ly + jitterY, gz * 0.44 + popZ);
+          dummyObj.position.set(gx * spanX + canyonSplit, ly + jitterY, gz * 0.44 + popZ);
           dummyObj.scale.set(voxScaleX, voxScaleY, 1.0);
           dummyObj.updateMatrix();
           mlpInst.setMatrixAt(mIdx, dummyObj.matrix);
 
           let mCol = colTitanium;
-          if (isWave) mCol = colBlueBright;
+          if (isWave) mCol = isDma ? colEmerald : colBlueBright;
           else if (rigCurr.fp16Bloated > 0.45) mCol = colRawFP16;
           else if (isCrown) mCol = colSpaceBlack;
           else if (isDma) mCol = colEmerald;
@@ -2215,7 +2641,7 @@ Check: bat costs $1.05, total $1.10</div>
         }
 
         // C. Right Subsystem: 16 Salient Outlier Precision Copper Pins (4x4 Micro-Pin Array!)
-        const pinBaseX = 0.62 + rigCurr.pinExtract * 0.62 + rigCurr.fp16Bloated * 0.35;
+        const pinBaseX = 0.62 + rigCurr.pinExtract * 0.62 + rigCurr.fp16Bloated * 0.35 + rigCurr.fpvTunnel * 0.16;
         for (let p = 0; p < PIN_PER_L; p++) {
           const px = (p % 4) - 1.5;
           const pz = Math.floor(p / 4) - 1.5;
@@ -2239,29 +2665,103 @@ Check: bat costs $1.05, total $1.10</div>
       if (mlpInst.instanceColor) mlpInst.instanceColor.needsUpdate = true;
       if (pinInst.instanceColor) pinInst.instanceColor.needsUpdate = true;
 
+      // 2B. Animate 3D Crystalline Prompt Token Carrier & 16-Arc Interior Synapse Web!
+      const showCarrier = wantCanyonFlight || rigCurr.fpvTunnel > 0.18;
+      promptPacketGroup.visible = showCarrier;
+      fpvSynapseGroup.visible = showCarrier && rigCurr.fpvTunnel > 0.35;
+
+      if (showCarrier) {
+        promptPacketGroup.position.set(pktX, pktY, pktZ);
+        pktCoreMesh.rotation.y = t * 2.2;
+        pktCoreMesh.rotation.x = t * 1.35;
+        pktCageWire.rotation.y = -t * 1.45;
+        pktCageWire.rotation.z = t * 0.95;
+        pktRingCopper.rotation.x = Math.PI * 0.36 + Math.sin(t * 1.9) * 0.44;
+        pktRingCopper.rotation.y = t * 2.5;
+        pktRingEmerald.rotation.x = -Math.PI * 0.32 + Math.cos(t * 1.6) * 0.44;
+        pktRingEmerald.rotation.z = -t * 2.1;
+
+        const haloPulse = 0.92 + Math.sin(t * 6.5) * 0.10;
+        pktScanHalo.scale.set(haloPulse, haloPulse, 1.0);
+
+        const wArr = wakeGeo.attributes.position.array;
+        for (let w = 0; w < WAKE_COUNT; w++) {
+          wArr[w * 3 + 1] -= 0.032;
+          if (wArr[w * 3 + 1] < -1.52) wArr[w * 3 + 1] = -0.06;
+        }
+        wakeGeo.attributes.position.needsUpdate = true;
+
+        const curL = Math.max(0, Math.min(51, activeWave >= 0 ? activeWave : Math.floor(fpvClimbU * 52)));
+        if (curL !== lastPromptTagLayer) {
+          lastPromptTagLayer = curL;
+          const padL = curL < 10 ? '0' + curL : '' + curL;
+          updatePromptTagText(`L${padL} · ${activePromptSnippet}`, isDarkTheme);
+        }
+
+        if (fpvSynapseGroup.visible) {
+          const leftAttnX = -(0.68 + rigCurr.wingSpread * 0.52 + rigCurr.fpvTunnel * 0.16);
+          const rightPinX =  (0.62 + rigCurr.pinExtract * 0.62 + rigCurr.fpvTunnel * 0.16);
+          const targetY = Math.abs(waveLayerWorldY - pktY) < 0.85 ? waveLayerWorldY : pktY;
+
+          fpvSynapseArcs.forEach(({ geom, idx }) => {
+            if (idx < 6) {
+              const zOff = ((idx % 3) - 1.0) * 0.52;
+              const yOff = (idx < 3 ? -0.14 : 0.14);
+              synStart.set(leftAttnX, targetY + yOff, zOff);
+              synMid.set((leftAttnX + pktX) * 0.5, pktY + 0.22, (zOff + pktZ) * 0.5);
+            } else if (idx < 12) {
+              const side = (idx % 2 === 0) ? -1 : 1;
+              const zOff = (Math.floor((idx - 6) / 2) - 1.0) * 0.46;
+              synStart.set(side * 0.68, targetY + Math.sin(t * 3.0 + idx) * 0.08, zOff);
+              synMid.set(side * 0.30, pktY + 0.16, (zOff + pktZ) * 0.5);
+            } else {
+              const zOff = ((idx - 12) - 1.5) * 0.42;
+              synStart.set(rightPinX, targetY, zOff);
+              synMid.set((rightPinX + pktX) * 0.5, pktY + 0.20, (zOff + pktZ) * 0.5);
+            }
+            synEnd.set(pktX, pktY, pktZ);
+
+            const arr = geom.attributes.position.array;
+            for (let k = 0; k <= 20; k++) {
+              const u = k / 20;
+              const inv = 1.0 - u;
+              synTmp.set(
+                inv * inv * synStart.x + 2 * inv * u * synMid.x + u * u * synEnd.x,
+                inv * inv * synStart.y + 2 * inv * u * synMid.y + u * u * synEnd.y,
+                inv * inv * synStart.z + 2 * inv * u * synMid.z + u * u * synEnd.z
+              );
+              arr[k * 3]     = synTmp.x;
+              arr[k * 3 + 1] = synTmp.y;
+              arr[k * 3 + 2] = synTmp.z;
+            }
+            geom.attributes.position.needsUpdate = true;
+          });
+        }
+      }
+
       // 3. Animate DMA Photon Packets Racing Along the 5 Curved Optical Conduits
       dmaConduitGroup.visible = rigCurr.shellOpen > 0.25;
       dmaPackets.forEach(pkt => {
-        const u = (t * (isGenerating ? 1.35 : 0.42) + pkt.offset) % 1.0;
+        const u = (t * (isGenerating ? 1.05 : 0.42) + pkt.offset) % 1.0;
         pkt.mesh.position.copy(pkt.curve.getPointAt(u));
       });
 
-      // 4. Position Macro Tensor Data-Flow Rays on Selected Layer & Toggle Overview Sprites
-      const showOverviewSprites = stageMode !== 'dive' && camCurr.dist > 7.2;
+      // 4. Position Macro Tensor Data-Flow Rays & Hide Exterior Overview Sprites During FPV Flight
+      const showOverviewSprites = stageMode !== 'dive' && !wantCanyonFlight && fpvBlend < 0.15 && camCurr.dist > 7.2;
       cadSprites.forEach(s => { s.visible = showOverviewSprites; });
-      macroRayGroup.visible = (stageMode === 'dive' || isGenerating) && rigCurr.wingSpread > 0.4;
+      macroRayGroup.visible = (stageMode === 'dive' || (isGenerating && fpvBlend < 0.25)) && rigCurr.wingSpread > 0.4;
       if (macroRayGroup.visible) {
         const targetL = isGenerating && activeWave >= 0 ? activeWave : selectedLayer;
         const shardGap = (Math.floor(targetL / 13) - 1.5) * 0.14 * rigCurr.layerGap;
-        macroRayGroup.position.y = (-2.52 + (targetL / 51) * 5.04) * (1.0 + rigCurr.layerGap) + shardGap;
+        macroRayGroup.position.y = (-2.52 + (targetL / 51) * 5.04) * stackScale + shardGap + baseLift;
       }
 
       // 5. Animate Vertical Token Quanta Stream
       const sArr = streamGeo.attributes.position.array;
-      const mult = isGenerating ? 3.8 : 0.9;
+      const mult = (isGenerating || wantCanyonFlight) ? 2.6 : 0.9;
       for (let i = 0; i < STREAM_COUNT; i++) {
         sArr[i * 3 + 1] += sSpeed[i] * 0.016 * mult;
-        if (sArr[i * 3 + 1] > 2.85) sArr[i * 3 + 1] = -2.85;
+        if (sArr[i * 3 + 1] > topCrownY - 0.1) sArr[i * 3 + 1] = -2.85;
       }
       streamGeo.attributes.position.needsUpdate = true;
 
@@ -2273,19 +2773,23 @@ Check: bat costs $1.05, total $1.10</div>
         const sy = cRect.top + 34;
 
         const shardGap = (Math.floor(selectedLayer / 13) - 1.5) * 0.14 * rigCurr.layerGap;
-        const ly = (-2.52 + (selectedLayer / 51) * 5.04) * (1.0 + rigCurr.layerGap) + shardGap;
+        const ly = (-2.52 + (selectedLayer / 51) * 5.04) * stackScale + shardGap + baseLift;
         anchorVec3.set(-0.95, ly, 0.35).project(camera);
 
-        const ex = Math.max(sx + 36, Math.min(window.innerWidth - 40, (anchorVec3.x * 0.5 + 0.5) * window.innerWidth));
-        const ey = Math.max(40, Math.min(window.innerHeight - 60, (-anchorVec3.y * 0.5 + 0.5) * window.innerHeight));
+        if (anchorVec3.z > 1.0) {
+          leaderSvg.innerHTML = '';
+        } else {
+          const ex = Math.max(sx + 36, Math.min(window.innerWidth - 40, (anchorVec3.x * 0.5 + 0.5) * window.innerWidth));
+          const ey = Math.max(40, Math.min(window.innerHeight - 60, (-anchorVec3.y * 0.5 + 0.5) * window.innerHeight));
 
-        const strokeHex = isDarkTheme ? '#2997FF' : '#0066CC';
-        leaderSvg.innerHTML = `
-          <polyline points="${sx},${sy} ${sx + 22},${sy} ${ex.toFixed(1)},${ey.toFixed(1)}"
-            fill="none" stroke="${strokeHex}" stroke-width="1.35" stroke-opacity="0.82" />
-          <circle cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="3.8" fill="${strokeHex}" />
-          <circle cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="7.5" fill="none" stroke="${strokeHex}" stroke-width="1" stroke-opacity="0.48" />
-        `;
+          const strokeHex = isDarkTheme ? '#2997FF' : '#0066CC';
+          leaderSvg.innerHTML = `
+            <polyline points="${sx},${sy} ${sx + 22},${sy} ${ex.toFixed(1)},${ey.toFixed(1)}"
+              fill="none" stroke="${strokeHex}" stroke-width="1.35" stroke-opacity="0.78" />
+            <circle cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="3.8" fill="${strokeHex}" />
+            <circle cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="7.5" fill="none" stroke="${strokeHex}" stroke-width="1" stroke-opacity="0.44" />
+          `;
+        }
       }
     }
 
@@ -2294,7 +2798,7 @@ Check: bat costs $1.05, total $1.10</div>
   requestAnimationFrame(animate);
 
   // =========================================================================
-  // 5. LIVE TELEMETRY & 3-STAGE BREAK -> CRUSH -> STREAM EXECUTION
+  // 5. LIVE TELEMETRY & 4-PHASE DELIBERATE FPV PROMPT TRACKING EXECUTION
   // =========================================================================
   async function pollTelemetry() {
     try {
@@ -2325,13 +2829,17 @@ Check: bat costs $1.05, total $1.10</div>
     if (p.includes('all a are b') || p.includes('syllogism')) {
       return "No, it does NOT logically follow.\n\nProof by counterexample:\n- Let A = {1}, B = {1, 2}, C = {2, 3}.\n- Every element of A is in B (All A are B).\n- Element 2 is in both B and C (Some B are C).\n- Yet A and C share zero elements.\n\nTherefore 'Some A are C' is invalid.";
     }
-    return "Colab A100 tunnel is currently paused (saved to Google Drive LEAN_30B_BACKUP). Re-run restore_and_launch in Colab to stream live A100 tokens for custom prompts — 3D Fracture -> 9.17x Quantize Crush -> 52-Layer Pass preview completed above.";
+    return "Colab A100 tunnel is currently paused (saved to Google Drive LEAN_30B_BACKUP). Re-run restore_and_launch in Colab to stream live A100 tokens for custom prompts — 3D Fracture -> 9.17x Quantize Crush -> 52-Layer FPV Canyon Flight completed above.";
   }
 
   function runPreset(text) {
     if (inPortal) enterNeuralCore();
     document.getElementById('prompt-input').value = text;
     submitPrompt();
+  }
+
+  function sleepMs(ms) {
+    return new Promise(r => setTimeout(r, ms));
   }
 
   async function submitPrompt(e) {
@@ -2347,6 +2855,12 @@ Check: bat costs $1.05, total $1.10</div>
     isGenerating = true;
     btn.disabled = true;
 
+    // Format crisp snippet for the 3D Prompt Carrier Sprite Tag inside the canyon
+    const cleanPromptOneLine = prompt.replace(/\s+/g, ' ').trim();
+    activePromptSnippet = '"' + (cleanPromptOneLine.length > 22 ? cleanPromptOneLine.slice(0, 21) + '…' : cleanPromptOneLine) + '"';
+    lastPromptTagLayer = -1;
+    updatePromptTagText(`EMB · ${activePromptSnippet}`, isDarkTheme);
+
     const scroll = document.getElementById('chat-scroll');
     const turn = document.createElement('div');
     turn.className = 'turn';
@@ -2355,7 +2869,7 @@ Check: bat costs $1.05, total $1.10</div>
       <div class="turn-assistant">
         <div class="assist-meta">
           <span class="assist-tag">MUSE-GLIMMER-30B</span>
-          <span class="live-step-meta">Stage 1 · Breaking 59.9 GB FP16...</span>
+          <span class="live-step-meta">Phase 1/4 · Fracturing 59.90 GB Raw FP16...</span>
         </div>
         <div class="assist-body"><span class="stream-cursor"></span></div>
       </div>
@@ -2367,99 +2881,193 @@ Check: bat costs $1.05, total $1.10</div>
     const assistEl = turn.querySelector('.turn-assistant');
     const metaEl = turn.querySelector('.live-step-meta');
 
-    // Launch real A100 stream in parallel with 3D Fracture -> Crush choreography
-    const streamPromise = fetch('/api/infer_stream', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, max_new_tokens: 180 })
-    });
-
-    // STAGE 1: Break Open 59.90 GB Uncompressed FP16 Cloud
-    phasePill.textContent = '1/3 BREAKING 59.9 GB';
-    phasePill.classList.add('running');
-    btn.textContent = 'Breaking 59.9 GB...';
-    setStageMode('fracture');
-    await new Promise(r => setTimeout(r, 750));
-
-    // STAGE 2: Extract Copper Outlier Pins & Crush 8x into 6.53 GB Wafers
-    phasePill.textContent = '2/3 CRUSHING → 6.53 GB';
-    metaEl.textContent = 'Stage 2 · Extracting Outliers & 2b/4b Crush...';
-    btn.textContent = 'Crushing 9.17×...';
-    setStageMode('quantize');
-    await new Promise(r => setTimeout(r, 750));
-
-    // STAGE 3: Live 52-Layer Pass + Macro Rays
-    phasePill.textContent = '3/3 STREAMING 52L';
-    btn.textContent = 'Streaming 52L...';
-
+    // Collect live A100 stream events asynchronously so fast network responses NEVER rush the 3D FPV flight!
+    const liveSnapshots = [];
+    let finalEvt = null;
     let streamedOk = false;
-    try {
-      const res = await streamPromise;
-      if (res.ok && res.body) {
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder();
-        let buf = '';
-        let finalEvt = null;
+    let networkDone = false;
 
-        while (true) {
-          const { value, done } = await reader.read();
-          if (done) break;
-          buf += decoder.decode(value, { stream: true });
-          const lines = buf.split('\n');
-          buf = lines.pop() || '';
-
-          for (const line of lines) {
-            if (!line.trim()) continue;
-            const evt = JSON.parse(line);
-            if (evt.event === 'token') {
-              streamedOk = true;
-              const clean = (evt.text || '').replace(/\\\(|\\\)|\\\[|\\\]/g, '');
-              bodyEl.innerHTML = clean.replace(/</g, '&lt;') + '<span class="stream-cursor"></span>';
-              liveWaveLayer = (evt.step * 7) % 52;
-              liveDmaLayer = evt.active_dma_ring_layer || 26;
-              metaEl.textContent = `Token #${evt.step} · ${evt.tokens_per_sec.toFixed(2)} tok/s`;
-              scroll.scrollTop = scroll.scrollHeight;
-            } else if (evt.event === 'done') {
-              streamedOk = true;
-              finalEvt = evt;
+    (async () => {
+      try {
+        const res = await fetch('/api/infer_stream', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt, max_new_tokens: 180 })
+        });
+        if (res.ok && res.body) {
+          const reader = res.body.getReader();
+          const decoder = new TextDecoder();
+          let buf = '';
+          while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            buf += decoder.decode(value, { stream: true });
+            const lines = buf.split('\n');
+            buf = lines.pop() || '';
+            for (const line of lines) {
+              if (!line.trim()) continue;
+              const evt = JSON.parse(line);
+              if (evt.event === 'token') {
+                streamedOk = true;
+                liveSnapshots.push(evt);
+              } else if (evt.event === 'done') {
+                streamedOk = true;
+                finalEvt = evt;
+              }
             }
           }
         }
+      } catch (err) {}
+      networkDone = true;
+    })();
 
-        if (finalEvt) {
-          bodyEl.textContent = (finalEvt.response || '').replace(/\\\(|\\\)|\\\[|\\\]/g, '');
-          metaEl.textContent = `Live A100 · ${finalEvt.elapsed_sec.toFixed(2)}s`;
-          const rec = document.createElement('div');
-          rec.className = 'assist-receipt';
-          rec.innerHTML = `
-            <span>VRAM: <strong>${finalEvt.gpu_persistent_gib.toFixed(2)} GiB</strong> (<span class="b">${finalEvt.gpu_peak_gib.toFixed(2)} GiB peak</span>)</span>
-            <span>Speed: <span class="b">${finalEvt.tokens_per_sec.toFixed(2)} tok/s</span></span>
-            <span><strong>${finalEvt.tokens_generated} tokens</strong></span>
-          `;
-          assistEl.appendChild(rec);
-        }
-      }
-    } catch (e) {}
+    // PHASE 1 (1.85s): Exterior 59.90 GB Raw FP16 Fracture (Exceeds 8.00 GiB Hardware Cage!)
+    promptFpvActive = false;
+    phasePill.textContent = '1/4 FRACTURE 59.9 GB';
+    phasePill.classList.add('running');
+    btn.textContent = '1/4 Breaking 59.9 GB...';
+    setStageMode('fracture');
+    await sleepMs(1850);
 
-    // Graceful Offline Replay if Colab A100 is currently disconnected/paused
-    if (!streamedOk) {
-      const replay = getVerifiedOfflineReplay(prompt);
-      const words = replay.split(/(\s+)/);
-      let acc = '';
-      for (let w = 0; w < words.length; w++) {
-        acc += words[w];
-        bodyEl.innerHTML = acc.replace(/</g, '&lt;') + '<span class="stream-cursor"></span>';
-        if (words[w].trim()) {
-          liveWaveLayer = (w * 3) % 52;
-          metaEl.textContent = `52L Replay Wave · Layer ${liveWaveLayer}/51`;
+    // PHASE 2 (1.75s): 9.17x Quantize Crush -> 6.53 GB + Parting Open the 52-Layer Silicon Canyon!
+    phasePill.textContent = '2/4 CRUSH & PART CANYON';
+    metaEl.textContent = 'Phase 2/4 · 9.17× Crush (6.53 GB) & Parting 52L Canyon...';
+    btn.textContent = '2/4 Parting 52L Canyon...';
+    setStageMode('quantize');
+    rigTarget.shellOpen = 1.42;
+    rigTarget.wingSpread = 1.30;
+    rigTarget.pinExtract = 1.26;
+    rigTarget.layerGap = 0.24;
+    rigTarget.fpvTunnel = 1.0;
+    fpvClimbU = 0.0;
+    liveWaveLayer = 0;
+    await sleepMs(1750);
+
+    // PHASE 3 (1.40s): Spawn Prompt Carrier at Input Embedding [202,048 x 6,656] & Swoop Camera Into FPV!
+    fpvCamEnabled = true;
+    const camBtn = document.getElementById('fpv-cam-btn');
+    if (camBtn) camBtn.textContent = 'Cam: FPV Inside';
+    promptFpvActive = true;
+    fpvClimbU = 0.0;
+    liveWaveLayer = 0;
+    phasePill.textContent = '3/4 FPV EMBEDDING DIVE';
+    metaEl.textContent = 'Phase 3/4 · Entering Input Embedding [202,048 × 6,656]...';
+    btn.textContent = '3/4 Diving Into L00...';
+    updateFpvHud(0, 0.0, 'FPV ENTRY · INPUT EMBEDDING → LAYER 00');
+    await sleepMs(1400);
+
+    // PHASE 4 (6.50s steady interior flight): Track Prompt Carrier Inside All 52 Layers -> LM Head Crown!
+    phasePill.textContent = '4/4 FPV 52-LAYER FLIGHT';
+    btn.textContent = '4/4 Tracking FPV 52L...';
+
+    const offlineWords = getVerifiedOfflineReplay(prompt).split(/(\s+)/);
+    let offlineWordIdx = 0;
+    let offlineAcc = '';
+    let liveSnapIdx = 0;
+    let lastTokenTick = performance.now();
+
+    const climbDurationMs = 6500;
+    const climbStart = performance.now();
+
+    while (true) {
+      const now = performance.now();
+      const rawP = Math.min(1.0, (now - climbStart) / climbDurationMs);
+      // Smooth easeInOutSine so launch from L00 and arrival at LM Head Crown feel weighty and cinematic
+      fpvClimbU = 0.5 - 0.5 * Math.cos(Math.PI * rawP);
+      liveWaveLayer = Math.min(51, Math.floor(fpvClimbU * 52));
+      liveDmaLayer = DMA_LAYERS[Math.floor(fpvClimbU * DMA_LAYERS.length) % DMA_LAYERS.length];
+
+      const padL = liveWaveLayer < 10 ? '0' + liveWaveLayer : '' + liveWaveLayer;
+      const hudLabel = rawP > 0.94
+        ? 'FPV CROWN · LM HEAD PROJECTION [202,048 VOCAB]'
+        : `FPV PROMPT TRACKING · LAYER ${padL} / 51`;
+      updateFpvHud(liveWaveLayer, fpvClimbU, hudLabel);
+
+      // Begin streaming reasoning tokens into the console smoothly once passing mid-stack (u >= 0.36)
+      if (rawP >= 0.36 && (now - lastTokenTick) >= 58) {
+        lastTokenTick = now;
+        if (streamedOk && liveSnapIdx < liveSnapshots.length) {
+          const evt = liveSnapshots[liveSnapIdx++];
+          const clean = (evt.text || '').replace(/\\\(|\\\)|\\\[|\\\]/g, '');
+          bodyEl.innerHTML = clean.replace(/</g, '&lt;') + '<span class="stream-cursor"></span>';
+          metaEl.textContent = `FPV L${padL}/51 · Token #${evt.step} (${evt.tokens_per_sec.toFixed(2)} tok/s)`;
           scroll.scrollTop = scroll.scrollHeight;
-          await new Promise(r => setTimeout(r, 28));
+        } else if (!streamedOk && networkDone && offlineWordIdx < offlineWords.length) {
+          // Advance 1 non-whitespace word + trailing space per 58ms tick (~17 words/sec readable pace)
+          while (offlineWordIdx < offlineWords.length) {
+            const tok = offlineWords[offlineWordIdx++];
+            offlineAcc += tok;
+            if (tok.trim()) break;
+          }
+          bodyEl.innerHTML = offlineAcc.replace(/</g, '&lt;') + '<span class="stream-cursor"></span>';
+          metaEl.textContent = `FPV L${padL}/51 · SwiGLU + int8 Outlier Pass`;
+          scroll.scrollTop = scroll.scrollHeight;
+        } else {
+          metaEl.textContent = `FPV Canyon · Layer ${padL}/51 (${DMA_SET.has(liveWaveLayer) ? 'Async DMA Ring' : (SALIENT_CROWN.has(liveWaveLayer) ? '4-Bit Crown' : '2-Bit Bulk')})`;
         }
+      } else if (rawP < 0.36) {
+        metaEl.textContent = `FPV Canyon · Layer ${padL}/51 (${SALIENT_CROWN.has(liveWaveLayer) ? '4-Bit Salient Crown' : '2-Bit Group-64 Wafer'})`;
       }
-      bodyEl.textContent = replay;
-      metaEl.textContent = 'Cached Hardware Receipt (Colab Paused)';
+
+      if (rawP >= 1.0) break;
+      await sleepMs(16);
     }
 
+    // Hold briefly above the Top Logit Output Crown while draining any remaining generated tokens smoothly
+    updateFpvHud(51, 1.0, 'FPV SUMMIT · 202,048 LOGIT VOCAB EMERGENCE');
+    while (!networkDone) {
+      if (streamedOk && liveSnapIdx < liveSnapshots.length) {
+        const evt = liveSnapshots[liveSnapIdx++];
+        const clean = (evt.text || '').replace(/\\\(|\\\)|\\\[|\\\]/g, '');
+        bodyEl.innerHTML = clean.replace(/</g, '&lt;') + '<span class="stream-cursor"></span>';
+        metaEl.textContent = `LM Head Crown · Token #${evt.step} (${evt.tokens_per_sec.toFixed(2)} tok/s)`;
+        scroll.scrollTop = scroll.scrollHeight;
+      }
+      await sleepMs(50);
+    }
+
+    if (streamedOk) {
+      while (liveSnapIdx < liveSnapshots.length) {
+        const evt = liveSnapshots[liveSnapIdx++];
+        const clean = (evt.text || '').replace(/\\\(|\\\)|\\\[|\\\]/g, '');
+        bodyEl.innerHTML = clean.replace(/</g, '&lt;') + '<span class="stream-cursor"></span>';
+        metaEl.textContent = `LM Head Crown · Token #${evt.step} (${evt.tokens_per_sec.toFixed(2)} tok/s)`;
+        scroll.scrollTop = scroll.scrollHeight;
+        await sleepMs(45);
+      }
+      if (finalEvt) {
+        bodyEl.textContent = (finalEvt.response || '').replace(/\\\(|\\\)|\\\[|\\\]/g, '');
+        metaEl.textContent = `Live A100 · ${finalEvt.elapsed_sec.toFixed(2)}s`;
+        const rec = document.createElement('div');
+        rec.className = 'assist-receipt';
+        rec.innerHTML = `
+          <span>VRAM: <strong>${finalEvt.gpu_persistent_gib.toFixed(2)} GiB</strong> (<span class="b">${finalEvt.gpu_peak_gib.toFixed(2)} GiB peak</span>)</span>
+          <span>Speed: <span class="b">${finalEvt.tokens_per_sec.toFixed(2)} tok/s</span></span>
+          <span><strong>${finalEvt.tokens_generated} tokens</strong></span>
+        `;
+        assistEl.appendChild(rec);
+      }
+    } else {
+      while (offlineWordIdx < offlineWords.length) {
+        while (offlineWordIdx < offlineWords.length) {
+          const tok = offlineWords[offlineWordIdx++];
+          offlineAcc += tok;
+          if (tok.trim()) break;
+        }
+        bodyEl.innerHTML = offlineAcc.replace(/</g, '&lt;') + '<span class="stream-cursor"></span>';
+        scroll.scrollTop = scroll.scrollHeight;
+        await sleepMs(52);
+      }
+      bodyEl.textContent = getVerifiedOfflineReplay(prompt);
+      metaEl.textContent = '52L FPV Pass Complete · Cached Hardware Receipt';
+    }
+
+    await sleepMs(650);
+
+    // Smooth Crane Pullback Out of Top Crown Back to Quantized 6.53 GB Studio Overview!
+    promptFpvActive = false;
+    activePromptSnippet = '6,656-D RESIDUAL';
+    lastPromptTagLayer = -1;
     isGenerating = false;
     liveWaveLayer = -1;
     btn.disabled = false;
