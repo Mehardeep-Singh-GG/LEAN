@@ -1280,28 +1280,304 @@ Check: bat costs $1.05, total $1.10</div>
 
   const canvas = document.getElementById('webgl-stage');
   const leaderSvg = document.getElementById('leader-svg');
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    alpha: true,
+    powerPreference: 'high-performance'
+  });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setClearColor(0xF3F4F6, 1);
+  renderer.setClearColor(0x000000, 0); // Exact match to CSS studio backdrop!
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.12;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0xF3F4F6, 19, 44);
-
-  const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 120);
-
-  // Studio Architectural Lighting (Crisp Daylight Key + Rim + Warm Bounce)
-  scene.add(new THREE.AmbientLight(0xffffff, 0.78));
-  const keyLight = new THREE.DirectionalLight(0xffffff, 0.58);
-  keyLight.position.set(9, 17, 12);
-  scene.add(keyLight);
-
-  const rimLight = new THREE.DirectionalLight(0xdbeafe, 0.38);
-  rimLight.position.set(-11, 7, -10);
-  scene.add(rimLight);
+  const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.08, 120);
 
   // =========================================================================
-  // 1. ACT I: 32,000-PARTICLE 52-SPIRAL SINGULARITY PORTAL (1 ARM PER LAYER!)
+  // 0. HYPERREALISTIC PBR STUDIO HDRI (PMREM) & PROCEDURAL LITHOGRAPHY MAPS
+  // =========================================================================
+  const pmremGen = new THREE.PMREMGenerator(renderer);
+  pmremGen.compileEquirectangularShader();
+
+  function buildStudioEnvironment(darkStudio) {
+    const envScene = new THREE.Scene();
+    envScene.background = new THREE.Color(darkStudio ? 0x050508 : 0x262830);
+
+    // High-Dynamic-Range (HDR > 1.0) Studio Softbox Panels + Dark Negative-Fill Flags
+    // Alternating bright softboxes & dark negative-fill gives real CNC metal & silicon razor-sharp specular roll!
+    const addPanel = (w, h, x, y, z, rx, ry, rz, r, g, b) => {
+      const mat = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+      mat.color.setRGB(r, g, b);
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
+      m.position.set(x, y, z);
+      m.rotation.set(rx, ry, rz);
+      envScene.add(m);
+    };
+
+    // Main Overhead Apple-Keynote Diffused Softbox Bank
+    addPanel(26, 18, 0, 15, 2, Math.PI * 0.5, 0, 0, darkStudio ? 5.5 : 4.6, darkStudio ? 5.7 : 4.7, darkStudio ? 6.4 : 5.0);
+    // Front-Left Grazing Specular Strip (Catches wafer & aluminum bevel chamfers!)
+    addPanel(8, 22, -13, 4, 11, 0, Math.PI * 0.28, 0, 2.4, 3.3, 5.2);
+    // Front-Right Warm Copper/Tungsten Rim Strip
+    addPanel(8, 22, 14, 5, 9, 0, -Math.PI * 0.32, 0, 4.6, 3.2, 1.7);
+    // Back Rim Kicker Strip (Defines silhouette inside & outside canyon)
+    addPanel(24, 10, 0, 9, -15, 0.22, 0, 0, 2.8, 3.6, 4.8);
+    // Deep Negative-Fill Contrast Flags on Left/Right Sides so chrome & silicon look truly metallic
+    addPanel(16, 18, -17, 0, -2, 0, Math.PI * 0.5, 0, 0.03, 0.03, 0.04);
+    addPanel(16, 18,  17, 0, -2, 0, -Math.PI * 0.5, 0, 0.03, 0.03, 0.04);
+    // Studio Bounce Floor
+    addPanel(32, 32, 0, -14, 0, -Math.PI * 0.5, 0, 0, darkStudio ? 0.12 : 0.85, darkStudio ? 0.14 : 0.88, darkStudio ? 0.20 : 0.95);
+
+    const rt = pmremGen.fromScene(envScene, 0.032);
+    return rt.texture;
+  }
+
+  const envMapLight = buildStudioEnvironment(false);
+  const envMapDark  = buildStudioEnvironment(true);
+  scene.environment = envMapLight;
+
+  // Physical Studio Key, Rim, Fill & Interior Canyon Accent Lights
+  const hemiLight = new THREE.HemisphereLight(0xF4F7FF, 0x2A2D38, 0.42);
+  scene.add(hemiLight);
+
+  const keyLight = new THREE.DirectionalLight(0xFFFDF9, 1.45);
+  keyLight.position.set(7.5, 13.5, 9.5);
+  keyLight.castShadow = true;
+  keyLight.shadow.mapSize.width = 2048;
+  keyLight.shadow.mapSize.height = 2048;
+  keyLight.shadow.camera.near = 2.0;
+  keyLight.shadow.camera.far = 32.0;
+  const shBounds = 5.5;
+  keyLight.shadow.camera.left = -shBounds;
+  keyLight.shadow.camera.right = shBounds;
+  keyLight.shadow.camera.top = shBounds * 1.4;
+  keyLight.shadow.camera.bottom = -shBounds;
+  keyLight.shadow.bias = -0.0005;
+  scene.add(keyLight);
+
+  const rimLight = new THREE.DirectionalLight(0x93C5FD, 0.95);
+  rimLight.position.set(-10.5, 6.5, -8.5);
+  scene.add(rimLight);
+
+  const warmSideLight = new THREE.DirectionalLight(0xFDE68A, 0.52);
+  warmSideLight.position.set(10.0, -1.5, 6.0);
+  scene.add(warmSideLight);
+
+  // Precision CNC Chamfered Box Geometry Helper (Eliminates CG razor-sharp 90° edges!)
+  function createChamferBox(w, h, d, bevel = 0.008, bevelSegs = 2) {
+    const b = Math.min(bevel, w * 0.22, h * 0.22, d * 0.22);
+    const sw = Math.max(0.001, w - b * 2);
+    const sd = Math.max(0.001, d - b * 2);
+    const sh = Math.max(0.001, h - b * 2);
+
+    const shape = new THREE.Shape();
+    const hw = sw * 0.5;
+    const hd = sd * 0.5;
+    shape.moveTo(-hw, -hd);
+    shape.lineTo( hw, -hd);
+    shape.lineTo( hw,  hd);
+    shape.lineTo(-hw,  hd);
+    shape.closePath();
+
+    const geo = new THREE.ExtrudeGeometry(shape, {
+      depth: sh,
+      bevelEnabled: true,
+      bevelSegments: bevelSegs,
+      steps: 1,
+      bevelSize: b,
+      bevelThickness: b,
+      curveSegments: 1
+    });
+    geo.center();
+    geo.rotateX(Math.PI * 0.5);
+    geo.computeVertexNormals();
+    return geo;
+  }
+
+  // Procedural 512x512 Sub-Micron Silicon Wafer Photolithography Bump & Roughness Maps
+  function buildSiliconLithoTextures() {
+    const sz = 512;
+    const bumpCnv = document.createElement('canvas');
+    bumpCnv.width = bumpCnv.height = sz;
+    const bCtx = bumpCnv.getContext('2d');
+
+    const roughCnv = document.createElement('canvas');
+    roughCnv.width = roughCnv.height = sz;
+    const rCtx = roughCnv.getContext('2d');
+
+    bCtx.fillStyle = '#808080';
+    bCtx.fillRect(0, 0, sz, sz);
+    rCtx.fillStyle = '#262626'; // Polished mirror silicon base (low roughness)
+    rCtx.fillRect(0, 0, sz, sz);
+
+    // Etched SRAM Tensor Sub-Arrays, Crossbar Interconnects & Die Dicing Streets
+    const cells = 8;
+    const step = sz / cells;
+    for (let gx = 0; gx < cells; gx++) {
+      for (let gy = 0; gy < cells; gy++) {
+        const x = gx * step;
+        const y = gy * step;
+        // Raised SRAM macro block
+        bCtx.fillStyle = ((gx + gy) % 2 === 0) ? '#A8A8A8' : '#969696';
+        bCtx.fillRect(x + 5, y + 5, step - 10, step - 10);
+
+        rCtx.fillStyle = ((gx * 3 + gy) % 3 === 0) ? '#181818' : '#343434';
+        rCtx.fillRect(x + 5, y + 5, step - 10, step - 10);
+
+        // Fine internal photolithography tensor bitlines
+        bCtx.fillStyle = '#646464';
+        for (let ln = 10; ln < step - 10; ln += 6) {
+          if (gx % 2 === 0) bCtx.fillRect(x + ln, y + 8, 2, step - 16);
+          else bCtx.fillRect(x + 8, y + ln, step - 16, 2);
+        }
+      }
+    }
+    // Primary die dicing streets
+    bCtx.strokeStyle = '#383838';
+    bCtx.lineWidth = 3;
+    for (let p = 0; p <= sz; p += step * 2) {
+      bCtx.beginPath(); bCtx.moveTo(p, 0); bCtx.lineTo(p, sz); bCtx.stroke();
+      bCtx.beginPath(); bCtx.moveTo(0, p); bCtx.lineTo(sz, p); bCtx.stroke();
+    }
+
+    const maxAniso = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    const bumpTex = new THREE.CanvasTexture(bumpCnv);
+    bumpTex.wrapS = bumpTex.wrapT = THREE.RepeatWrapping;
+    bumpTex.repeat.set(3, 3);
+    bumpTex.anisotropy = maxAniso;
+
+    const roughTex = new THREE.CanvasTexture(roughCnv);
+    roughTex.wrapS = roughTex.wrapT = THREE.RepeatWrapping;
+    roughTex.repeat.set(3, 3);
+    roughTex.anisotropy = maxAniso;
+    return { bumpTex, roughTex };
+  }
+
+  // Procedural 512x512 Anisotropic CNC Brushed Titanium / Aluminum Grain Map
+  function buildBrushedMetalTexture() {
+    const sz = 512;
+    const cnv = document.createElement('canvas');
+    cnv.width = cnv.height = sz;
+    const ctx = cnv.getContext('2d');
+    ctx.fillStyle = '#808080';
+    ctx.fillRect(0, 0, sz, sz);
+    for (let y = 0; y < sz; y++) {
+      const v = 112 + Math.floor(Math.random() * 34);
+      ctx.fillStyle = `rgb(${v},${v},${v})`;
+      ctx.fillRect(0, y, sz, 1);
+      if (y % 5 === 0) {
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        ctx.fillRect(Math.random() * 120, y, 220 + Math.random() * 180, 1);
+      }
+    }
+    const tex = new THREE.CanvasTexture(cnv);
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(2, 2);
+    tex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    return tex;
+  }
+
+  // Procedural 1024x1024 CoWoS-L Silicon Interposer Substrate Map (Gold Micro-Traces + Fiducials!)
+  function buildCoWoSInterposerTextures() {
+    const cw = 1024, ch = 768;
+    const cnv = document.createElement('canvas');
+    cnv.width = cw; cnv.height = ch;
+    const ctx = cnv.getContext('2d');
+
+    // Deep Matte Obsidian-Emerald CoWoS Solder Mask
+    ctx.fillStyle = '#111618';
+    ctx.fillRect(0, 0, cw, ch);
+
+    // Outer Gold Ground-Plane Seal Ring
+    ctx.strokeStyle = '#C9932B';
+    ctx.lineWidth = 8;
+    ctx.strokeRect(22, 22, cw - 44, ch - 44);
+    ctx.strokeStyle = 'rgba(201, 147, 43, 0.45)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(36, 36, cw - 72, ch - 72);
+
+    // 140 High-Speed Differential Gold Serpentine Bus Traces Radiating from Die Core
+    ctx.strokeStyle = 'rgba(218, 165, 58, 0.52)';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 72; i++) {
+      const x = 110 + (i / 71) * (cw - 220);
+      ctx.beginPath();
+      ctx.moveTo(x, 44);
+      ctx.lineTo(x, 155);
+      ctx.lineTo(cw * 0.5 + (x - cw * 0.5) * 0.72, 240);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(x, ch - 44);
+      ctx.lineTo(x, ch - 155);
+      ctx.lineTo(cw * 0.5 + (x - cw * 0.5) * 0.72, ch - 240);
+      ctx.stroke();
+    }
+    for (let j = 0; j < 48; j++) {
+      const y = 90 + (j / 47) * (ch - 180);
+      ctx.beginPath();
+      ctx.moveTo(44, y);
+      ctx.lineTo(175, y);
+      ctx.lineTo(255, ch * 0.5 + (y - ch * 0.5) * 0.76);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(cw - 44, y);
+      ctx.lineTo(cw - 175, y);
+      ctx.lineTo(cw - 255, ch * 0.5 + (y - ch * 0.5) * 0.76);
+      ctx.stroke();
+    }
+
+    // Gold Micro-Via Arrays & Optical Lithography Alignment Fiducials at All 4 Corners
+    ctx.fillStyle = '#E0AA3E';
+    [[74, 74], [cw - 74, 74], [74, ch - 74], [cw - 74, ch - 74]].forEach(([fx, fy]) => {
+      ctx.strokeStyle = '#E0AA3E';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(fx - 22, fy - 22, 44, 44);
+      ctx.fillRect(fx - 7, fy - 7, 14, 14);
+    });
+
+    // Precision Silkscreen Nomenclature
+    ctx.fillStyle = 'rgba(236, 238, 244, 0.78)';
+    ctx.font = '700 22px "JetBrains Mono", monospace';
+    ctx.fillText('LEAN · MUSE-GLIMMER-30B · CoWoS-L INTERPOSER', 118, ch - 62);
+    ctx.fillStyle = '#E0AA3E';
+    ctx.fillText('6.53 GB · 52L · <8.00 GiB', cw - 430, ch - 62);
+
+    const mapTex = new THREE.CanvasTexture(cnv);
+    mapTex.encoding = THREE.sRGBEncoding;
+    mapTex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    return mapTex;
+  }
+
+  // Soft Multi-Stop Contact Ambient Occlusion Shadow Texture
+  function buildSoftContactShadowTex() {
+    const sz = 512;
+    const cnv = document.createElement('canvas');
+    cnv.width = cnv.height = sz;
+    const ctx = cnv.getContext('2d');
+    const grad = ctx.createRadialGradient(sz * 0.5, sz * 0.5, sz * 0.08, sz * 0.5, sz * 0.5, sz * 0.49);
+    grad.addColorStop(0.0, 'rgba(0, 0, 0, 0.52)');
+    grad.addColorStop(0.48, 'rgba(0, 0, 0, 0.28)');
+    grad.addColorStop(0.78, 'rgba(0, 0, 0, 0.07)');
+    grad.addColorStop(1.0, 'rgba(0, 0, 0, 0.0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, sz, sz);
+    return new THREE.CanvasTexture(cnv);
+  }
+
+  const siliconMaps = buildSiliconLithoTextures();
+  const brushedMap  = buildBrushedMetalTexture();
+  const cowosMap    = buildCoWoSInterposerTextures();
+  const aoShadowTex = buildSoftContactShadowTex();
+
+  // =========================================================================
+  // 1. ACT I: 32,000-PARTICLE 52-SPIRAL SINGULARITY PORTAL (OPTICAL CORE!)
   // =========================================================================
   const PORTAL_COUNT = 32000;
   const portalGeo = new THREE.BufferGeometry();
@@ -1319,17 +1595,14 @@ Check: bat costs $1.05, total $1.10</div>
   const cEmerald = new THREE.Color(0x157F46);
 
   for (let i = 0; i < PORTAL_COUNT; i++) {
-    // 52 Logarithmic Spiral Filaments (1 Filament per Transformer Layer!)
-    // Strictly outside the calm central Eye (r >= 3.15) so central typography is 100% pristine!
     const armIdx = i % 52;
-    const uProg  = Math.pow(Math.random(), 0.86); // 0 = inner event horizon, 1 = outer halo
+    const uProg  = Math.pow(Math.random(), 0.86);
     const radius = 3.15 + uProg * 4.65;
     const baseArmAngle = (armIdx / 52) * Math.PI * 2;
-    const spiralTwist  = uProg * 2.45; // Coherent logarithmic swirl!
+    const spiralTwist  = uProg * 2.45;
     const ribbonSpread = (Math.random() - 0.5) * (0.042 + uProg * 0.10);
     const theta = baseArmAngle + spiralTwist + ribbonSpread;
 
-    // Local Accretion Plane Coordinates (3D tilt applied synchronously via object rotation!)
     const rawX = radius * Math.cos(theta);
     const rawY = radius * Math.sin(theta);
     const rawZ = Math.sin(theta * 3.0 + uProg * 4.5) * 0.42 + (Math.random() - 0.5) * 0.28;
@@ -1338,7 +1611,6 @@ Check: bat costs $1.05, total $1.10</div>
     pPos[i * 3 + 1] = rawY;
     pPos[i * 3 + 2] = rawZ;
 
-    // Crystallized Target inside the exact corresponding layer of the 52-Layer Silicon Core!
     const ty = -2.55 + (armIdx / 51) * 5.20;
     const tx = (Math.random() - 0.5) * 1.9;
     const tz = (Math.random() - 0.5) * 1.5;
@@ -1346,7 +1618,6 @@ Check: bat costs $1.05, total $1.10</div>
     pTarget[i * 3 + 1] = ty;
     pTarget[i * 3 + 2] = tz;
 
-    // Architectural Role Colors Mapped to Actual Layer Types (Crown = Blue, DMA = Emerald, Outlier = Copper)
     let role = uProg > 0.55 ? 1 : 0;
     let col = role === 1 ? cSlate : cInk;
     if (SALIENT_CROWN.has(armIdx)) {
@@ -1363,7 +1634,7 @@ Check: bat costs $1.05, total $1.10</div>
     pColor[i * 3 + 2] = col.b;
 
     pPhase[i] = uProg * Math.PI * 2 + (armIdx * 0.12);
-    pSize[i]  = (1.35 + (1.0 - uProg) * 2.15) * (SALIENT_CROWN.has(armIdx) ? 1.18 : 1.0);
+    pSize[i]  = (1.45 + (1.0 - uProg) * 2.25) * (SALIENT_CROWN.has(armIdx) ? 1.18 : 1.0);
   }
 
   portalGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
@@ -1374,7 +1645,7 @@ Check: bat costs $1.05, total $1.10</div>
 
   const portalUniforms = {
     uTime: { value: 0 },
-    uImplode: { value: 0 }, // 0 = Swirling 52-Arm Portal, 1 = Crystallized into 52-Layer Core
+    uImplode: { value: 0 },
     uOpacity: { value: 1 },
     uMouse: { value: new THREE.Vector2(0, 0) },
     uPixelRatio: { value: Math.min(window.devicePixelRatio || 1, 2) }
@@ -1399,7 +1670,6 @@ Check: bat costs $1.05, total $1.10</div>
       void main() {
         vColor = aColor;
         float rad = length(position.xy);
-        // Differential Keplerian orbital velocity (inner faster, outer majestic)
         float kepler = 0.24 / max(0.55, rad * 0.25);
         float angle = uTime * kepler;
         float ca = cos(angle);
@@ -1410,7 +1680,6 @@ Check: bat costs $1.05, total $1.10</div>
           position.z + sin(uTime * 1.3 + aPhase) * 0.18
         );
 
-        // Cursor gravitational ripple field
         vec2 mWorld = uMouse * 5.8;
         float dMouse = length(swirled.xy - mWorld);
         float push = smoothstep(2.6, 0.0, dMouse) * (1.0 - uImplode);
@@ -1418,7 +1687,6 @@ Check: bat costs $1.05, total $1.10</div>
         swirled.xy += dir * push * 0.80;
         swirled.z  += push * 1.05;
 
-        // Helical 9.17x Compression Collapse into the 52-Layer Silicon Core
         float t = smoothstep(0.0, 1.0, uImplode);
         float spin = t * (1.0 - t) * 5.2;
         vec3 lerped = mix(swirled, aTarget, t);
@@ -1431,12 +1699,11 @@ Check: bat costs $1.05, total $1.10</div>
         );
 
         vec4 mvPosition = modelViewMatrix * vec4(finalPos, 1.0);
-        gl_PointSize = aSize * uPixelRatio * (11.2 / max(1.5, -mvPosition.z));
+        gl_PointSize = aSize * uPixelRatio * (11.5 / max(1.5, -mvPosition.z));
         gl_Position = projectionMatrix * mvPosition;
 
-        // Silky radial attenuation so inner Eye & outer edge dissolve cleanly
         float edgeFade = (1.0 - smoothstep(5.9, 7.75, rad)) * smoothstep(2.95, 3.38, rad);
-        vAlpha = mix(0.86 * edgeFade, 0.20, t);
+        vAlpha = mix(0.90 * edgeFade, 0.20, t);
       }
     `,
     fragmentShader: `
@@ -1448,8 +1715,11 @@ Check: bat costs $1.05, total $1.10</div>
         vec2 uv = gl_PointCoord - vec2(0.5);
         float d = length(uv);
         if (d > 0.5) discard;
-        float crisp = smoothstep(0.5, 0.22, d);
-        gl_FragColor = vec4(vColor, crisp * vAlpha * uOpacity);
+        // Optical micro-crystal specular core + smooth diffraction envelope
+        float core = exp(-d * d * 24.0);
+        float crisp = smoothstep(0.5, 0.16, d);
+        vec3 lit = mix(vColor, min(vec3(1.0), vColor * 1.65 + vec3(0.22)), core * 0.55);
+        gl_FragColor = vec4(lit, crisp * vAlpha * uOpacity);
       }
     `
   });
@@ -1458,72 +1728,60 @@ Check: bat costs $1.05, total $1.10</div>
   portalPoints.rotation.x = -0.34;
   scene.add(portalPoints);
 
-  // 3D Gyroscopic Astrolabe Calibration Rings + 52 Layer Tick Marks inside the Portal
+  // 3D Precision Machined Astrolabe Calibration Rings + 52 Layer Tick Marks inside the Portal
   const portalRingsGroup = new THREE.Group();
   portalRingsGroup.rotation.x = -0.34;
 
-  const pRingInner = new THREE.LineLoop(
-    new THREE.BufferGeometry().setFromPoints(
-      Array.from({ length: 160 }, (_, i) => {
-        const a = (i / 160) * Math.PI * 2;
-        return new THREE.Vector3(Math.cos(a) * 3.04, Math.sin(a) * 3.04, 0);
-      })
-    ),
-    new THREE.LineBasicMaterial({ color: 0x0066CC, transparent: true, opacity: 0.42 })
+  const pRingInner = new THREE.Mesh(
+    new THREE.TorusGeometry(3.04, 0.009, 12, 180),
+    new THREE.MeshStandardMaterial({ color: 0x0066CC, metalness: 0.85, roughness: 0.20, transparent: true, opacity: 0.65 })
   );
 
-  // 52 Precision Radial Tick Marks around the Inner Event Horizon (1 per Layer!)
   const tickPts = [];
   for (let i = 0; i < 52; i++) {
     const a = (i / 52) * Math.PI * 2;
     const r0 = 2.88;
-    const r1 = SALIENT_CROWN.has(i) ? 3.16 : 3.04;
+    const r1 = SALIENT_CROWN.has(i) ? 3.18 : 3.04;
     tickPts.push(new THREE.Vector3(Math.cos(a) * r0, Math.sin(a) * r0, 0));
     tickPts.push(new THREE.Vector3(Math.cos(a) * r1, Math.sin(a) * r1, 0));
   }
   const pTicks = new THREE.LineSegments(
     new THREE.BufferGeometry().setFromPoints(tickPts),
-    new THREE.LineBasicMaterial({ color: 0x16161B, transparent: true, opacity: 0.32 })
+    new THREE.LineBasicMaterial({ color: 0x16161B, transparent: true, opacity: 0.36 })
   );
 
-  const pRingMid = new THREE.LineLoop(
-    new THREE.BufferGeometry().setFromPoints(
-      Array.from({ length: 160 }, (_, i) => {
-        const a = (i / 160) * Math.PI * 2;
-        return new THREE.Vector3(Math.cos(a) * 4.45, Math.sin(a) * 4.45, Math.sin(a * 2.0) * 0.25);
-      })
-    ),
-    new THREE.LineBasicMaterial({ color: 0xC6861A, transparent: true, opacity: 0.24 })
+  const pRingMid = new THREE.Mesh(
+    new THREE.TorusGeometry(4.45, 0.008, 10, 180),
+    new THREE.MeshStandardMaterial({ color: 0xD4942A, metalness: 0.92, roughness: 0.18, transparent: true, opacity: 0.45 })
   );
 
-  const pRingOuter = new THREE.LineLoop(
-    new THREE.BufferGeometry().setFromPoints(
-      Array.from({ length: 160 }, (_, i) => {
-        const a = (i / 160) * Math.PI * 2;
-        return new THREE.Vector3(Math.cos(a) * 6.15, Math.sin(a) * 6.15, 0);
-      })
-    ),
-    new THREE.LineBasicMaterial({ color: 0x141416, transparent: true, opacity: 0.14 })
+  const pRingOuter = new THREE.Mesh(
+    new THREE.TorusGeometry(6.15, 0.007, 10, 180),
+    new THREE.MeshStandardMaterial({ color: 0x525665, metalness: 0.85, roughness: 0.25, transparent: true, opacity: 0.28 })
   );
 
   portalRingsGroup.add(pRingInner, pTicks, pRingMid, pRingOuter);
   scene.add(portalRingsGroup);
 
   // =========================================================================
-  // 2. ACT II: GROUNDED SILICON SUPERCHIP & 12,480 INSTANCED TENSOR VOXELS
+  // 2. ACT II: HYPERREALISTIC CNC & CoWoS SILICON SUPERCHIP (12,480 VOXELS)
   // =========================================================================
   const siliconWorld = new THREE.Group();
   siliconWorld.visible = false;
   scene.add(siliconWorld);
 
-  // A. Architectural CAD Floor Grid (Dual Light/Space-Black Grids), Compass Rings & 32 Radial PCB Traces
+  // A. Architectural CAD Floor Grid, Compass Rings & Gold Radial PCB Traces
   const floorY = -3.15;
-  const cadGridLight = new THREE.GridHelper(36, 72, 0xC6C6D0, 0xE2E2EA);
+  const cadGridLight = new THREE.GridHelper(32, 64, 0xB8BAC6, 0xDCDEE6);
   cadGridLight.position.y = floorY;
+  cadGridLight.material.transparent = true;
+  cadGridLight.material.opacity = 0.55;
   siliconWorld.add(cadGridLight);
 
-  const cadGridDark = new THREE.GridHelper(36, 72, 0x2C2C38, 0x1A1A22);
+  const cadGridDark = new THREE.GridHelper(32, 64, 0x2E303E, 0x1B1C26);
   cadGridDark.position.y = floorY;
+  cadGridDark.material.transparent = true;
+  cadGridDark.material.opacity = 0.65;
   cadGridDark.visible = false;
   siliconWorld.add(cadGridDark);
 
@@ -1532,114 +1790,230 @@ Check: bat costs $1.05, total $1.10</div>
     const pts = [];
     for (let i = 0; i <= 128; i++) {
       const a = (i / 128) * Math.PI * 2;
-      pts.push(new THREE.Vector3(Math.cos(a) * rad, floorY + 0.006, Math.sin(a) * rad));
+      pts.push(new THREE.Vector3(Math.cos(a) * rad, floorY + 0.005, Math.sin(a) * rad));
     }
     const ring = new THREE.Line(
       new THREE.BufferGeometry().setFromPoints(pts),
-      new THREE.LineBasicMaterial({ color: idx === 0 ? 0x0066CC : 0xBEBECA, transparent: true, opacity: idx === 0 ? 0.42 : 0.45 })
+      new THREE.LineBasicMaterial({ color: idx === 0 ? 0x0066CC : 0xBEBECA, transparent: true, opacity: idx === 0 ? 0.42 : 0.40 })
     );
     siliconWorld.add(ring);
     compassRings.push({ ring, idx });
   });
 
-  // 32 Radial PCB Substrate Traces Grounding the Pedestal into the CAD Test Bench
   const pcbTracePts = [];
   for (let i = 0; i < 32; i++) {
     const a = (i / 32) * Math.PI * 2;
-    pcbTracePts.push(new THREE.Vector3(Math.cos(a) * 2.2, floorY + 0.008, Math.sin(a) * 1.7));
-    pcbTracePts.push(new THREE.Vector3(Math.cos(a) * 4.4, floorY + 0.008, Math.sin(a) * 4.4));
+    pcbTracePts.push(new THREE.Vector3(Math.cos(a) * 2.2, floorY + 0.007, Math.sin(a) * 1.7));
+    pcbTracePts.push(new THREE.Vector3(Math.cos(a) * 4.4, floorY + 0.007, Math.sin(a) * 4.4));
   }
   siliconWorld.add(
     new THREE.LineSegments(
       new THREE.BufferGeometry().setFromPoints(pcbTracePts),
-      new THREE.LineBasicMaterial({ color: 0xC6861A, transparent: true, opacity: 0.26 })
+      new THREE.LineBasicMaterial({ color: 0xC6861A, transparent: true, opacity: 0.28 })
     )
   );
 
-  // B. 3-Tier Machined Silicon Interposer Pedestal, Embedding Array & Top Logit Crown
-  const matAnodizedDark = new THREE.MeshStandardMaterial({ color: 0x1A1A1E, roughness: 0.42, metalness: 0.35 });
-  const matBrushedAlum  = new THREE.MeshStandardMaterial({ color: 0xD6D8E0, roughness: 0.38, metalness: 0.25 });
-  const matCopperMetal  = new THREE.MeshStandardMaterial({ color: 0xC6861A, roughness: 0.32, metalness: 0.55 });
-  const matBlueAccent   = new THREE.MeshStandardMaterial({ color: 0x0066CC, roughness: 0.35, metalness: 0.20 });
-  const matEmeraldBus   = new THREE.MeshStandardMaterial({ color: 0x157F46, roughness: 0.35, metalness: 0.25 });
+  // B. Hyperrealistic Physical Hardware Materials (PBR Clearcoat Silicon, Brushed CNC Titanium, Electroplated Gold-Copper)
+  const matAnodizedDark = new THREE.MeshPhysicalMaterial({
+    color: 0x18191E,
+    metalness: 0.84,
+    roughness: 0.24,
+    clearcoat: 0.35,
+    clearcoatRoughness: 0.22,
+    bumpMap: brushedMap,
+    bumpScale: 0.003,
+    envMapIntensity: 1.55
+  });
 
-  // Soft Ground Contact Shadow Footprint Plate
+  const matCoWoSSubstrate = new THREE.MeshPhysicalMaterial({
+    color: 0xFFFFFF,
+    map: cowosMap,
+    metalness: 0.62,
+    roughness: 0.22,
+    clearcoat: 0.68,
+    clearcoatRoughness: 0.12,
+    bumpMap: siliconMaps.bumpTex,
+    bumpScale: 0.0025,
+    envMapIntensity: 1.45
+  });
+
+  const matBrushedAlum = new THREE.MeshPhysicalMaterial({
+    color: 0xD4D7E0,
+    metalness: 0.90,
+    roughness: 0.23,
+    clearcoat: 0.18,
+    bumpMap: brushedMap,
+    bumpScale: 0.0055,
+    envMapIntensity: 1.65
+  });
+
+  const matCopperMetal = new THREE.MeshPhysicalMaterial({
+    color: 0xDF9B32,
+    metalness: 0.95,
+    roughness: 0.15,
+    clearcoat: 0.30,
+    clearcoatRoughness: 0.10,
+    envMapIntensity: 1.95
+  });
+
+  const matBlueAccent = new THREE.MeshPhysicalMaterial({
+    color: 0x0A66CC,
+    metalness: 0.72,
+    roughness: 0.16,
+    clearcoat: 0.90,
+    clearcoatRoughness: 0.06,
+    bumpMap: siliconMaps.bumpTex,
+    bumpScale: 0.004,
+    envMapIntensity: 1.80
+  });
+
+  const matEmeraldBus = new THREE.MeshPhysicalMaterial({
+    color: 0x128048,
+    metalness: 0.76,
+    roughness: 0.18,
+    clearcoat: 0.82,
+    clearcoatRoughness: 0.08,
+    bumpMap: siliconMaps.bumpTex,
+    bumpScale: 0.004,
+    envMapIntensity: 1.70
+  });
+
+  // Soft Ground Contact Ambient Occlusion Plate + Real Shadow Receiver Plane
   const shadowPlate = new THREE.Mesh(
-    new THREE.PlaneGeometry(6.0, 4.4),
-    new THREE.MeshBasicMaterial({ color: 0xDCDCE4, side: THREE.DoubleSide })
+    new THREE.PlaneGeometry(8.2, 6.2),
+    new THREE.MeshBasicMaterial({ map: aoShadowTex, transparent: true, opacity: 0.85, depthWrite: false })
   );
   shadowPlate.rotation.x = -Math.PI / 2;
   shadowPlate.position.set(0, floorY + 0.003, 0);
   siliconWorld.add(shadowPlate);
 
-  // Tier 1: Wide Brushed Aluminum Carrier Plate
-  const basePlate1 = new THREE.Mesh(new THREE.BoxGeometry(5.4, 0.15, 3.9), matBrushedAlum);
+  const realShadowCatcher = new THREE.Mesh(
+    new THREE.PlaneGeometry(16, 16),
+    new THREE.ShadowMaterial({ opacity: 0.16 })
+  );
+  realShadowCatcher.rotation.x = -Math.PI / 2;
+  realShadowCatcher.position.set(0, floorY + 0.004, 0);
+  realShadowCatcher.receiveShadow = true;
+  siliconWorld.add(realShadowCatcher);
+
+  // Tier 1: Wide CNC-Machined Brushed Titanium Carrier Plate + 4 Hex Socket Retention Bolts!
+  const basePlate1 = new THREE.Mesh(createChamferBox(5.45, 0.15, 3.95, 0.024, 3), matBrushedAlum);
   basePlate1.position.set(0, floorY + 0.075, 0);
-  basePlate1.add(new THREE.LineSegments(new THREE.EdgesGeometry(basePlate1.geometry), new THREE.LineBasicMaterial({ color: 0x8E8E98 })));
+  basePlate1.castShadow = true;
+  basePlate1.receiveShadow = true;
   siliconWorld.add(basePlate1);
 
-  // Tier 2: Space-Black Silicon Interposer Substrate
-  const basePlate2 = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.15, 3.05), matAnodizedDark);
+  [[-2.42, -1.68], [2.42, -1.68], [-2.42, 1.68], [2.42, 1.68]].forEach(([bx, bz]) => {
+    const washer = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.02, 20), matCopperMetal);
+    washer.position.set(bx, floorY + 0.16, bz);
+    const boltHead = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.065, 6), matAnodizedDark);
+    boltHead.position.set(bx, floorY + 0.195, bz);
+    siliconWorld.add(washer, boltHead);
+  });
+
+  // Tier 2: High-Density CoWoS-L Silicon Interposer Substrate with Gold Differential Traces
+  const basePlate2 = new THREE.Mesh(createChamferBox(4.24, 0.15, 3.08, 0.018, 2), matCoWoSSubstrate);
   basePlate2.position.set(0, floorY + 0.225, 0);
-  basePlate2.add(new THREE.LineSegments(new THREE.EdgesGeometry(basePlate2.geometry), new THREE.LineBasicMaterial({ color: 0x3A3A44 })));
+  basePlate2.castShadow = true;
+  basePlate2.receiveShadow = true;
   siliconWorld.add(basePlate2);
+
+  // 96 Surface-Mount MLCC Decoupling Capacitors Ringing the CoWoS Interposer Die Perimeter!
+  const smdPositions = [];
+  for (let k = -14; k <= 14; k++) {
+    smdPositions.push([k * 0.115, 1.24, 0]);
+    smdPositions.push([k * 0.115, -1.24, 0]);
+  }
+  for (let k = -8; k <= 8; k++) {
+    smdPositions.push([-1.78, k * 0.115, Math.PI * 0.5]);
+    smdPositions.push([ 1.78, k * 0.115, Math.PI * 0.5]);
+  }
+  const smdBodyInst = new THREE.InstancedMesh(
+    createChamferBox(0.052, 0.032, 0.028, 0.004, 1),
+    matCopperMetal,
+    smdPositions.length
+  );
+  const smdTmp = new THREE.Object3D();
+  smdPositions.forEach(([sx, sz, rotY], idx) => {
+    smdTmp.position.set(sx, floorY + 0.315, sz);
+    smdTmp.rotation.set(0, rotY, 0);
+    smdTmp.updateMatrix();
+    smdBodyInst.setMatrixAt(idx, smdTmp.matrix);
+  });
+  siliconWorld.add(smdBodyInst);
 
   // Input Token Embedding Crystal Banks on Base Interposer (202,048 x 6,656)
   for (let b = 0; b < 8; b++) {
-    const embBank = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.08, 1.85), b % 2 === 0 ? matBlueAccent : matCopperMetal);
-    embBank.position.set(-1.26 + b * 0.36, floorY + 0.34, 0);
+    const embBank = new THREE.Mesh(
+      createChamferBox(0.31, 0.085, 1.86, 0.010, 2),
+      b % 2 === 0 ? matBlueAccent : matCopperMetal
+    );
+    embBank.position.set(-1.26 + b * 0.36, floorY + 0.342, 0);
+    embBank.castShadow = true;
+    embBank.receiveShadow = true;
     siliconWorld.add(embBank);
   }
 
-  // Tier 3: PCIe Pinned-RAM Host Controller Module on Left Deck (Feeds the Circular DMA Ring!)
-  const pcieController = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.22, 1.55), matEmeraldBus);
+  // Tier 3: PCIe Gen5 Pinned-RAM Host DMA Controller ASIC on Left Deck (With Gold Heatpipe Cap!)
+  const pcieController = new THREE.Mesh(createChamferBox(0.70, 0.22, 1.58, 0.018, 2), matEmeraldBus);
   pcieController.position.set(-2.22, floorY + 0.26, 0);
-  pcieController.add(new THREE.LineSegments(new THREE.EdgesGeometry(pcieController.geometry), new THREE.LineBasicMaterial({ color: 0x0E5830 })));
+  pcieController.castShadow = true;
+  const pcieIhs = new THREE.Mesh(createChamferBox(0.52, 0.035, 1.28, 0.008, 2), matBrushedAlum);
+  pcieIhs.position.set(0, 0.125, 0);
+  pcieController.add(pcieIhs);
   siliconWorld.add(pcieController);
 
-  // Top Logit Output Crown Cap (Split-Wing Skylight Portal!) + 8 Output LM-Head Crystal Banks (202,048 Vocab Projection)
+  // Top Logit Output Crown Cap (Split-Wing CNC Skylight Portal!) + 8 Output LM-Head Crystal Banks
   const topCrownGroup = new THREE.Group();
-  const crownHalfGeo = new THREE.BoxGeometry(1.775, 0.14, 2.50);
+  const crownHalfGeo = createChamferBox(1.775, 0.145, 2.52, 0.016, 2);
   const topCrownCapL = new THREE.Mesh(crownHalfGeo, matAnodizedDark);
   topCrownCapL.position.set(-0.8875, 0, 0);
-  topCrownCapL.add(new THREE.LineSegments(new THREE.EdgesGeometry(crownHalfGeo), new THREE.LineBasicMaterial({ color: 0x0066CC })));
+  topCrownCapL.castShadow = true;
   const topCrownCapR = new THREE.Mesh(crownHalfGeo, matAnodizedDark);
   topCrownCapR.position.set(0.8875, 0, 0);
-  topCrownCapR.add(new THREE.LineSegments(new THREE.EdgesGeometry(crownHalfGeo), new THREE.LineBasicMaterial({ color: 0x0066CC })));
+  topCrownCapR.castShadow = true;
+
+  // Machined Gold-Copper Rim Bezel Inside the Skylight Portal
   const crownPortalRing = new THREE.Mesh(
-    new THREE.RingGeometry(0.36, 0.44, 48),
-    new THREE.MeshBasicMaterial({ color: 0x2997FF, side: THREE.DoubleSide, transparent: true, opacity: 0.85 })
+    new THREE.TorusGeometry(0.42, 0.022, 14, 56),
+    matCopperMetal
   );
   crownPortalRing.rotation.x = Math.PI * 0.5;
-  crownPortalRing.position.set(0, -0.02, 0);
+  crownPortalRing.position.set(0, -0.01, 0);
   topCrownGroup.add(topCrownCapL, topCrownCapR, crownPortalRing);
+
   const headBanks = [];
   for (let b = 0; b < 8; b++) {
     const baseX = -1.19 + b * 0.34;
-    const headBank = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.10, 1.75), b % 2 === 0 ? matBlueAccent : matBrushedAlum);
-    headBank.position.set(baseX, 0.12, 0);
+    const headBank = new THREE.Mesh(
+      createChamferBox(0.28, 0.105, 1.76, 0.010, 2),
+      b % 2 === 0 ? matBlueAccent : matBrushedAlum
+    );
+    headBank.position.set(baseX, 0.125, 0);
+    headBank.castShadow = true;
     topCrownGroup.add(headBank);
     headBanks.push({ mesh: headBank, baseX });
   }
   topCrownGroup.position.set(0, 2.95, 0);
   siliconWorld.add(topCrownGroup);
 
-  // 4 Vertical Titanium Structural Guide Columns Anchoring Pedestal <-> Top Logit Crown
+  // 4 Vertical CNC-Turned Titanium Structural Guide Columns + Electroplated Copper Collars
   const colPositions = [
     [-1.68, -1.16], [1.68, -1.16],
     [-1.68,  1.16], [1.68,  1.16]
   ];
   const guideCols = [];
   colPositions.forEach(([cx, cz]) => {
-    const colMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.030, 0.030, 5.95, 12), matBrushedAlum);
+    const colMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.034, 0.034, 5.95, 20), matBrushedAlum);
     colMesh.position.set(cx, -0.02, cz);
+    colMesh.castShadow = true;
     siliconWorld.add(colMesh);
 
-    const collarBot = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.11, 12), matCopperMetal);
+    const collarBot = new THREE.Mesh(new THREE.CylinderGeometry(0.082, 0.088, 0.12, 20), matCopperMetal);
     collarBot.position.set(cx, floorY + 0.34, cz);
     siliconWorld.add(collarBot);
 
-    const collarTop = new THREE.Mesh(new THREE.CylinderGeometry(0.065, 0.065, 0.09, 12), matCopperMetal);
+    const collarTop = new THREE.Mesh(new THREE.CylinderGeometry(0.078, 0.078, 0.10, 20), matCopperMetal);
     collarTop.position.set(cx, 2.84, cz);
     siliconWorld.add(collarTop);
 
@@ -1650,7 +2024,7 @@ Check: bat costs $1.05, total $1.10</div>
   const wallBoxGeo = new THREE.BoxGeometry(3.52, 5.82, 2.54);
   const wallWire = new THREE.LineSegments(
     new THREE.EdgesGeometry(wallBoxGeo),
-    new THREE.LineBasicMaterial({ color: 0x0066CC, transparent: true, opacity: 0.38 })
+    new THREE.LineBasicMaterial({ color: 0x0066CC, transparent: true, opacity: 0.30 })
   );
   wallWire.position.set(0, -0.02, 0);
   siliconWorld.add(wallWire);
@@ -1661,8 +2035,8 @@ Check: bat costs $1.05, total $1.10</div>
     const ctx = meta.ctx;
     ctx.clearRect(0, 0, cw, ch);
 
-    ctx.fillStyle = isDark ? 'rgba(22, 22, 28, 0.92)' : 'rgba(255, 255, 255, 0.90)';
-    ctx.strokeStyle = isDark ? '#343442' : '#D4D4DC';
+    ctx.fillStyle = isDark ? 'rgba(20, 20, 26, 0.92)' : 'rgba(255, 255, 255, 0.92)';
+    ctx.strokeStyle = isDark ? '#383846' : '#D0D2DC';
     ctx.lineWidth = 3;
     const r = 18;
     ctx.beginPath();
@@ -1696,6 +2070,7 @@ Check: bat costs $1.05, total $1.10</div>
     cnv.height = 84;
     const ctx = cnv.getContext('2d');
     const tex = new THREE.CanvasTexture(cnv);
+    tex.encoding = THREE.sRGBEncoding;
     tex.anisotropy = 4;
     const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
     spr.scale.set(2.15, 0.35, 1);
@@ -1707,47 +2082,113 @@ Check: bat costs $1.05, total $1.10</div>
   }
 
   const sprCrownMeta = makeCadSprite('LM HEAD · 202,048 VOCAB', '#0066CC', '#2997FF', new THREE.Vector3(0.0, 3.48, 0.0));
-  const sprOutMeta   = makeCadSprite('512 INT8 OUTLIER PINS', '#B57914', '#E5A024', new THREE.Vector3(2.55, 1.35, 0.4));
-  const sprDmaMeta   = makeCadSprite('5-SLOT ASYNC DMA RING', '#157F46', '#30D158', new THREE.Vector3(-2.65, -0.65, 0.5));
-  const sprBaseMeta  = makeCadSprite('SILICON INTERPOSER · DDR5', '#141416', '#EAECEF', new THREE.Vector3(2.95, floorY + 0.38, -0.85));
+  const sprOutMeta   = makeCadSprite('512 INT8 OUTLIER PINS', '#B57914', '#E5A024', new THREE.Vector3(2.38, 1.35, 0.45));
+  const sprDmaMeta   = makeCadSprite('5-SLOT ASYNC DMA RING', '#157F46', '#30D158', new THREE.Vector3(-2.62, -0.65, 0.5));
+  const sprBaseMeta  = makeCadSprite('CoWoS-L INTERPOSER · DDR5', '#141416', '#EAECEF', new THREE.Vector3(1.92, floorY + 0.42, 1.48));
   const cadSpriteMetas = [sprCrownMeta, sprOutMeta, sprDmaMeta, sprBaseMeta];
   const cadSprites = cadSpriteMetas.map(m => m.spr);
 
-  // C. 4 Anodized Shard Heat-Spreader Shields (Fracture Outward on Stage 1!)
+  // C. 4 CNC-Milled Finned Heat-Spreader Shields with Copper Heatpipes (Fracture Outward on Stage 1!)
+  const shieldCoreGeo = createChamferBox(0.068, 1.22, 2.24, 0.012, 2);
+  const shieldFinGeo  = createChamferBox(0.042, 0.026, 2.16, 0.005, 1);
+  const shieldPipeGeo = new THREE.CylinderGeometry(0.018, 0.018, 1.18, 12);
+
+  function buildFinnedHeatsinkAssembly(sideSign) {
+    const grp = new THREE.Group();
+    const plate = new THREE.Mesh(shieldCoreGeo, matBrushedAlum);
+    plate.castShadow = true;
+    plate.receiveShadow = true;
+    grp.add(plate);
+
+    // 9 Machined Horizontal Cooling Louver Fins on the Exterior Face
+    for (let f = -4; f <= 4; f++) {
+      const fin = new THREE.Mesh(shieldFinGeo, matAnodizedDark);
+      fin.position.set(sideSign * 0.046, f * 0.125, 0);
+      grp.add(fin);
+    }
+    // Twin Embedded Copper Vapor-Chamber Heatpipes
+    [-0.68, 0.68].forEach(zPos => {
+      const pipe = new THREE.Mesh(shieldPipeGeo, matCopperMetal);
+      pipe.position.set(sideSign * 0.038, 0, zPos);
+      grp.add(pipe);
+    });
+    return grp;
+  }
+
   const shardShields = [];
   for (let s = 0; s < 4; s++) {
     const sy = -2.12 + s * 1.38;
-    const shieldGeo = new THREE.BoxGeometry(0.07, 1.22, 2.24);
-    const lShield = new THREE.Mesh(shieldGeo, matBrushedAlum);
-    lShield.add(new THREE.LineSegments(new THREE.EdgesGeometry(shieldGeo), new THREE.LineBasicMaterial({ color: 0x52525C })));
+    const lShield = buildFinnedHeatsinkAssembly(-1);
     lShield.position.set(-1.58, sy, 0);
     siliconWorld.add(lShield);
 
-    const rShield = new THREE.Mesh(shieldGeo, matBrushedAlum);
-    rShield.add(new THREE.LineSegments(new THREE.EdgesGeometry(shieldGeo), new THREE.LineBasicMaterial({ color: 0x52525C })));
+    const rShield = buildFinnedHeatsinkAssembly(1);
     rShield.position.set(1.58, sy, 0);
     siliconWorld.add(rShield);
 
     shardShields.push({ lShield, rShield, baseY: sy, shardIdx: s });
   }
 
-  // D. 2,496 DISCRETE 3D TENSOR VOXELS ACROSS ALL 52 LAYERS (THREE.InstancedMesh!)
+  // D. 2,496 HYPERREALISTIC 3D SILICON DIES, HBM STACKS & GOLD-COPPER MICRO-PILLARS (InstancedMesh!)
   const NUM_LAYERS = 52;
   const ATTN_PER_L = 8;
   const MLP_PER_L  = 24; // 6 cols (X) x 4 rows (Z)
   const PIN_PER_L  = 16; // 4 cols (X) x 4 rows (Z)
 
-  const voxMat = new THREE.MeshStandardMaterial({ roughness: 0.36, metalness: 0.22 });
-  const attnInst = new THREE.InstancedMesh(new THREE.BoxGeometry(0.11, 0.042, 0.22), voxMat, NUM_LAYERS * ATTN_PER_L);
-  const mlpInst  = new THREE.InstancedMesh(new THREE.BoxGeometry(0.13, 0.040, 0.38), voxMat, NUM_LAYERS * MLP_PER_L);
-  const pinInst  = new THREE.InstancedMesh(new THREE.BoxGeometry(0.055, 0.062, 0.055), voxMat, NUM_LAYERS * PIN_PER_L);
+  // Clearcoated Monocrystalline Silicon Photolithography Wafer Material
+  const matSiliconDie = new THREE.MeshPhysicalMaterial({
+    color: 0xFFFFFF,
+    metalness: 0.80,
+    roughness: 0.17,
+    roughnessMap: siliconMaps.roughTex,
+    bumpMap: siliconMaps.bumpTex,
+    bumpScale: 0.0055,
+    clearcoat: 0.92,
+    clearcoatRoughness: 0.06,
+    envMapIntensity: 1.85
+  });
+
+  // Stacked HBM3e / GQA Attention Die Material
+  const matHbmDie = new THREE.MeshPhysicalMaterial({
+    color: 0xFFFFFF,
+    metalness: 0.84,
+    roughness: 0.20,
+    bumpMap: siliconMaps.bumpTex,
+    bumpScale: 0.004,
+    clearcoat: 0.78,
+    clearcoatRoughness: 0.09,
+    envMapIntensity: 1.75
+  });
+
+  // Electroplated Gold-Copper CoWoS Outlier Pin Material
+  const matGoldPin = new THREE.MeshPhysicalMaterial({
+    color: 0xFFFFFF,
+    metalness: 0.96,
+    roughness: 0.13,
+    clearcoat: 0.35,
+    clearcoatRoughness: 0.08,
+    envMapIntensity: 2.15
+  });
+
+  const attnGeo = createChamferBox(0.114, 0.044, 0.224, 0.0065, 1);
+  const mlpGeo  = createChamferBox(0.134, 0.042, 0.384, 0.0070, 1);
+  const pinGeo  = new THREE.CylinderGeometry(0.026, 0.030, 0.064, 14);
+
+  const attnInst = new THREE.InstancedMesh(attnGeo, matHbmDie, NUM_LAYERS * ATTN_PER_L);
+  const mlpInst  = new THREE.InstancedMesh(mlpGeo, matSiliconDie, NUM_LAYERS * MLP_PER_L);
+  const pinInst  = new THREE.InstancedMesh(pinGeo, matGoldPin, NUM_LAYERS * PIN_PER_L);
+
+  attnInst.castShadow = true;
+  attnInst.receiveShadow = true;
+  mlpInst.castShadow = true;
+  mlpInst.receiveShadow = true;
 
   attnInst.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   mlpInst.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   pinInst.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 
   // Pre-allocate instanceColor buffers before first WebGL shader compile!
-  const initCol = new THREE.Color(0xC2C5D0);
+  const initCol = new THREE.Color(0xC2C5D0).convertSRGBToLinear();
   for (let i = 0; i < NUM_LAYERS * ATTN_PER_L; i++) attnInst.setColorAt(i, initCol);
   for (let i = 0; i < NUM_LAYERS * MLP_PER_L; i++)  mlpInst.setColorAt(i, initCol);
   for (let i = 0; i < NUM_LAYERS * PIN_PER_L; i++)  pinInst.setColorAt(i, initCol);
@@ -1765,9 +2206,30 @@ Check: bat costs $1.05, total $1.10</div>
     hitSlabs.push(slab);
   }
 
-  // E. 5 Sweeping 3D Bezier Optical Conduits for Circular Spaced Async DMA Ring (L08->17->26->35->44)
+  // E. 5 Physical Borosilicate Glass Fiber-Optic DMA Conduits + Copper Ferrules (L08->17->26->35->44)
   const dmaConduitGroup = new THREE.Group();
   siliconWorld.add(dmaConduitGroup);
+
+  const matFiberGlass = new THREE.MeshPhysicalMaterial({
+    color: 0x10B981,
+    emissive: 0x053B28,
+    emissiveIntensity: 0.35,
+    metalness: 0.12,
+    roughness: 0.06,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.04,
+    transparent: true,
+    opacity: 0.62,
+    envMapIntensity: 2.2
+  });
+
+  const matPhotonPulse = new THREE.MeshStandardMaterial({
+    color: 0x60A5FA,
+    emissive: 0x2563EB,
+    emissiveIntensity: 2.4,
+    roughness: 0.1,
+    metalness: 0.1
+  });
 
   const dmaCurves = [];
   const dmaPackets = [];
@@ -1781,21 +2243,26 @@ Check: bat costs $1.05, total $1.10</div>
     const curve = new THREE.CubicBezierCurve3(startPt, midPt1, midPt2, endPt);
     dmaCurves.push({ curve, layerIdx: lIdx });
 
-    const tubeLine = new THREE.Line(
-      new THREE.BufferGeometry().setFromPoints(curve.getPoints(44)),
-      new THREE.LineBasicMaterial({ color: 0x157F46, transparent: true, opacity: 0.62 })
+    // Physical 3D Glossy Optical Fiber Tube + Copper Port Ferrules
+    const fiberMesh = new THREE.Mesh(
+      new THREE.TubeGeometry(curve, 48, 0.020, 10, false),
+      matFiberGlass
     );
-    dmaConduitGroup.add(tubeLine);
+    dmaConduitGroup.add(fiberMesh);
 
-    const pkt = new THREE.Mesh(
-      new THREE.SphereGeometry(0.055, 10, 10),
-      new THREE.MeshBasicMaterial({ color: 0x0066CC })
-    );
+    const ferruleBot = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.06, 12), matCopperMetal);
+    ferruleBot.position.copy(startPt);
+    const ferruleTop = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.06, 12), matCopperMetal);
+    ferruleTop.rotation.z = Math.PI * 0.5;
+    ferruleTop.position.copy(endPt);
+    dmaConduitGroup.add(ferruleBot, ferruleTop);
+
+    const pkt = new THREE.Mesh(new THREE.SphereGeometry(0.048, 14, 14), matPhotonPulse);
     dmaConduitGroup.add(pkt);
     dmaPackets.push({ mesh: pkt, curve, offset: k * 0.2 });
   });
 
-  // F. Macro Tensor Dive Data-Flow Rays (bbycroft.net/llm style Attention -> MLP -> Outlier Rays!)
+  // F. Macro Tensor Dive Data-Flow Rays (Attention -> MLP -> Outlier Optical Filaments!)
   const macroRayGroup = new THREE.Group();
   siliconWorld.add(macroRayGroup);
   const macroRayLines = [];
@@ -1813,11 +2280,11 @@ Check: bat costs $1.05, total $1.10</div>
     );
     const l1 = new THREE.Line(
       new THREE.BufferGeometry().setFromPoints(arc.getPoints(28)),
-      new THREE.LineBasicMaterial({ color: 0x0066CC, transparent: true, opacity: 0.82 })
+      new THREE.LineBasicMaterial({ color: 0x2997FF, transparent: true, opacity: 0.85 })
     );
     const l2 = new THREE.Line(
       new THREE.BufferGeometry().setFromPoints(arc2.getPoints(28)),
-      new THREE.LineBasicMaterial({ color: 0xC6861A, transparent: true, opacity: 0.82 })
+      new THREE.LineBasicMaterial({ color: 0xE5A024, transparent: true, opacity: 0.85 })
     );
     macroRayGroup.add(l1, l2);
     macroRayLines.push(l1, l2);
@@ -1837,47 +2304,67 @@ Check: bat costs $1.05, total $1.10</div>
   streamGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
   const streamPoints = new THREE.Points(
     streamGeo,
-    new THREE.PointsMaterial({ color: 0x0066CC, size: 0.035, transparent: true, opacity: 0.48 })
+    new THREE.PointsMaterial({ color: 0x2997FF, size: 0.032, transparent: true, opacity: 0.45 })
   );
   siliconWorld.add(streamPoints);
 
-  // H. 3D Crystalline Prompt Token Carrier + Gyroscopic Bit-Rings + 16-Arc Interior Synapse Web (FPV Tracking!)
+  // H. Jewel-Grade Optical Crystal Prompt Carrier + Machined Gimbal Rings + Dynamic Canyon PointLights!
   const promptPacketGroup = new THREE.Group();
   promptPacketGroup.visible = false;
   siliconWorld.add(promptPacketGroup);
 
-  const pktCoreMat = new THREE.MeshStandardMaterial({
-    color: 0x0066CC,
-    emissive: 0x004499,
-    emissiveIntensity: 0.55,
-    roughness: 0.18,
-    metalness: 0.35
+  // Real Dynamic PointLights Mounted on the Prompt Carrier (Illuminates passing silicon wafer bevels & copper pins!)
+  const pktPointLight = new THREE.PointLight(0x3898FF, 2.8, 3.8, 1.6);
+  pktPointLight.position.set(0, 0.05, 0.15);
+  promptPacketGroup.add(pktPointLight);
+
+  const pktWarmRimLight = new THREE.PointLight(0xFFB340, 1.25, 2.8, 1.8);
+  pktWarmRimLight.position.set(0.25, -0.15, -0.10);
+  promptPacketGroup.add(pktWarmRimLight);
+
+  const pktCoreMat = new THREE.MeshPhysicalMaterial({
+    color: 0x1D84FF,
+    emissive: 0x0A4DA6,
+    emissiveIntensity: 0.85,
+    roughness: 0.05,
+    metalness: 0.30,
+    clearcoat: 1.0,
+    clearcoatRoughness: 0.03,
+    envMapIntensity: 2.5
   });
-  const pktCoreMesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.145, 0), pktCoreMat);
+  const pktCoreMesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.145, 1), pktCoreMat);
   promptPacketGroup.add(pktCoreMesh);
+
+  // Inner Incandescent Singularity Seed
+  const pktInnerSeed = new THREE.Mesh(
+    new THREE.OctahedronGeometry(0.075, 0),
+    new THREE.MeshBasicMaterial({ color: 0xE0F2FE })
+  );
+  promptPacketGroup.add(pktInnerSeed);
 
   const pktCageGeo = new THREE.IcosahedronGeometry(0.225, 0);
   const pktCageWire = new THREE.LineSegments(
     new THREE.EdgesGeometry(pktCageGeo),
-    new THREE.LineBasicMaterial({ color: 0x2997FF, transparent: true, opacity: 0.88 })
+    new THREE.LineBasicMaterial({ color: 0x60A5FA, transparent: true, opacity: 0.88 })
   );
   promptPacketGroup.add(pktCageWire);
 
+  // Machined Metallic Gold-Copper & Anodized Emerald Gyroscopic Gimbal Rings
   const pktRingCopper = new THREE.Mesh(
-    new THREE.TorusGeometry(0.29, 0.0085, 8, 56),
-    new THREE.MeshBasicMaterial({ color: 0xE5A024 })
+    new THREE.TorusGeometry(0.29, 0.011, 14, 64),
+    matCopperMetal
   );
   promptPacketGroup.add(pktRingCopper);
 
   const pktRingEmerald = new THREE.Mesh(
-    new THREE.TorusGeometry(0.355, 0.0075, 8, 56),
-    new THREE.MeshBasicMaterial({ color: 0x30D158 })
+    new THREE.TorusGeometry(0.355, 0.0095, 14, 64),
+    matEmeraldBus
   );
   promptPacketGroup.add(pktRingEmerald);
 
   const pktScanHalo = new THREE.Mesh(
-    new THREE.RingGeometry(0.46, 0.485, 56),
-    new THREE.MeshBasicMaterial({ color: 0x2997FF, side: THREE.DoubleSide, transparent: true, opacity: 0.42 })
+    new THREE.RingGeometry(0.465, 0.485, 64),
+    new THREE.MeshBasicMaterial({ color: 0x3898FF, side: THREE.DoubleSide, transparent: true, opacity: 0.45 })
   );
   pktScanHalo.rotation.x = Math.PI * 0.5;
   promptPacketGroup.add(pktScanHalo);
@@ -1908,6 +2395,7 @@ Check: bat costs $1.05, total $1.10</div>
   promptTagCnv.height = 128;
   const promptTagCtx = promptTagCnv.getContext('2d');
   const promptTagTex = new THREE.CanvasTexture(promptTagCnv);
+  promptTagTex.encoding = THREE.sRGBEncoding;
   promptTagTex.anisotropy = 4;
   const promptTagSpr = new THREE.Sprite(
     new THREE.SpriteMaterial({ map: promptTagTex, transparent: true, depthTest: false })
@@ -2320,15 +2808,15 @@ Check: bat costs $1.05, total $1.10</div>
   }
   updateNodeInspector(26);
 
-  // Reusable Matrix / Color Objects for Zero-GC 60FPS InstancedMesh Updates
+  // Reusable Matrix / Color Objects for Zero-GC 60FPS InstancedMesh Updates (Linear PBR Space!)
   const dummyObj = new THREE.Object3D();
-  const colSpaceBlack = new THREE.Color(0x1E1E24); // Flips to gleaming Platinum-White in Space-Black Dark Mode!
-  const colTitanium   = new THREE.Color(0xC2C5D0); // Flips to Anodized Gunmetal in Space-Black Dark Mode!
-  const colRawFP16    = new THREE.Color(0xD8DAE4);
-  const colBlueWave   = new THREE.Color(0x0066CC);
-  const colBlueBright = new THREE.Color(0x2B88FF);
-  const colEmerald    = new THREE.Color(0x168A4C);
-  const colCopperPin  = new THREE.Color(0xCE8B1E);
+  const colSpaceBlack = new THREE.Color(0x20222A).convertSRGBToLinear();
+  const colTitanium   = new THREE.Color(0xCBD0DC).convertSRGBToLinear();
+  const colRawFP16    = new THREE.Color(0xDCE0EC).convertSRGBToLinear();
+  const colBlueWave   = new THREE.Color(0x0B72E7).convertSRGBToLinear();
+  const colBlueBright = new THREE.Color(0x3B9EFF).convertSRGBToLinear();
+  const colEmerald    = new THREE.Color(0x189E58).convertSRGBToLinear();
+  const colCopperPin  = new THREE.Color(0xE5A235).convertSRGBToLinear();
   const anchorVec3    = new THREE.Vector3();
 
   // =========================================================================
@@ -2346,13 +2834,14 @@ Check: bat costs $1.05, total $1.10</div>
     if (portalBtn) portalBtn.textContent = isDarkTheme ? '☀ Silver Daylight' : '☾ Space Black';
     if (studioBtn) studioBtn.textContent = isDarkTheme ? '☀ Light' : '☾ Dark';
 
-    // 1. Update WebGL Sky, Fog & CAD Floor Grids
-    const bgHex = isDarkTheme ? 0x0D0D10 : 0xF3F4F6;
-    renderer.setClearColor(bgHex, 1);
-    scene.fog.color.setHex(bgHex);
+    // 1. Switch Dedicated Studio PMREM HDRI Softbox Rig, Tone-Mapping Exposure & CAD Floor Grids
+    renderer.setClearColor(0x000000, 0);
+    scene.environment = isDarkTheme ? envMapDark : envMapLight;
+    renderer.toneMappingExposure = isDarkTheme ? 1.18 : 1.08;
     cadGridLight.visible = !isDarkTheme;
     cadGridDark.visible  = isDarkTheme;
-    shadowPlate.material.color.setHex(isDarkTheme ? 0x070709 : 0xDCDCE4);
+    shadowPlate.material.opacity = isDarkTheme ? 0.92 : 0.72;
+    realShadowCatcher.material.opacity = isDarkTheme ? 0.34 : 0.14;
 
     compassRings.forEach(({ ring, idx }) => {
       ring.material.color.setHex(
@@ -2362,7 +2851,7 @@ Check: bat costs $1.05, total $1.10</div>
       );
     });
 
-    // 2. Update Act I 32,000-Particle Singularity Portal Spiral Colors & Calibration Rings
+    // 2. Update Act I 32,000-Particle Singularity Portal Spiral Colors & Machined Astrolabe Rings
     const pBase0 = isDarkTheme ? new THREE.Color(0xEAECEF) : new THREE.Color(0x16161B);
     const pBase1 = isDarkTheme ? new THREE.Color(0x7C8091) : new THREE.Color(0x525665);
     const pBlue  = isDarkTheme ? new THREE.Color(0x2997FF) : new THREE.Color(0x0066CC);
@@ -2379,29 +2868,30 @@ Check: bat costs $1.05, total $1.10</div>
     }
     portalGeo.attributes.aColor.needsUpdate = true;
 
-    pRingInner.material.color.setHex(isDarkTheme ? 0x2997FF : 0x0066CC);
+    pRingInner.material.color.setHex(isDarkTheme ? 0x2997FF : 0x0066CC).convertSRGBToLinear();
     pTicks.material.color.setHex(isDarkTheme ? 0xEAECEF : 0x16161B);
-    pRingOuter.material.color.setHex(isDarkTheme ? 0x8A8E9E : 0x141416);
+    pRingOuter.material.color.setHex(isDarkTheme ? 0x8A8E9E : 0x42444E).convertSRGBToLinear();
 
-    // 3. Update Act II 3D Superchip Anodized Metals, Voxel Palette & 2x Retina CAD Sprites
-    matBrushedAlum.color.setHex(isDarkTheme ? 0x2C2E38 : 0xD6D8E0);
-    matAnodizedDark.color.setHex(isDarkTheme ? 0x141419 : 0x1A1A1E);
+    // 3. Update Act II Hyperrealistic CNC Anodized Metals, Clearcoat Silicon Dies & Gold-Copper Pins
+    matBrushedAlum.color.setHex(isDarkTheme ? 0x4A4E5E : 0xD6DAE4).convertSRGBToLinear();
+    matAnodizedDark.color.setHex(isDarkTheme ? 0x1B1D24 : 0x20222A).convertSRGBToLinear();
     wallWire.material.color.setHex(isDarkTheme ? 0x2997FF : 0x0066CC);
     streamPoints.material.color.setHex(isDarkTheme ? 0x47A8FF : 0x0066CC);
 
-    // In Space Black mode: 4-bit Salient Thinking Crowns gleam in Platinum-Silver (0xECEEF4)
-    // while 2-bit bulk wafers sit in machined Dark Gunmetal (0x4A4E5C)!
-    colSpaceBlack.setHex(isDarkTheme ? 0xECEEF4 : 0x1E1E24);
-    colTitanium.setHex(isDarkTheme ? 0x4A4E5C : 0xC2C5D0);
-    colRawFP16.setHex(isDarkTheme ? 0x7A7E90 : 0xD8DAE4);
-    colBlueWave.setHex(isDarkTheme ? 0x2997FF : 0x0066CC);
-    colEmerald.setHex(isDarkTheme ? 0x28B852 : 0x168A4C);
-    colCopperPin.setHex(isDarkTheme ? 0xE5A024 : 0xCE8B1E);
+    // In Space Black mode: 4-bit Salient Thinking Crowns gleam in Platinum-Chrome (0xF2F6FF)
+    // while 2-bit bulk silicon dies gleam in Deep Space-Grey Monocrystalline Silicon (0x2B303D)!
+    colSpaceBlack.setHex(isDarkTheme ? 0xF2F6FF : 0x161820).convertSRGBToLinear();
+    colTitanium.setHex(isDarkTheme ? 0x2B303D : 0xB8C0D0).convertSRGBToLinear();
+    colRawFP16.setHex(isDarkTheme ? 0x6E768C : 0xDCE2F0).convertSRGBToLinear();
+    colBlueWave.setHex(isDarkTheme ? 0x2997FF : 0x0066CC).convertSRGBToLinear();
+    colBlueBright.setHex(isDarkTheme ? 0x5EB2FF : 0x248AFF).convertSRGBToLinear();
+    colEmerald.setHex(isDarkTheme ? 0x22C55E : 0x128A48).convertSRGBToLinear();
+    colCopperPin.setHex(isDarkTheme ? 0xF0AC3C : 0xDF9828).convertSRGBToLinear();
 
     cadSpriteMetas.forEach(m => renderCadSpriteCanvas(m, isDarkTheme));
     updatePromptTagText(promptTagMeta.label, isDarkTheme);
-    pktCoreMat.color.setHex(isDarkTheme ? 0x2997FF : 0x0066CC);
-    pktCoreMat.emissive.setHex(isDarkTheme ? 0x0A58CA : 0x003E80);
+    pktCoreMat.color.setHex(isDarkTheme ? 0x2E98FF : 0x0C70DE).convertSRGBToLinear();
+    pktCoreMat.emissive.setHex(isDarkTheme ? 0x0E5FD8 : 0x06489E).convertSRGBToLinear();
   }
 
   function toggleTheme() {
