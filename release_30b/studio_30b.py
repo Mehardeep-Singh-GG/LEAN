@@ -134,6 +134,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
     --surface: #F7F7F9;
     --pill-bg: #EAEAEE;
     --ink: #141416;
+    --ink-contrast: #FFFFFF;
     --ink-soft: #3A3A40;
     --muted: #6E6E77;
     --muted-light: #94949E;
@@ -143,6 +144,38 @@ HTML_PAGE = r"""<!DOCTYPE html>
     --emerald: #157F46;
     --border: #DCDCE2;
     --border-subtle: #E8E8EE;
+    --portal-glass: rgba(243, 244, 246, 0.76);
+    --portal-pill: rgba(255, 255, 255, 0.86);
+    --portal-border: rgba(255, 255, 255, 0.78);
+    --user-bubble-bg: #141416;
+    --user-bubble-fg: #FFFFFF;
+    --focus-bg: #FFFFFF;
+  }
+
+  /* APPLE M4 PRO "SPACE BLACK" HARDWARE DARK MODE */
+  html[data-theme="dark"] {
+    --bg: #0D0D10;
+    --panel: rgba(22, 22, 27, 0.88);
+    --panel-solid: #18181E;
+    --surface: #202028;
+    --pill-bg: #262630;
+    --ink: #F2F2F6;
+    --ink-contrast: #0D0D10;
+    --ink-soft: #B8B8C4;
+    --muted: #8A8A98;
+    --muted-light: #5E5E6C;
+    --blue: #2997FF;
+    --blue-hover: #47A8FF;
+    --copper: #E5A024;
+    --emerald: #30D158;
+    --border: #2E2E38;
+    --border-subtle: #25252E;
+    --portal-glass: rgba(16, 16, 20, 0.78);
+    --portal-pill: rgba(24, 24, 30, 0.88);
+    --portal-border: rgba(255, 255, 255, 0.10);
+    --user-bubble-bg: #282833;
+    --user-bubble-fg: #F2F2F6;
+    --focus-bg: #24242E;
   }
 
   * {
@@ -233,13 +266,38 @@ HTML_PAGE = r"""<!DOCTYPE html>
     color: var(--ink-soft);
     text-transform: uppercase;
   }
+  .portal-top-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    pointer-events: auto;
+  }
   .portal-top-pill {
-    background: rgba(255, 255, 255, 0.84);
+    background: var(--portal-pill);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border: 1px solid var(--border);
     padding: 6px 13px;
     border-radius: 999px;
+    color: var(--ink-soft);
+  }
+  .portal-theme-btn {
+    background: var(--portal-pill);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--border);
+    padding: 6px 13px;
+    border-radius: 999px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .portal-theme-btn:hover {
+    border-color: var(--blue);
+    color: var(--blue);
   }
 
   .portal-center {
@@ -252,10 +310,10 @@ HTML_PAGE = r"""<!DOCTYPE html>
     gap: 14px;
     padding: 26px 34px;
     border-radius: 28px;
-    background: rgba(243, 244, 246, 0.74);
+    background: var(--portal-glass);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.75);
+    border: 1px solid var(--portal-border);
   }
 
   .portal-kicker {
@@ -264,7 +322,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
     gap: 8px;
     padding: 5px 13px;
     border-radius: 999px;
-    background: #FFFFFF;
+    background: var(--panel-solid);
     border: 1px solid var(--border);
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
@@ -308,7 +366,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
 
   .portal-enter-btn {
     background: var(--ink);
-    color: #FFFFFF;
+    color: var(--ink-contrast);
     border: 1px solid var(--ink);
     border-radius: 999px;
     padding: 13px 28px;
@@ -320,11 +378,12 @@ HTML_PAGE = r"""<!DOCTYPE html>
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s ease, color 0.2s ease;
   }
   .portal-enter-btn:hover {
     background: var(--blue);
     border-color: var(--blue);
+    color: #FFFFFF;
     transform: translateY(-2px);
   }
 
@@ -341,7 +400,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
     display: inline-flex;
     align-items: center;
     gap: 24px;
-    background: rgba(255, 255, 255, 0.86);
+    background: var(--portal-pill);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--border);
@@ -363,7 +422,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
     letter-spacing: 0.04em;
   }
   .portal-hint-pill {
-    background: rgba(255, 255, 255, 0.84);
+    background: var(--portal-pill);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     border: 1px solid var(--border);
@@ -510,11 +569,11 @@ HTML_PAGE = r"""<!DOCTYPE html>
     padding: 3px 7px;
     border-radius: 5px;
     background: var(--ink);
-    color: #FFFFFF;
+    color: var(--ink-contrast);
     white-space: nowrap;
   }
-  .fn-badge.blue { background: var(--blue); }
-  .fn-badge.emerald { background: var(--emerald); }
+  .fn-badge.blue { background: var(--blue); color: #FFFFFF; }
+  .fn-badge.emerald { background: var(--emerald); color: #FFFFFF; }
 
   .fn-ratio {
     font-family: 'JetBrains Mono', monospace;
@@ -577,10 +636,10 @@ HTML_PAGE = r"""<!DOCTYPE html>
     align-items: center;
     justify-content: center;
     background: var(--ink);
-    color: #FFFFFF;
+    color: var(--ink-contrast);
   }
-  .fn-bit.b { background: var(--blue); }
-  .fn-bit.c { background: var(--copper); }
+  .fn-bit.b { background: var(--blue); color: #FFFFFF; }
+  .fn-bit.c { background: var(--copper); color: #FFFFFF; }
 
   .fn-hint {
     font-family: 'JetBrains Mono', monospace;
@@ -666,7 +725,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
   }
   .dir-btn.active {
     background: var(--ink);
-    color: #FFFFFF;
+    color: var(--ink-contrast);
   }
 
   /* 4. RIGHT FLOATING APPLE CONVERSATIONAL SHEET (COLLAPSIBLE!) */
@@ -756,8 +815,9 @@ HTML_PAGE = r"""<!DOCTYPE html>
   .turn-user {
     align-self: flex-end;
     max-width: 88%;
-    background: var(--ink);
-    color: #FFFFFF;
+    background: var(--user-bubble-bg);
+    color: var(--user-bubble-fg);
+    border: 1px solid var(--border);
     padding: 10px 14px;
     border-radius: 15px 15px 4px 15px;
     font-size: 13.5px;
@@ -865,7 +925,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
   }
   .composer-form:focus-within {
     border-color: var(--blue);
-    background: #FFFFFF;
+    background: var(--focus-bg);
   }
 
   .composer-input {
@@ -909,7 +969,10 @@ HTML_PAGE = r"""<!DOCTYPE html>
 <section class="portal-overlay" id="portal-overlay">
   <div class="portal-top">
     <span class="portal-top-pill">PROJECT LEAN · SPATIAL ARCHITECTURE LAB</span>
-    <span class="portal-top-pill">52 SPIRAL ARMS · 32,000 QUANTA PARTICLES</span>
+    <div class="portal-top-right">
+      <span class="portal-top-pill">52 SPIRAL ARMS · 32,000 QUANTA PARTICLES</span>
+      <button class="portal-theme-btn" id="portal-theme-btn" onclick="event.stopPropagation(); toggleTheme()">☾ Space Black</button>
+    </div>
   </div>
 
   <div class="portal-center">
@@ -968,6 +1031,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
       <span class="live-wall-dot"></span>
       <span id="top-wall-text">7.27 / 8.00 GiB · 11.26 tok/s</span>
     </div>
+    <button class="toggle-panel-btn" id="theme-toggle-btn" onclick="toggleTheme()">☾ Dark</button>
     <button class="toggle-panel-btn" id="toggle-sheet-btn" onclick="toggleChatSheet()">Full 3D View</button>
   </header>
 
@@ -1143,6 +1207,7 @@ Check: bat costs $1.05, total $1.10</div>
   const pColor = new Float32Array(PORTAL_COUNT * 3);
   const pPhase = new Float32Array(PORTAL_COUNT);
   const pSize = new Float32Array(PORTAL_COUNT);
+  const pRole = new Uint8Array(PORTAL_COUNT); // 0=baseInk/OffWhite, 1=slate, 2=blue, 3=emerald, 4=copper
 
   const cInk     = new THREE.Color(0x16161B);
   const cSlate   = new THREE.Color(0x525665);
@@ -1179,14 +1244,16 @@ Check: bat costs $1.05, total $1.10</div>
     pTarget[i * 3 + 2] = tz;
 
     // Architectural Role Colors Mapped to Actual Layer Types (Crown = Blue, DMA = Emerald, Outlier = Copper)
-    let col = uProg > 0.55 ? cSlate : cInk;
+    let role = uProg > 0.55 ? 1 : 0;
+    let col = role === 1 ? cSlate : cInk;
     if (SALIENT_CROWN.has(armIdx)) {
-      col = Math.random() > 0.25 ? cBlue : cInk;
+      if (Math.random() > 0.25) { role = 2; col = cBlue; } else { role = 0; col = cInk; }
     } else if (DMA_SET.has(armIdx)) {
-      col = Math.random() > 0.35 ? cEmerald : cBlue;
+      if (Math.random() > 0.35) { role = 3; col = cEmerald; } else { role = 2; col = cBlue; }
     } else if (armIdx % 7 === 0 && Math.random() > 0.45) {
-      col = cCopper;
+      role = 4; col = cCopper;
     }
+    pRole[i] = role;
 
     pColor[i * 3]     = col.r;
     pColor[i * 3 + 1] = col.g;
@@ -1346,12 +1413,18 @@ Check: bat costs $1.05, total $1.10</div>
   siliconWorld.visible = false;
   scene.add(siliconWorld);
 
-  // A. Architectural CAD Floor Grid, Compass Rings & 32 Radial PCB Interposer Bus Traces
+  // A. Architectural CAD Floor Grid (Dual Light/Space-Black Grids), Compass Rings & 32 Radial PCB Traces
   const floorY = -3.15;
-  const cadGrid = new THREE.GridHelper(36, 72, 0xC6C6D0, 0xE2E2EA);
-  cadGrid.position.y = floorY;
-  siliconWorld.add(cadGrid);
+  const cadGridLight = new THREE.GridHelper(36, 72, 0xC6C6D0, 0xE2E2EA);
+  cadGridLight.position.y = floorY;
+  siliconWorld.add(cadGridLight);
 
+  const cadGridDark = new THREE.GridHelper(36, 72, 0x2C2C38, 0x1A1A22);
+  cadGridDark.position.y = floorY;
+  cadGridDark.visible = false;
+  siliconWorld.add(cadGridDark);
+
+  const compassRings = [];
   [2.9, 4.4, 6.2].forEach((rad, idx) => {
     const pts = [];
     for (let i = 0; i <= 128; i++) {
@@ -1363,6 +1436,7 @@ Check: bat costs $1.05, total $1.10</div>
       new THREE.LineBasicMaterial({ color: idx === 0 ? 0x0066CC : 0xBEBECA, transparent: true, opacity: idx === 0 ? 0.42 : 0.45 })
     );
     siliconWorld.add(ring);
+    compassRings.push({ ring, idx });
   });
 
   // 32 Radial PCB Substrate Traces Grounding the Pedestal into the CAD Test Bench
@@ -1462,15 +1536,13 @@ Check: bat costs $1.05, total $1.10</div>
   siliconWorld.add(wallWire);
 
   // World-Space 3D CAD Telemetry Micro-Sprites (Crisp 2x Retina Canvas Labels in 3D Space!)
-  function makeCadSprite(label, accentHex, posVec3) {
+  function renderCadSpriteCanvas(meta, isDark) {
     const cw = 512, ch = 84;
-    const cnv = document.createElement('canvas');
-    cnv.width = cw;
-    cnv.height = ch;
-    const ctx = cnv.getContext('2d');
+    const ctx = meta.ctx;
+    ctx.clearRect(0, 0, cw, ch);
 
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.90)';
-    ctx.strokeStyle = '#D4D4DC';
+    ctx.fillStyle = isDark ? 'rgba(22, 22, 28, 0.92)' : 'rgba(255, 255, 255, 0.90)';
+    ctx.strokeStyle = isDark ? '#343442' : '#D4D4DC';
     ctx.lineWidth = 3;
     const r = 18;
     ctx.beginPath();
@@ -1486,30 +1558,40 @@ Check: bat costs $1.05, total $1.10</div>
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = accentHex;
+    ctx.fillStyle = isDark ? meta.darkAccentHex : meta.lightAccentHex;
     ctx.beginPath();
     ctx.arc(34, ch / 2, 9, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = '#141416';
+    ctx.fillStyle = isDark ? '#F2F2F6' : '#141416';
     ctx.font = '700 24px "JetBrains Mono", -apple-system, monospace';
     ctx.textBaseline = 'middle';
-    ctx.fillText(label, 58, ch / 2 + 1);
+    ctx.fillText(meta.label, 58, ch / 2 + 1);
+    meta.tex.needsUpdate = true;
+  }
 
+  function makeCadSprite(label, lightAccentHex, darkAccentHex, posVec3) {
+    const cnv = document.createElement('canvas');
+    cnv.width = 512;
+    cnv.height = 84;
+    const ctx = cnv.getContext('2d');
     const tex = new THREE.CanvasTexture(cnv);
     tex.anisotropy = 4;
     const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
     spr.scale.set(2.15, 0.35, 1);
     spr.position.copy(posVec3);
     siliconWorld.add(spr);
-    return spr;
+    const meta = { spr, cnv, ctx, tex, label, lightAccentHex, darkAccentHex };
+    renderCadSpriteCanvas(meta, false);
+    return meta;
   }
 
-  const sprCrown = makeCadSprite('LM HEAD · 202,048 VOCAB', '#0066CC', new THREE.Vector3(0.0, 3.48, 0.0));
-  const sprOut   = makeCadSprite('512 INT8 OUTLIER PINS', '#B57914', new THREE.Vector3(2.55, 1.35, 0.4));
-  const sprDma   = makeCadSprite('5-SLOT ASYNC DMA RING', '#157F46', new THREE.Vector3(-2.65, -0.65, 0.5));
-  const sprBase  = makeCadSprite('SILICON INTERPOSER · DDR5', '#141416', new THREE.Vector3(2.95, floorY + 0.38, -0.85));
-  const cadSprites = [sprCrown, sprOut, sprDma, sprBase];
+  const sprCrownMeta = makeCadSprite('LM HEAD · 202,048 VOCAB', '#0066CC', '#2997FF', new THREE.Vector3(0.0, 3.48, 0.0));
+  const sprOutMeta   = makeCadSprite('512 INT8 OUTLIER PINS', '#B57914', '#E5A024', new THREE.Vector3(2.55, 1.35, 0.4));
+  const sprDmaMeta   = makeCadSprite('5-SLOT ASYNC DMA RING', '#157F46', '#30D158', new THREE.Vector3(-2.65, -0.65, 0.5));
+  const sprBaseMeta  = makeCadSprite('SILICON INTERPOSER · DDR5', '#141416', '#EAECEF', new THREE.Vector3(2.95, floorY + 0.38, -0.85));
+  const cadSpriteMetas = [sprCrownMeta, sprOutMeta, sprDmaMeta, sprBaseMeta];
+  const cadSprites = cadSpriteMetas.map(m => m.spr);
 
   // C. 4 Anodized Shard Heat-Spreader Shields (Fracture Outward on Stage 1!)
   const shardShields = [];
@@ -1908,14 +1990,98 @@ Check: bat costs $1.05, total $1.10</div>
 
   // Reusable Matrix / Color Objects for Zero-GC 60FPS InstancedMesh Updates
   const dummyObj = new THREE.Object3D();
-  const colSpaceBlack = new THREE.Color(0x1E1E24);
-  const colTitanium   = new THREE.Color(0xC2C5D0);
+  const colSpaceBlack = new THREE.Color(0x1E1E24); // Flips to gleaming Platinum-White in Space-Black Dark Mode!
+  const colTitanium   = new THREE.Color(0xC2C5D0); // Flips to Anodized Gunmetal in Space-Black Dark Mode!
   const colRawFP16    = new THREE.Color(0xD8DAE4);
   const colBlueWave   = new THREE.Color(0x0066CC);
   const colBlueBright = new THREE.Color(0x2B88FF);
   const colEmerald    = new THREE.Color(0x168A4C);
   const colCopperPin  = new THREE.Color(0xCE8B1E);
   const anchorVec3    = new THREE.Vector3();
+
+  // =========================================================================
+  // 3B. REAL-TIME THEME ENGINE: SILVER DAYLIGHT <-> SPACE BLACK DARK MODE
+  // =========================================================================
+  let isDarkTheme = false;
+
+  function applyTheme(dark) {
+    isDarkTheme = !!dark;
+    document.documentElement.setAttribute('data-theme', isDarkTheme ? 'dark' : 'light');
+    try { localStorage.setItem('lean_studio_theme', isDarkTheme ? 'dark' : 'light'); } catch (e) {}
+
+    const portalBtn = document.getElementById('portal-theme-btn');
+    const studioBtn = document.getElementById('theme-toggle-btn');
+    if (portalBtn) portalBtn.textContent = isDarkTheme ? '☀ Silver Daylight' : '☾ Space Black';
+    if (studioBtn) studioBtn.textContent = isDarkTheme ? '☀ Light' : '☾ Dark';
+
+    // 1. Update WebGL Sky, Fog & CAD Floor Grids
+    const bgHex = isDarkTheme ? 0x0D0D10 : 0xF3F4F6;
+    renderer.setClearColor(bgHex, 1);
+    scene.fog.color.setHex(bgHex);
+    cadGridLight.visible = !isDarkTheme;
+    cadGridDark.visible  = isDarkTheme;
+    shadowPlate.material.color.setHex(isDarkTheme ? 0x070709 : 0xDCDCE4);
+
+    compassRings.forEach(({ ring, idx }) => {
+      ring.material.color.setHex(
+        idx === 0
+          ? (isDarkTheme ? 0x2997FF : 0x0066CC)
+          : (isDarkTheme ? 0x2E2E3A : 0xBEBECA)
+      );
+    });
+
+    // 2. Update Act I 32,000-Particle Singularity Portal Spiral Colors & Calibration Rings
+    const pBase0 = isDarkTheme ? new THREE.Color(0xEAECEF) : new THREE.Color(0x16161B);
+    const pBase1 = isDarkTheme ? new THREE.Color(0x7C8091) : new THREE.Color(0x525665);
+    const pBlue  = isDarkTheme ? new THREE.Color(0x2997FF) : new THREE.Color(0x0066CC);
+    const pEm    = isDarkTheme ? new THREE.Color(0x30D158) : new THREE.Color(0x157F46);
+    const pCop   = isDarkTheme ? new THREE.Color(0xE5A024) : new THREE.Color(0xC6861A);
+
+    const cArr = portalGeo.attributes.aColor.array;
+    for (let i = 0; i < PORTAL_COUNT; i++) {
+      const r = pRole[i];
+      const c = r === 0 ? pBase0 : (r === 1 ? pBase1 : (r === 2 ? pBlue : (r === 3 ? pEm : pCop)));
+      cArr[i * 3]     = c.r;
+      cArr[i * 3 + 1] = c.g;
+      cArr[i * 3 + 2] = c.b;
+    }
+    portalGeo.attributes.aColor.needsUpdate = true;
+
+    pRingInner.material.color.setHex(isDarkTheme ? 0x2997FF : 0x0066CC);
+    pTicks.material.color.setHex(isDarkTheme ? 0xEAECEF : 0x16161B);
+    pRingOuter.material.color.setHex(isDarkTheme ? 0x8A8E9E : 0x141416);
+
+    // 3. Update Act II 3D Superchip Anodized Metals, Voxel Palette & 2x Retina CAD Sprites
+    matBrushedAlum.color.setHex(isDarkTheme ? 0x2C2E38 : 0xD6D8E0);
+    matAnodizedDark.color.setHex(isDarkTheme ? 0x141419 : 0x1A1A1E);
+    wallWire.material.color.setHex(isDarkTheme ? 0x2997FF : 0x0066CC);
+    streamPoints.material.color.setHex(isDarkTheme ? 0x47A8FF : 0x0066CC);
+
+    // In Space Black mode: 4-bit Salient Thinking Crowns gleam in Platinum-Silver (0xECEEF4)
+    // while 2-bit bulk wafers sit in machined Dark Gunmetal (0x4A4E5C)!
+    colSpaceBlack.setHex(isDarkTheme ? 0xECEEF4 : 0x1E1E24);
+    colTitanium.setHex(isDarkTheme ? 0x4A4E5C : 0xC2C5D0);
+    colRawFP16.setHex(isDarkTheme ? 0x7A7E90 : 0xD8DAE4);
+    colBlueWave.setHex(isDarkTheme ? 0x2997FF : 0x0066CC);
+    colEmerald.setHex(isDarkTheme ? 0x28B852 : 0x168A4C);
+    colCopperPin.setHex(isDarkTheme ? 0xE5A024 : 0xCE8B1E);
+
+    cadSpriteMetas.forEach(m => renderCadSpriteCanvas(m, isDarkTheme));
+  }
+
+  function toggleTheme() {
+    applyTheme(!isDarkTheme);
+  }
+
+  // Initialize Theme from ?theme=dark|light URL param or saved localStorage preference
+  const themeParam = urlParams.get('theme');
+  let initialDark = false;
+  if (themeParam === 'dark') initialDark = true;
+  else if (themeParam === 'light') initialDark = false;
+  else {
+    try { initialDark = localStorage.getItem('lean_studio_theme') === 'dark'; } catch (e) {}
+  }
+  applyTheme(initialDark);
 
   // =========================================================================
   // 4. MASTER 60FPS RENDER LOOP
@@ -2113,11 +2279,12 @@ Check: bat costs $1.05, total $1.10</div>
         const ex = Math.max(sx + 36, Math.min(window.innerWidth - 40, (anchorVec3.x * 0.5 + 0.5) * window.innerWidth));
         const ey = Math.max(40, Math.min(window.innerHeight - 60, (-anchorVec3.y * 0.5 + 0.5) * window.innerHeight));
 
+        const strokeHex = isDarkTheme ? '#2997FF' : '#0066CC';
         leaderSvg.innerHTML = `
           <polyline points="${sx},${sy} ${sx + 22},${sy} ${ex.toFixed(1)},${ey.toFixed(1)}"
-            fill="none" stroke="#0066CC" stroke-width="1.35" stroke-opacity="0.78" />
-          <circle cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="3.8" fill="#0066CC" />
-          <circle cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="7.5" fill="none" stroke="#0066CC" stroke-width="1" stroke-opacity="0.45" />
+            fill="none" stroke="${strokeHex}" stroke-width="1.35" stroke-opacity="0.82" />
+          <circle cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="3.8" fill="${strokeHex}" />
+          <circle cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="7.5" fill="none" stroke="${strokeHex}" stroke-width="1" stroke-opacity="0.48" />
         `;
       }
     }
