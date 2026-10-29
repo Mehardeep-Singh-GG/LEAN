@@ -2685,42 +2685,59 @@ Check: bat costs $1.05, total $1.10</div>
     envMapIntensity: 0.82
   });
 
-  // Soft Ground Contact Ambient Occlusion Plate + Real Shadow Receiver Plane
+  // Soft Ground Contact Ambient Occlusion Plate + Real Shadow Receiver Plane + Concentric Studio Plaza
   const shadowPlate = new THREE.Mesh(
-    new THREE.PlaneGeometry(8.2, 6.2),
-    new THREE.MeshBasicMaterial({ map: aoShadowTex, transparent: true, opacity: 0.85, depthWrite: false })
+    new THREE.PlaneGeometry(15.6, 12.8),
+    new THREE.MeshBasicMaterial({ map: aoShadowTex, transparent: true, opacity: 0.78, depthWrite: false })
   );
   shadowPlate.rotation.x = -Math.PI / 2;
-  shadowPlate.position.set(0, floorY + 0.003, 0);
+  shadowPlate.position.set(0, floorY + 0.002, -1.15);
   siliconWorld.add(shadowPlate);
 
   const realShadowCatcher = new THREE.Mesh(
-    new THREE.PlaneGeometry(16, 16),
-    new THREE.ShadowMaterial({ opacity: 0.16 })
+    new THREE.PlaneGeometry(24, 24),
+    new THREE.ShadowMaterial({ opacity: 0.14 })
   );
   realShadowCatcher.rotation.x = -Math.PI / 2;
-  realShadowCatcher.position.set(0, floorY + 0.004, 0);
+  realShadowCatcher.position.set(0, floorY + 0.004, -1.0);
   realShadowCatcher.receiveShadow = true;
   siliconWorld.add(realShadowCatcher);
 
+  // Tier 0: Monumental Concentric Circular Machined Studio Dais Anchoring the Superchip to the Curved Amphitheater!
+  const chipTurntableDais = new THREE.Mesh(
+    new THREE.CylinderGeometry(3.36, 3.48, 0.056, 96),
+    matBrushedAlum
+  );
+  chipTurntableDais.position.set(0, floorY + 0.028, 0);
+  chipTurntableDais.receiveShadow = true;
+  siliconWorld.add(chipTurntableDais);
+
+  const chipTurntableGoldRim = new THREE.Mesh(
+    new THREE.TorusGeometry(3.38, 0.013, 12, 96),
+    matCopperMetal
+  );
+  chipTurntableGoldRim.rotation.x = Math.PI * 0.5;
+  chipTurntableGoldRim.position.set(0, floorY + 0.056, 0);
+  siliconWorld.add(chipTurntableGoldRim);
+
   // Tier 1: Wide CNC-Machined Brushed Titanium Carrier Plate + 4 Hex Socket Retention Bolts!
-  const basePlate1 = new THREE.Mesh(createChamferBox(5.45, 0.15, 3.95, 0.024, 3), matBrushedAlum);
-  basePlate1.position.set(0, floorY + 0.075, 0);
+  const basePlate1 = new THREE.Mesh(createChamferBox(5.12, 0.14, 3.72, 0.024, 3), matBrushedAlum);
+  basePlate1.position.set(0, floorY + 0.095, 0);
   basePlate1.castShadow = true;
   basePlate1.receiveShadow = true;
   siliconWorld.add(basePlate1);
 
-  [[-2.42, -1.68], [2.42, -1.68], [-2.42, 1.68], [2.42, 1.68]].forEach(([bx, bz]) => {
-    const washer = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.02, 20), matCopperMetal);
-    washer.position.set(bx, floorY + 0.16, bz);
-    const boltHead = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.065, 6), matAnodizedDark);
-    boltHead.position.set(bx, floorY + 0.195, bz);
+  [[-2.28, -1.58], [2.28, -1.58], [-2.28, 1.58], [2.28, 1.58]].forEach(([bx, bz]) => {
+    const washer = new THREE.Mesh(new THREE.CylinderGeometry(0.10, 0.10, 0.02, 20), matCopperMetal);
+    washer.position.set(bx, floorY + 0.172, bz);
+    const boltHead = new THREE.Mesh(new THREE.CylinderGeometry(0.068, 0.068, 0.055, 6), matAnodizedDark);
+    boltHead.position.set(bx, floorY + 0.202, bz);
     siliconWorld.add(washer, boltHead);
   });
 
   // Tier 2: High-Density CoWoS-L Silicon Interposer Substrate with Gold Differential Traces
-  const basePlate2 = new THREE.Mesh(createChamferBox(4.24, 0.15, 3.08, 0.018, 2), matCoWoSSubstrate);
-  basePlate2.position.set(0, floorY + 0.225, 0);
+  const basePlate2 = new THREE.Mesh(createChamferBox(4.16, 0.14, 3.00, 0.018, 2), matCoWoSSubstrate);
+  basePlate2.position.set(0, floorY + 0.23, 0);
   basePlate2.castShadow = true;
   basePlate2.receiveShadow = true;
   siliconWorld.add(basePlate2);
@@ -2832,51 +2849,56 @@ Check: bat costs $1.05, total $1.10</div>
   wallWire.position.set(0, -0.02, 0);
   siliconWorld.add(wallWire);
 
-  // World-Space 3D CAD Telemetry Micro-Sprites (Crisp 2x Retina Canvas Labels in 3D Space!)
+  // World-Space VisionOS Capsule Micro-Sprites (4x Crisp Anti-Aliased Glass Pills!)
   function renderCadSpriteCanvas(meta, isDark) {
-    const cw = 512, ch = 84;
+    const cw = 576, ch = 92;
     const ctx = meta.ctx;
     ctx.clearRect(0, 0, cw, ch);
 
-    ctx.fillStyle = isDark ? 'rgba(18, 19, 26, 0.96)' : 'rgba(255, 255, 255, 0.97)';
-    ctx.strokeStyle = isDark ? '#383846' : '#D0D2DC';
-    ctx.lineWidth = 3;
-    const r = 18;
+    const pad = 6;
+    const rad = (ch - pad * 2) * 0.5;
+    const grad = ctx.createLinearGradient(0, pad, 0, ch - pad);
+    if (isDark) {
+      grad.addColorStop(0, 'rgba(26, 30, 42, 0.90)');
+      grad.addColorStop(1, 'rgba(15, 18, 26, 0.88)');
+    } else {
+      grad.addColorStop(0, 'rgba(255, 255, 255, 0.94)');
+      grad.addColorStop(1, 'rgba(244, 247, 253, 0.91)');
+    }
+
     ctx.beginPath();
-    ctx.moveTo(r, 6); ctx.lineTo(cw - r, 6);
-    ctx.quadraticCurveTo(cw - 6, 6, cw - 6, r);
-    ctx.lineTo(cw - 6, ch - r);
-    ctx.quadraticCurveTo(cw - 6, ch - 6, cw - r, ch - 6);
-    ctx.lineTo(r, ch - 6);
-    ctx.quadraticCurveTo(6, ch - 6, 6, ch - r);
-    ctx.lineTo(6, r);
-    ctx.quadraticCurveTo(6, 6, r, 6);
+    ctx.arc(pad + rad, ch * 0.5, rad, Math.PI * 0.5, Math.PI * 1.5);
+    ctx.arc(cw - pad - rad, ch * 0.5, rad, -Math.PI * 0.5, Math.PI * 0.5);
     ctx.closePath();
+    ctx.fillStyle = grad;
     ctx.fill();
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.15)' : 'rgba(15, 23, 42, 0.11)';
     ctx.stroke();
 
-    ctx.fillStyle = isDark ? meta.darkAccentHex : meta.lightAccentHex;
+    const dotHex = isDark ? meta.darkAccentHex : meta.lightAccentHex;
+    ctx.fillStyle = dotHex;
     ctx.beginPath();
-    ctx.arc(34, ch / 2, 9, 0, Math.PI * 2);
+    ctx.arc(42, ch * 0.5, 8.5, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = isDark ? '#F2F2F6' : '#141416';
-    ctx.font = '700 24px "JetBrains Mono", -apple-system, monospace';
+    ctx.fillStyle = isDark ? '#EAEFF8' : '#161A24';
+    ctx.font = '600 22px "Inter", -apple-system, sans-serif';
     ctx.textBaseline = 'middle';
-    ctx.fillText(meta.label, 58, ch / 2 + 1);
+    ctx.fillText(meta.label, 66, ch * 0.5 + 1);
     meta.tex.needsUpdate = true;
   }
 
   function makeCadSprite(label, lightAccentHex, darkAccentHex, posVec3) {
     const cnv = document.createElement('canvas');
-    cnv.width = 512;
-    cnv.height = 84;
+    cnv.width = 576;
+    cnv.height = 92;
     const ctx = cnv.getContext('2d');
     const tex = new THREE.CanvasTexture(cnv);
     tex.encoding = THREE.sRGBEncoding;
     tex.anisotropy = 4;
     const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
-    spr.scale.set(1.92, 0.31, 1);
+    spr.scale.set(1.76, 0.28, 1);
     spr.position.copy(posVec3);
     siliconWorld.add(spr);
     const meta = { spr, cnv, ctx, tex, label, lightAccentHex, darkAccentHex };
@@ -2884,53 +2906,25 @@ Check: bat costs $1.05, total $1.10</div>
     return meta;
   }
 
-  // Positioned cleanly in outer architectural margins so zero pills overlap the 52 silicon layers or bottom HUD!
-  const sprCrownMeta = makeCadSprite('LM HEAD · 202,048 VOCAB', '#0057E7', '#3B82F6', new THREE.Vector3(0.0, 3.56, 0.0));
-  const sprOutMeta   = makeCadSprite('512 INT8 OUTLIER BUS', '#C86414', '#F59E0B', new THREE.Vector3(2.96, 1.25, 0.0));
-  const sprDmaMeta   = makeCadSprite('5-SLOT ASYNC DMA RING', '#059669', '#10B981', new THREE.Vector3(-3.08, -0.32, 0.2));
-  const sprBaseMeta  = makeCadSprite('CoWoS-L INTERPOSER · DDR5', '#FF5A5F', '#FF5A5F', new THREE.Vector3(2.48, floorY + 0.04, 1.55));
+  // Positioned cleanly on the foreground Superchip bevels so zero badges touch the curved 3D Amphitheater behind!
+  const sprCrownMeta = makeCadSprite('LM Head · 202,048 Vocab', '#0057E7', '#3B82F6', new THREE.Vector3(0.0, 3.32, 0.88));
+  const sprOutMeta   = makeCadSprite('512 Int8 Outlier Bus', '#C87D20', '#E5A93C', new THREE.Vector3(2.18, 0.92, 0.92));
+  const sprDmaMeta   = makeCadSprite('5-Slot Async DMA Ring', '#0D9488', '#2DD4BF', new THREE.Vector3(-2.22, -0.45, 0.92));
+  const sprBaseMeta  = makeCadSprite('CoWoS-L Interposer · DDR5', '#FF5A5F', '#FF5A5F', new THREE.Vector3(1.88, floorY + 0.06, 1.68));
   const cadSpriteMetas = [sprCrownMeta, sprOutMeta, sprDmaMeta, sprBaseMeta];
   const cadSprites = cadSpriteMetas.map(m => m.spr);
 
-  // C. 4 Sleek Open Architectural C-Frame Shard Brackets (Zero Venetian-blind stripe clutter — 100% open sightlines!)
-  const bracketSpineGeo = createChamferBox(0.036, 1.16, 0.048, 0.008, 1);
-  const bracketArmGeo   = createChamferBox(0.11, 0.032, 0.056, 0.006, 1);
-  const bracketClipGeo  = createChamferBox(0.052, 0.075, 0.068, 0.006, 1);
-
-  function buildOpenShardBracket(sideSign) {
-    const grp = new THREE.Group();
-    // Minimalist front & back slim titanium spines with copper corner clips — completely open through the center!
-    [-0.96, 0.96].forEach(zPos => {
-      const spine = new THREE.Mesh(bracketSpineGeo, matAnodizedDark);
-      spine.position.set(0, 0, zPos);
-      grp.add(spine);
-
-      [-0.56, 0.56].forEach(yEnd => {
-        const arm = new THREE.Mesh(bracketArmGeo, matBrushedAlum);
-        arm.position.set(-sideSign * 0.042, yEnd, zPos);
-        grp.add(arm);
-
-        const clip = new THREE.Mesh(bracketClipGeo, matCopperMetal);
-        clip.position.set(sideSign * 0.012, yEnd * 0.88, zPos);
-        grp.add(clip);
-      });
+  // C. 12 Precision Column-Mounted Champagne-Gold Shard Divider Collars (Zero floating black stick clutter!)
+  const shardCollars = [];
+  const shardCollarGeo = new THREE.CylinderGeometry(0.066, 0.066, 0.052, 24);
+  [-1.26, 0.0, 1.26].forEach(baseY => {
+    colPositions.forEach(([cx, cz]) => {
+      const collar = new THREE.Mesh(shardCollarGeo, matCopperMetal);
+      collar.position.set(cx, baseY, cz);
+      siliconWorld.add(collar);
+      shardCollars.push({ mesh: collar, baseY });
     });
-    return grp;
-  }
-
-  const shardShields = [];
-  for (let s = 0; s < 4; s++) {
-    const sy = -2.12 + s * 1.38;
-    const lShield = buildOpenShardBracket(-1);
-    lShield.position.set(-1.58, sy, 0);
-    siliconWorld.add(lShield);
-
-    const rShield = buildOpenShardBracket(1);
-    rShield.position.set(1.58, sy, 0);
-    siliconWorld.add(rShield);
-
-    shardShields.push({ lShield, rShield, baseY: sy, shardIdx: s });
-  }
+  });
 
   // D. 52-LAYER SATIN-ANODIZED SILICON DIES, GQA TOWERS & PRECISION COPPER OUTLIER BUSBARS (InstancedMesh!)
   const NUM_LAYERS = 52;
@@ -3041,29 +3035,29 @@ Check: bat costs $1.05, total $1.10</div>
   const dmaPackets = [];
   DMA_LAYERS.forEach((lIdx, k) => {
     const ly = -2.52 + (lIdx / 51) * 5.04;
-    const startPt = new THREE.Vector3(-2.22, floorY + 0.37, (k - 2) * 0.22);
-    const midPt1  = new THREE.Vector3(-2.68 - k * 0.08, floorY + 1.2 + k * 0.45, (k - 2) * 0.26);
-    const midPt2  = new THREE.Vector3(-2.42, ly, (k - 2) * 0.16);
+    const startPt = new THREE.Vector3(-2.14, floorY + 0.37, (k - 2) * 0.19);
+    const midPt1  = new THREE.Vector3(-2.26 - k * 0.04, floorY + 1.15 + k * 0.42, (k - 2) * 0.21);
+    const midPt2  = new THREE.Vector3(-2.02, ly, (k - 2) * 0.13);
     const endPt   = new THREE.Vector3(-1.15, ly, 0);
 
     const curve = new THREE.CubicBezierCurve3(startPt, midPt1, midPt2, endPt);
     dmaCurves.push({ curve, layerIdx: lIdx });
 
-    // Physical 3D Glossy Optical Fiber Tube + Copper Port Ferrules
+    // Physical 3D Glossy Optical Capillary Tube + Copper Port Ferrules
     const fiberMesh = new THREE.Mesh(
-      new THREE.TubeGeometry(curve, 48, 0.020, 10, false),
+      new THREE.TubeGeometry(curve, 48, 0.013, 10, false),
       matFiberGlass
     );
     dmaConduitGroup.add(fiberMesh);
 
-    const ferruleBot = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.06, 12), matCopperMetal);
+    const ferruleBot = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 0.05, 12), matCopperMetal);
     ferruleBot.position.copy(startPt);
-    const ferruleTop = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.06, 12), matCopperMetal);
+    const ferruleTop = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.05, 12), matCopperMetal);
     ferruleTop.rotation.z = Math.PI * 0.5;
     ferruleTop.position.copy(endPt);
     dmaConduitGroup.add(ferruleBot, ferruleTop);
 
-    const pkt = new THREE.Mesh(new THREE.SphereGeometry(0.048, 14, 14), matPhotonPulse);
+    const pkt = new THREE.Mesh(new THREE.SphereGeometry(0.036, 14, 14), matPhotonPulse);
     dmaConduitGroup.add(pkt);
     dmaPackets.push({ mesh: pkt, curve, offset: k * 0.2 });
   });
@@ -3281,546 +3275,718 @@ Check: bat costs $1.05, total $1.10</div>
   const synTmp   = new THREE.Vector3();
 
   // =========================================================================
-  // 2I. LIVE-UPDATING 3D WORLD-SPACE TELEMETRY AMPHITHEATER BEHIND THE MODEL!
-  //     (5 Volumetric CNC & Crystal Hardware Sculptures Driven by Real 1Hz OS,
-  //      Live Colab CUDA Stream, 52L OOM Curves & Safetensors Shards!)
+  // 2I. APPLE PARK × VISIONOS CURVED TWO-TIER 3D TELEMETRY AMPHITHEATER!
+  //     (Grounded Semicircular Stepped Architecture + Specular 3D Arc Tubes +
+  //      Gradient Silk Curtains + 4x Supersampled VisionOS Capsule Glass Pills,
+  //      100% Live-Driven by Real 1Hz Mac OS, Colab CUDA, 52L OOM & Shards!)
   // =========================================================================
   const telemetryArenaGroup = new THREE.Group();
   siliconWorld.add(telemetryArenaGroup);
 
+  const ARENA_CZ = -0.35;
   const arenaHitBoxes = [];
   const arenaPlaques = [];
 
-  // Shared Theme-Aware Physical Materials for the 3D Telemetry Amphitheater
+  // Shared Luxury Theme-Aware Physical Materials for the Curved Amphitheater
   const matArenaBezel = new THREE.MeshPhysicalMaterial({
-    color: 0xCFD6E4,
-    metalness: 0.62,
-    roughness: 0.28,
-    clearcoat: 0.14,
+    color: 0xD8DFEC,
+    metalness: 0.56,
+    roughness: 0.26,
+    clearcoat: 0.20,
     bumpMap: brushedMap,
-    bumpScale: 0.003,
-    envMapIntensity: 0.88
+    bumpScale: 0.0025,
+    envMapIntensity: 0.90
   });
 
   const matArenaBackplate = new THREE.MeshPhysicalMaterial({
-    color: 0xECEFF6,
-    metalness: 0.12,
-    roughness: 0.55,
-    clearcoat: 0.08,
-    envMapIntensity: 0.45
+    color: 0xF0F3F9,
+    metalness: 0.14,
+    roughness: 0.46,
+    clearcoat: 0.14,
+    bumpMap: brushedMap,
+    bumpScale: 0.0015,
+    envMapIntensity: 0.55
   });
 
   const matArenaPlinth = new THREE.MeshPhysicalMaterial({
-    color: 0x222938,
-    metalness: 0.48,
-    roughness: 0.32,
-    clearcoat: 0.14,
+    color: 0xDCE3F0,
+    metalness: 0.38,
+    roughness: 0.30,
+    clearcoat: 0.22,
     bumpMap: brushedMap,
-    bumpScale: 0.0025,
+    bumpScale: 0.0020,
     envMapIntensity: 0.78
   });
 
-  const matCoralBlade = new THREE.MeshPhysicalMaterial({
-    color: 0xFF5A5F,
-    emissive: 0x521215,
-    emissiveIntensity: 0.24,
-    metalness: 0.24,
-    roughness: 0.26,
-    clearcoat: 0.25
+  const matCoralBlade = new THREE.MeshStandardMaterial({
+    color: 0xFF4B50,
+    emissive: 0xB81D24,
+    emissiveIntensity: 0.42,
+    metalness: 0.10,
+    roughness: 0.38
   });
 
   const matArenaPrism = new THREE.MeshPhysicalMaterial({
     color: 0xFFFFFF,
-    metalness: 0.28,
-    roughness: 0.28,
-    clearcoat: 0.20,
-    clearcoatRoughness: 0.18,
+    metalness: 0.26,
+    roughness: 0.22,
+    clearcoat: 0.32,
+    clearcoatRoughness: 0.14,
     bumpMap: siliconMaps.bumpTex,
-    bumpScale: 0.0018,
-    envMapIntensity: 0.72
+    bumpScale: 0.0014,
+    envMapIntensity: 0.85
   });
 
   const matArenaGridLine = new THREE.LineBasicMaterial({
-    color: 0x9AA4B8,
+    color: 0x9AA6BC,
     transparent: true,
-    opacity: 0.42
+    opacity: 0.32
   });
 
-  // 1. Giant 3D World-Space Monument Backdrop Behind the Central Superchip (MOTION.md Plane 1!)
-  const monumentCnv = document.createElement('canvas');
-  monumentCnv.width = 1536;
-  monumentCnv.height = 512;
-  const monumentCtx = monumentCnv.getContext('2d');
-  const monumentTex = new THREE.CanvasTexture(monumentCnv);
-  monumentTex.encoding = THREE.sRGBEncoding;
-  monumentTex.anisotropy = 4;
-  const monumentMesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(8.8, 2.93),
-    new THREE.MeshBasicMaterial({ map: monumentTex, transparent: true, depthWrite: false })
-  );
-  monumentMesh.position.set(0, 0.52, -4.85);
-  telemetryArenaGroup.add(monumentMesh);
+  // Polar-to-World Coordinate Helpers Centered at (0, y, ARENA_CZ)
+  function arenaPolarX(r, theta) { return Math.sin(theta) * r; }
+  function arenaPolarZ(r, theta) { return ARENA_CZ - Math.cos(theta) * r; }
 
-  let monumentCacheKey = '';
-  function renderWorldMonument(darkNow, wallGib, crushText) {
-    const key = `${darkNow ? 1 : 0}|${wallGib}|${crushText}`;
-    if (monumentCacheKey === key) return;
-    monumentCacheKey = key;
-    const cw = 1536, ch = 512;
-    monumentCtx.clearRect(0, 0, cw, ch);
-
-    monumentCtx.strokeStyle = darkNow ? 'rgba(94, 102, 126, 0.26)' : 'rgba(90, 102, 128, 0.22)';
-    monumentCtx.lineWidth = 4;
-    monumentCtx.font = '800 186px "Space Grotesk", -apple-system, sans-serif';
-    monumentCtx.textAlign = 'center';
-    monumentCtx.textBaseline = 'middle';
-    monumentCtx.strokeText(`${wallGib.toFixed(2)} GiB WALL`, cw * 0.5, ch * 0.36);
-
-    monumentCtx.font = '900 112px "Inter", -apple-system, sans-serif';
-    monumentCtx.strokeStyle = darkNow ? 'rgba(255, 90, 95, 0.22)' : 'rgba(255, 90, 95, 0.20)';
-    monumentCtx.strokeText(`${crushText || '9.12x'} PRICED QUANTA`, cw * 0.5, ch * 0.74);
-    monumentTex.needsUpdate = true;
+  // Analytic Razor-Sharp Solid Curved Ring-Sector Geometry (Zero Stilts, True Architectural Steps!)
+  function createRingSectorGeo(rIn, rOut, y0, y1, a0, a1, segs) {
+    const s = Math.max(2, segs || 24);
+    const numVerts = (s * 8 + 4) * 3;
+    const pos = new Float32Array(numVerts * 3);
+    const nrm = new Float32Array(numVerts * 3);
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    geo.setAttribute('normal', new THREE.BufferAttribute(nrm, 3));
+    updateRingSectorGeo(geo, rIn, rOut, y0, y1, a0, a1, s);
+    return geo;
   }
 
-  // 2. Curved Architectural Floor Track + 4 CoWoS Copper Telemetry Conduits & 8 Racing Data Packets
-  const arenaArcPts = [];
-  for (let i = 0; i <= 96; i++) {
-    const ang = -Math.PI * 0.78 + (i / 96) * Math.PI * 0.56; // Sweeps behind z < 0
-    const theta = (i / 96 - 0.5) * 1.68;
-    arenaArcPts.push(new THREE.Vector3(Math.sin(theta) * 5.65, floorY + 0.014, -Math.cos(theta) * 4.15 - 0.35));
-  }
-  const arenaFloorArc = new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints(arenaArcPts),
-    new THREE.LineBasicMaterial({ color: 0x0057E7, transparent: true, opacity: 0.45 })
-  );
-  telemetryArenaGroup.add(arenaFloorArc);
+  function updateRingSectorGeo(geo, rIn, rOut, y0, y1, a0, a1, segs) {
+    const pos = geo.attributes.position.array;
+    const nrm = geo.attributes.normal.array;
+    const s = segs || ((pos.length / 9 - 4) / 8);
+    let ptr = 0;
 
-  const arenaBusTargets = [
-    [-1.15, -4.92, -3.02],
-    [-0.45, -2.18, -3.40],
-    [ 0.45,  2.18, -3.40],
-    [ 1.15,  4.92, -3.02]
-  ];
-  const arenaFloorPackets = [];
-  arenaBusTargets.forEach(([sx, ex, ez], idx) => {
-    const curve = new THREE.CubicBezierCurve3(
-      new THREE.Vector3(sx, floorY + 0.05, -1.36),
-      new THREE.Vector3(sx * 1.5, floorY + 0.05, -2.15),
-      new THREE.Vector3(ex * 0.82, floorY + 0.05, ez + 0.55),
-      new THREE.Vector3(ex, floorY + 0.08, ez)
-    );
-    const tube = new THREE.Mesh(
-      new THREE.TubeGeometry(curve, 32, 0.016, 8, false),
-      idx % 2 === 0 ? matCopperMetal : matEmeraldBus
-    );
-    telemetryArenaGroup.add(tube);
-
-    for (let p = 0; p < 2; p++) {
-      const orb = new THREE.Mesh(new THREE.SphereGeometry(0.042, 10, 10), matPhotonPulse);
-      telemetryArenaGroup.add(orb);
-      arenaFloorPackets.push({ mesh: orb, curve, offset: idx * 0.23 + p * 0.5 });
+    function pushTri(ax, ay, az, bx, by, bz, cx, cy, cz, nx, ny, nz) {
+      pos[ptr] = ax; pos[ptr + 1] = ay; pos[ptr + 2] = az;
+      nrm[ptr] = nx; nrm[ptr + 1] = ny; nrm[ptr + 2] = nz; ptr += 3;
+      pos[ptr] = bx; pos[ptr + 1] = by; pos[ptr + 2] = bz;
+      nrm[ptr] = nx; nrm[ptr + 1] = ny; nrm[ptr + 2] = nz; ptr += 3;
+      pos[ptr] = cx; pos[ptr + 1] = cy; pos[ptr + 2] = cz;
+      nrm[ptr] = nx; nrm[ptr + 1] = ny; nrm[ptr + 2] = nz; ptr += 3;
     }
-  });
 
-  // Full-Height Floor-to-Crown Brushed Titanium Amphitheater Truss Columns
-  [
-    [-6.26, -2.54], [-3.56, -3.48],
-    [-2.18, -3.40], [ 2.18, -3.40],
-    [ 3.56, -3.48], [ 6.26, -2.54]
-  ].forEach(([tx, tz], k) => {
-    const colH = (k === 2 || k === 3) ? 7.45 : 6.18;
-    const colCenterY = floorY + colH * 0.5;
-    const truss = new THREE.Mesh(new THREE.CylinderGeometry(0.030, 0.030, colH, 16), matArenaBezel);
-    truss.position.set(tx, colCenterY, tz);
-    telemetryArenaGroup.add(truss);
+    const span = Math.max(0.002, a1 - a0);
+    for (let i = 0; i < s; i++) {
+      const t0 = a0 + (i / s) * span;
+      const t1 = a0 + ((i + 1) / s) * span;
+      const tm = 0.5 * (t0 + t1);
+      const s0 = Math.sin(t0), c0 = Math.cos(t0);
+      const s1 = Math.sin(t1), c1 = Math.cos(t1);
+      const sm = Math.sin(tm), cm = Math.cos(tm);
 
-    const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.095, 0.10, 16), matCopperMetal);
-    foot.position.set(tx, floorY + 0.05, tz);
-    telemetryArenaGroup.add(foot);
-  });
+      const ix0 = s0 * rIn,  iz0 = ARENA_CZ - c0 * rIn;
+      const ix1 = s1 * rIn,  iz1 = ARENA_CZ - c1 * rIn;
+      const ox0 = s0 * rOut, oz0 = ARENA_CZ - c0 * rOut;
+      const ox1 = s1 * rOut, oz1 = ARENA_CZ - c1 * rOut;
 
-  // Helper: Crisp 2x Retina Dynamic CNC Plaque Texture (Zero frame cost unless text/theme changes!)
-  function createDynamicPlaque(wWorld, hWorld, cw, ch) {
+      // Top Deck (+Y)
+      pushTri(ix0, y1, iz0, ix1, y1, iz1, ox1, y1, oz1, 0, 1, 0);
+      pushTri(ix0, y1, iz0, ox1, y1, oz1, ox0, y1, oz0, 0, 1, 0);
+      // Bottom Base (-Y)
+      pushTri(ix0, y0, iz0, ox1, y0, oz1, ix1, y0, iz1, 0, -1, 0);
+      pushTri(ix0, y0, iz0, ox0, y0, oz0, ox1, y0, oz1, 0, -1, 0);
+      // Front Inner Curved Wall (Facing Center/Camera)
+      pushTri(ix0, y0, iz0, ix1, y0, iz1, ix1, y1, iz1, -sm, 0, cm);
+      pushTri(ix0, y0, iz0, ix1, y1, iz1, ix0, y1, iz0, -sm, 0, cm);
+      // Rear Outer Curved Wall
+      pushTri(ox0, y0, oz0, ox1, y1, oz1, ox1, y0, oz1, sm, 0, -cm);
+      pushTri(ox0, y0, oz0, ox0, y1, oz0, ox1, y1, oz1, sm, 0, -cm);
+    }
+
+    // Start Radial End-Cap (a0)
+    const sa0 = Math.sin(a0), ca0 = Math.cos(a0);
+    const sxIn = sa0 * rIn, szIn = ARENA_CZ - ca0 * rIn;
+    const sxOut = sa0 * rOut, szOut = ARENA_CZ - ca0 * rOut;
+    pushTri(sxIn, y0, szIn, sxIn, y1, szIn, sxOut, y1, szOut, -ca0, 0, -sa0);
+    pushTri(sxIn, y0, szIn, sxOut, y1, szOut, sxOut, y0, szOut, -ca0, 0, -sa0);
+
+    // End Radial End-Cap (a1)
+    const sa1 = Math.sin(a1), ca1 = Math.cos(a1);
+    const exIn = sa1 * rIn, ezIn = ARENA_CZ - ca1 * rIn;
+    const exOut = sa1 * rOut, ezOut = ARENA_CZ - ca1 * rOut;
+    pushTri(exIn, y0, ezIn, exOut, y1, ezOut, exIn, y1, ezIn, ca1, 0, sa1);
+    pushTri(exIn, y0, ezIn, exOut, y0, ezOut, exOut, y1, ezOut, ca1, 0, sa1);
+
+    geo.attributes.position.needsUpdate = true;
+    geo.attributes.normal.needsUpdate = true;
+  }
+
+  // Shared Vertical Gradient Alpha Texture for Liquid-Silk Area Curtains (Three.js r128 Native!)
+  const silkCurtainAlphaCnv = document.createElement('canvas');
+  silkCurtainAlphaCnv.width = 4;
+  silkCurtainAlphaCnv.height = 64;
+  const silkCtx = silkCurtainAlphaCnv.getContext('2d');
+  const silkGrad = silkCtx.createLinearGradient(0, 0, 0, 64);
+  silkGrad.addColorStop(0.0, '#FFFFFF');
+  silkGrad.addColorStop(0.45, '#8A8A8A');
+  silkGrad.addColorStop(1.0, '#080808');
+  silkCtx.fillStyle = silkGrad;
+  silkCtx.fillRect(0, 0, 4, 64);
+  const silkAlphaTex = new THREE.CanvasTexture(silkCurtainAlphaCnv);
+
+  // Zero-GC Dynamic Curved 3D Specular Tube + Vertical Gradient Silk Area Curtain!
+  function createCurvedTubeAndCurtain(rArc, a0, a1, numPts, tubeRadius, colorHex, curtainOpacity) {
+    const RAD_S = 8;
+    const tubeGeo = new THREE.BufferGeometry();
+    const tPos = new Float32Array(numPts * RAD_S * 3);
+    const tNrm = new Float32Array(numPts * RAD_S * 3);
+    const tIdx = [];
+    for (let i = 0; i < numPts - 1; i++) {
+      for (let s = 0; s < RAD_S; s++) {
+        const sNext = (s + 1) % RAD_S;
+        const v00 = i * RAD_S + s;
+        const v01 = i * RAD_S + sNext;
+        const v10 = (i + 1) * RAD_S + s;
+        const v11 = (i + 1) * RAD_S + sNext;
+        tIdx.push(v00, v10, v11, v00, v11, v01);
+      }
+    }
+    tubeGeo.setAttribute('position', new THREE.BufferAttribute(tPos, 3));
+    tubeGeo.setAttribute('normal', new THREE.BufferAttribute(tNrm, 3));
+    tubeGeo.setIndex(tIdx);
+
+    const tubeMat = new THREE.MeshPhysicalMaterial({
+      color: colorHex,
+      emissive: colorHex,
+      emissiveIntensity: 0.18,
+      metalness: 0.25,
+      roughness: 0.16,
+      clearcoat: 0.85,
+      clearcoatRoughness: 0.10
+    });
+    const tubeMesh = new THREE.Mesh(tubeGeo, tubeMat);
+
+    // Translucent Silk Curtain Underneath the Curved 3D Tube
+    const curtGeo = new THREE.BufferGeometry();
+    const cPos = new Float32Array(numPts * 2 * 3);
+    const cUv  = new Float32Array(numPts * 2 * 2);
+    const cIdx = [];
+    for (let i = 0; i < numPts; i++) {
+      const u = i / (numPts - 1);
+      cUv[i * 4]     = u; cUv[i * 4 + 1] = 0.02; // Bottom (fades softly to transparent)
+      cUv[i * 4 + 2] = u; cUv[i * 4 + 3] = 0.98; // Top crest (vivid silk glow)
+      if (i < numPts - 1) {
+        const b0 = i * 2, tp0 = b0 + 1, b1 = b0 + 2, tp1 = b0 + 3;
+        cIdx.push(b0, tp0, b1, tp0, tp1, b1);
+      }
+    }
+    curtGeo.setAttribute('position', new THREE.BufferAttribute(cPos, 3));
+    curtGeo.setAttribute('uv', new THREE.BufferAttribute(cUv, 2));
+    curtGeo.setIndex(cIdx);
+
+    const curtMat = new THREE.MeshBasicMaterial({
+      color: colorHex,
+      alphaMap: silkAlphaTex,
+      transparent: true,
+      opacity: curtainOpacity,
+      depthWrite: false,
+      side: THREE.DoubleSide
+    });
+    const curtainMesh = new THREE.Mesh(curtGeo, curtMat);
+
+    telemetryArenaGroup.add(curtainMesh, tubeMesh);
+
+    const baseX = new Float32Array(numPts);
+    const baseZ = new Float32Array(numPts);
+    const radNX = new Float32Array(numPts);
+    const radNZ = new Float32Array(numPts);
+    for (let i = 0; i < numPts; i++) {
+      const th = a0 + (i / (numPts - 1)) * (a1 - a0);
+      baseX[i] = arenaPolarX(rArc, th);
+      baseZ[i] = arenaPolarZ(rArc, th);
+      radNX[i] = -Math.sin(th);
+      radNZ[i] = Math.cos(th);
+    }
+
+    function updateHeights(deckY, heights, activeCount) {
+      const limit = (typeof activeCount === 'number') ? Math.max(2, Math.min(numPts, activeCount)) : numPts;
+      for (let i = 0; i < numPts; i++) {
+        const clampedI = Math.min(i, limit - 1);
+        const h = Math.max(0.015, heights[clampedI]);
+        const px = baseX[clampedI];
+        const pz = baseZ[clampedI];
+        const py = deckY + h;
+
+        cPos[i * 6]     = px; cPos[i * 6 + 1] = deckY + 0.008; cPos[i * 6 + 2] = pz;
+        cPos[i * 6 + 3] = px; cPos[i * 6 + 4] = py;            cPos[i * 6 + 5] = pz;
+
+        const iPrev = Math.max(0, clampedI - 1);
+        const iNext = Math.min(limit - 1, clampedI + 1);
+        let tx = baseX[iNext] - baseX[iPrev];
+        let ty = heights[iNext] - heights[iPrev];
+        let tz = baseZ[iNext] - baseZ[iPrev];
+        const tLen = Math.hypot(tx, ty, tz) || 1.0;
+        tx /= tLen; ty /= tLen; tz /= tLen;
+
+        const bx = radNX[clampedI], bz = radNZ[clampedI];
+        // Cross(T, B_radial) gives vertical-ish binormal N2
+        let n2x = ty * bz;
+        let n2y = tz * bx - tx * bz;
+        let n2z = -ty * bx;
+        const n2Len = Math.hypot(n2x, n2y, n2z) || 1.0;
+        n2x /= n2Len; n2y /= n2Len; n2z /= n2Len;
+
+        const rEff = i < limit ? tubeRadius : 0.0005;
+        for (let s = 0; s < RAD_S; s++) {
+          const phi = (s / RAD_S) * Math.PI * 2.0;
+          const cp = Math.cos(phi), sp = Math.sin(phi);
+          const nx = cp * bx + sp * n2x;
+          const ny = sp * n2y;
+          const nz = cp * bz + sp * n2z;
+          const vOff = (i * RAD_S + s) * 3;
+          tPos[vOff]     = px + nx * rEff;
+          tPos[vOff + 1] = py + ny * rEff;
+          tPos[vOff + 2] = pz + nz * rEff;
+          tNrm[vOff]     = nx;
+          tNrm[vOff + 1] = ny;
+          tNrm[vOff + 2] = nz;
+        }
+      }
+      curtGeo.attributes.position.needsUpdate = true;
+      tubeGeo.attributes.position.needsUpdate = true;
+      tubeGeo.attributes.normal.needsUpdate = true;
+    }
+
+    return { tubeMesh, curtainMesh, tubeMat, curtMat, updateHeights, baseX, baseZ };
+  }
+
+  // 4x Supersampled Apple VisionOS Rounded Capsule Glass Pill (Replaces Boxy Banners!)
+  function createVisionPill(wWorld, hWorld, cw, ch) {
     const cnv = document.createElement('canvas');
-    cnv.width = cw;
-    cnv.height = ch;
+    cnv.width = cw || 1088;
+    cnv.height = ch || 232;
     const ctx = cnv.getContext('2d');
     const tex = new THREE.CanvasTexture(cnv);
     tex.encoding = THREE.sRGBEncoding;
     tex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
     const mesh = new THREE.Mesh(
       new THREE.PlaneGeometry(wWorld, hWorld),
-      new THREE.MeshBasicMaterial({ map: tex, transparent: true })
+      new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false })
     );
-    const meta = { mesh, cnv, ctx, tex, cw, ch, cacheKey: '' };
+    const meta = { mesh, cnv, ctx, tex, cw: cnv.width, ch: cnv.height, cacheKey: '' };
     arenaPlaques.push(meta);
     return meta;
   }
 
-  function updateHeaderPlaque(plaque, kicker, kpi, dotHex, darkNow) {
-    const key = `${darkNow ? 1 : 0}|${kicker}|${kpi}|${dotHex}`;
-    if (plaque.cacheKey === key) return;
-    plaque.cacheKey = key;
-    const { ctx, cw, ch, tex } = plaque;
+  function updateVisionPill(pill, titleTxt, subTxt, kpiTxt, dotHex, darkNow) {
+    const key = `${darkNow ? 1 : 0}|${titleTxt}|${subTxt}|${kpiTxt}|${dotHex}`;
+    if (pill.cacheKey === key) return;
+    pill.cacheKey = key;
+    const { ctx, cw, ch, tex } = pill;
     ctx.clearRect(0, 0, cw, ch);
 
-    ctx.fillStyle = darkNow ? 'rgba(20, 24, 34, 0.96)' : 'rgba(255, 255, 255, 0.96)';
-    ctx.strokeStyle = darkNow ? '#343C52' : '#CFD6E6';
-    ctx.lineWidth = 4;
-    const r = 18;
+    const pad = 10;
+    const rad = (ch - pad * 2) * 0.5;
+    const bgGrad = ctx.createLinearGradient(0, pad, 0, ch - pad);
+    if (darkNow) {
+      bgGrad.addColorStop(0.0, 'rgba(25, 30, 43, 0.92)');
+      bgGrad.addColorStop(1.0, 'rgba(14, 17, 26, 0.90)');
+    } else {
+      bgGrad.addColorStop(0.0, 'rgba(255, 255, 255, 0.95)');
+      bgGrad.addColorStop(1.0, 'rgba(243, 246, 252, 0.92)');
+    }
+
+    // Stadium Squircle Capsule Path
     ctx.beginPath();
-    ctx.moveTo(r, 4); ctx.lineTo(cw - r, 4);
-    ctx.quadraticCurveTo(cw - 4, 4, cw - 4, r);
-    ctx.lineTo(cw - 4, ch - r);
-    ctx.quadraticCurveTo(cw - 4, ch - 4, cw - r, ch - 4);
-    ctx.lineTo(r, ch - 4);
-    ctx.quadraticCurveTo(4, ch - 4, 4, ch - r);
-    ctx.lineTo(4, r);
-    ctx.quadraticCurveTo(4, 4, r, 4);
+    ctx.arc(pad + rad, ch * 0.5, rad, Math.PI * 0.5, Math.PI * 1.5);
+    ctx.arc(cw - pad - rad, ch * 0.5, rad, -Math.PI * 0.5, Math.PI * 0.5);
     ctx.closePath();
+    ctx.fillStyle = bgGrad;
     ctx.fill();
+
+    ctx.lineWidth = 3.2;
+    ctx.strokeStyle = darkNow ? 'rgba(255, 255, 255, 0.15)' : 'rgba(15, 23, 42, 0.10)';
     ctx.stroke();
+
+    // Jewel Status Halo + Core Dot
+    ctx.fillStyle = dotHex + '28';
+    ctx.beginPath();
+    ctx.arc(72, ch * 0.5, 24, 0, Math.PI * 2);
+    ctx.fill();
 
     ctx.fillStyle = dotHex;
     ctx.beginPath();
-    ctx.arc(34, ch * 0.5, 10, 0, Math.PI * 2);
+    ctx.arc(72, ch * 0.5, 11.5, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = darkNow ? '#9AA4BA' : '#586174';
-    ctx.font = '700 28px "JetBrains Mono", -apple-system, monospace';
+    // Left Stack: Clean Apple Title + Crisp Live Telemetry Subtitle
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(kicker, 58, ch * 0.5 + 1);
+    ctx.fillStyle = darkNow ? '#F1F5FB' : '#131722';
+    ctx.font = '700 33px "Inter", -apple-system, sans-serif';
+    ctx.fillText(titleTxt, 114, ch * 0.37);
 
-    ctx.fillStyle = darkNow ? '#F4F6FA' : '#12151E';
-    ctx.font = '700 46px "Space Grotesk", -apple-system, sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText(kpi, cw - 28, ch * 0.5 + 2);
-    tex.needsUpdate = true;
-  }
+    ctx.fillStyle = darkNow ? '#94A0B8' : '#5B657A';
+    ctx.font = '600 25px "JetBrains Mono", -apple-system, monospace';
+    ctx.fillText(subTxt, 114, ch * 0.67);
 
-  function updateFooterPlaque(plaque, leftTxt, rightTxt, rightHex, darkNow) {
-    const key = `${darkNow ? 1 : 0}|${leftTxt}|${rightTxt}|${rightHex}`;
-    if (plaque.cacheKey === key) return;
-    plaque.cacheKey = key;
-    const { ctx, cw, ch, tex } = plaque;
-    ctx.clearRect(0, 0, cw, ch);
-
-    ctx.fillStyle = darkNow ? 'rgba(22, 26, 36, 0.94)' : 'rgba(244, 246, 251, 0.96)';
-    ctx.strokeStyle = darkNow ? '#2E3548' : '#D5DCEB';
-    ctx.lineWidth = 3;
-    ctx.fillRect(4, 4, cw - 8, ch - 8);
-    ctx.strokeRect(4, 4, cw - 8, ch - 8);
-
-    ctx.font = '700 26px "JetBrains Mono", -apple-system, monospace';
-    ctx.textBaseline = 'middle';
-    ctx.textAlign = 'left';
-    ctx.fillStyle = darkNow ? '#A4AEC4' : '#4E5668';
-    ctx.fillText(leftTxt, 24, ch * 0.5 + 1);
-
-    ctx.textAlign = 'right';
-    ctx.fillStyle = rightHex || (darkNow ? '#E2E8F0' : '#1E293B');
-    ctx.fillText(rightTxt, cw - 24, ch * 0.5 + 1);
-    tex.needsUpdate = true;
-  }
-
-  // Reusable 3D CNC Instrument Stage Builder (Physical Recessed Backplate + Plinth + 3D Depth Cage)
-  function build3DGraphBay(x, y, z, rotY, wingId) {
-    const bay = new THREE.Group();
-    bay.position.set(x, y, z);
-    bay.rotation.y = rotY;
-    telemetryArenaGroup.add(bay);
-
-    const W = 3.04, H = 2.10, D = 0.56;
-
-    // Recessed Matte Backplate
-    const backMesh = new THREE.Mesh(createChamferBox(W, H - 0.16, 0.06, 0.010, 1), matArenaBackplate);
-    backMesh.position.set(0, 0.02, -0.22);
-    bay.add(backMesh);
-
-    // Bottom CNC Stage Deck Plinth + Copper Corner Bolts
-    const deckMesh = new THREE.Mesh(createChamferBox(W + 0.08, 0.13, D, 0.014, 2), matArenaPlinth);
-    deckMesh.position.set(0, -0.78, 0.02);
-    bay.add(deckMesh);
-
-    const topRail = new THREE.Mesh(createChamferBox(W + 0.06, 0.08, 0.30, 0.010, 1), matArenaBezel);
-    topRail.position.set(0, 1.04, -0.10);
-    bay.add(topRail);
-
-    [-W * 0.49, W * 0.49].forEach(rx => {
-      const sidePost = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, H - 0.06, 12), matArenaBezel);
-      sidePost.position.set(rx, 0.12, -0.18);
-      const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.044, 0.044, 0.06, 12), matCopperMetal);
-      collar.position.set(rx, -0.68, -0.18);
-      bay.add(sidePost, collar);
-    });
-
-    // 3D Volumetric Coordinate Grid Cage (Back + Side Depth Ticks!)
-    const gPts = [];
-    const y0 = -0.71, yTop = 0.56;
-    [0.0, 0.33, 0.66, 1.0].forEach(f => {
-      const gy = y0 + f * (yTop - y0);
-      gPts.push(new THREE.Vector3(-1.38, gy, -0.185), new THREE.Vector3(1.38, gy, -0.185));
-      gPts.push(new THREE.Vector3(-1.38, gy, -0.185), new THREE.Vector3(-1.38, gy, 0.22));
-      gPts.push(new THREE.Vector3( 1.38, gy, -0.185), new THREE.Vector3( 1.38, gy, 0.22));
-    });
-    for (let gx = -3; gx <= 3; gx++) {
-      const vx = gx * 0.45;
-      gPts.push(new THREE.Vector3(vx, y0, -0.185), new THREE.Vector3(vx, yTop, -0.185));
-      gPts.push(new THREE.Vector3(vx, y0, -0.185), new THREE.Vector3(vx, y0, 0.24));
+    // Subtle Hairline Vertical Divider + Giant Space Grotesk Tabular KPI on Right
+    ctx.font = '700 58px "Space Grotesk", -apple-system, sans-serif';
+    const kpiW = ctx.measureText(kpiTxt).width;
+    const divX = cw - kpiW - 102;
+    if (divX > 520) {
+      ctx.strokeStyle = darkNow ? 'rgba(255, 255, 255, 0.10)' : 'rgba(15, 23, 42, 0.08)';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(divX, ch * 0.25);
+      ctx.lineTo(divX, ch * 0.75);
+      ctx.stroke();
     }
-    bay.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(gPts), matArenaGridLine));
 
-    // Dynamic 2x Retina CNC Header & Plinth Footer Plaques
-    const headPlaque = createDynamicPlaque(2.94, 0.38, 896, 116);
-    headPlaque.mesh.position.set(0, 0.80, -0.06);
-    bay.add(headPlaque.mesh);
-
-    const footPlaque = createDynamicPlaque(2.96, 0.25, 896, 78);
-    footPlaque.mesh.position.set(0, -0.96, 0.20);
-    bay.add(footPlaque.mesh);
-
-    // Invisible Raycast Hitbox so clicking any 3D Graph Bay smoothly zooms in to inspect it!
-    const hitBox = new THREE.Mesh(
-      new THREE.BoxGeometry(W + 0.1, H + 0.3, D + 0.2),
-      new THREE.MeshBasicMaterial({ visible: false })
-    );
-    hitBox.userData = { arenaWingId: wingId, focusX: x * 0.82, focusY: y, focusZ: z + 0.8, focusYaw: -rotY * 0.55 };
-    bay.add(hitBox);
-    arenaHitBoxes.push(hitBox);
-
-    return { bay, headPlaque, footPlaque, deckY: -0.71, maxBarH: 1.24 };
-  }
-
-  // -------------------------------------------------------------------------
-  // SCULPTURE 0: CENTER-OVERHEAD 3D SEGMENTED 8.00 GiB HARDWARE WALL BRIDGE
-  // -------------------------------------------------------------------------
-  const envBridgeGroup = new THREE.Group();
-  envBridgeGroup.position.set(0, 4.10, -3.40);
-  telemetryArenaGroup.add(envBridgeGroup);
-
-  const envHousing = new THREE.Mesh(createChamferBox(4.56, 0.36, 0.40, 0.016, 2), matArenaPlinth);
-  envHousing.position.set(0, -0.16, 0);
-  envBridgeGroup.add(envHousing);
-
-  const envBackTrim = new THREE.Mesh(createChamferBox(4.64, 0.07, 0.44, 0.010, 1), matArenaBezel);
-  envBackTrim.position.set(0, 0.05, 0);
-  envBridgeGroup.add(envBackTrim);
-
-  // Physical Signal Coral 8.00 GiB Hardware Wall Gate on the Right End (+2.08)
-  const envWallGate = new THREE.Mesh(createChamferBox(0.055, 0.46, 0.48, 0.008, 1), matCoralBlade);
-  envWallGate.position.set(2.08, -0.14, 0.02);
-  envBridgeGroup.add(envWallGate);
-
-  const envPlaque = createDynamicPlaque(4.48, 0.36, 1280, 104);
-  envPlaque.mesh.position.set(0, 0.29, 0.04);
-  envBridgeGroup.add(envPlaque.mesh);
-
-  function updateEnvBridgePlaque(summaryStr, badgeStr, isLiveColab, darkNow) {
-    const key = `${darkNow ? 1 : 0}|${summaryStr}|${badgeStr}|${isLiveColab ? 1 : 0}`;
-    if (envPlaque.cacheKey === key) return;
-    envPlaque.cacheKey = key;
-    const { ctx, cw, ch, tex } = envPlaque;
-    ctx.clearRect(0, 0, cw, ch);
-
-    ctx.fillStyle = darkNow ? 'rgba(20, 24, 34, 0.96)' : 'rgba(255, 255, 255, 0.97)';
-    ctx.strokeStyle = darkNow ? '#363E54' : '#CBD3E4';
-    ctx.lineWidth = 4;
-    ctx.fillRect(4, 4, cw - 8, ch - 8);
-    ctx.strokeRect(4, 4, cw - 8, ch - 8);
-
-    ctx.fillStyle = isLiveColab ? '#10B981' : '#F59E0B';
-    ctx.beginPath();
-    ctx.arc(34, ch * 0.5, 11, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.font = '700 27px "JetBrains Mono", monospace';
-    ctx.textBaseline = 'middle';
-    ctx.textAlign = 'left';
-    ctx.fillStyle = darkNow ? '#A4AEC4' : '#4E5668';
-    ctx.fillText(badgeStr, 58, ch * 0.5 + 1);
-
-    ctx.font = '700 38px "Space Grotesk", sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillStyle = darkNow ? '#F4F6FA' : '#12151E';
-    ctx.fillText(summaryStr, cw - 26, ch * 0.5 + 2);
+    ctx.fillStyle = darkNow ? '#FFFFFF' : '#0F131D';
+    ctx.fillText(kpiTxt, cw - 62, ch * 0.52);
     tex.needsUpdate = true;
   }
 
-  // 4 Dynamic Volumetric 3D Crystal Segments (Weights, KV Cache, Split-K, Free Headroom)
-  const segUnitGeo = new THREE.BoxGeometry(1.0, 0.22, 0.28);
-  segUnitGeo.translate(0.5, 0, 0); // Left-anchored at x = 0 so scale.x extrudes cleanly rightward!
-  const matSegWeights = new THREE.MeshPhysicalMaterial({ color: 0x0057E7, metalness: 0.30, roughness: 0.24, clearcoat: 0.3 });
-  const matSegKv      = new THREE.MeshPhysicalMaterial({ color: 0x059669, metalness: 0.30, roughness: 0.24, clearcoat: 0.3 });
-  const matSegWs      = new THREE.MeshPhysicalMaterial({ color: 0xD97706, metalness: 0.45, roughness: 0.24, clearcoat: 0.3 });
-  const matSegFree    = new THREE.MeshPhysicalMaterial({ color: 0x64748B, metalness: 0.15, roughness: 0.45, transparent: true, opacity: 0.28 });
+  // =========================================================================
+  // MONUMENTAL GROUNDED SEMICIRCULAR ARCHITECTURAL TERRACES (ZERO STILTS!)
+  // =========================================================================
+  const WING_L0 = -1.17, WING_L1 = -0.47;
+  const WING_R0 =  0.47, WING_R1 =  1.17;
+  const DECK_LOW_Y  = -2.35; // Lower Front Curved Terrace Top
+  const DECK_HIGH_Y = -0.32; // Upper Rear Curved Terrace Top
 
-  const seg3DWeights = new THREE.Mesh(segUnitGeo, matSegWeights);
-  const seg3DKv      = new THREE.Mesh(segUnitGeo, matSegKv);
-  const seg3DWs      = new THREE.Mesh(segUnitGeo, matSegWs);
-  const seg3DFree    = new THREE.Mesh(segUnitGeo, matSegFree);
-  [seg3DWeights, seg3DKv, seg3DWs, seg3DFree].forEach(m => {
-    m.position.set(-2.08, -0.15, 0.08);
-    envBridgeGroup.add(m);
+  // 1. Continuous Semicircular Base Promenade Linking Both Wings Behind the Superchip
+  const basePromenade = new THREE.Mesh(
+    createRingSectorGeo(5.04, 7.08, floorY, floorY + 0.22, -1.21, 1.21, 64),
+    matArenaBackplate
+  );
+  basePromenade.receiveShadow = true;
+  telemetryArenaGroup.add(basePromenade);
+
+  const baseGoldTrim = new THREE.Mesh(
+    createRingSectorGeo(5.01, 5.05, floorY + 0.19, floorY + 0.23, -1.21, 1.21, 64),
+    matCopperMetal
+  );
+  telemetryArenaGroup.add(baseGoldTrim);
+
+  // Subtle Concentric Floor Calibration Arc on Studio Plaza (R = 4.24)
+  const plazaArcPts = [];
+  for (let i = 0; i <= 80; i++) {
+    const th = -1.14 + (i / 80) * 2.28;
+    plazaArcPts.push(new THREE.Vector3(arenaPolarX(4.24, th), floorY + 0.008, arenaPolarZ(4.24, th)));
+  }
+  const arenaFloorArc = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(plazaArcPts),
+    new THREE.LineBasicMaterial({ color: 0x0057E7, transparent: true, opacity: 0.34 })
+  );
+  telemetryArenaGroup.add(arenaFloorArc);
+
+  // 6 Radial Optical Floor Conduits Wiring the Superchip Turntable (R = 3.40) into the Amphitheater (R = 5.04)
+  const arenaFloorPackets = [];
+  [-0.96, -0.62, -0.22, 0.22, 0.62, 0.96].forEach((th, idx) => {
+    const p0 = new THREE.Vector3(Math.sin(th) * 3.40, floorY + 0.032, -Math.cos(th) * 3.40);
+    const p1 = new THREE.Vector3(arenaPolarX(4.15, th), floorY + 0.032, arenaPolarZ(4.15, th));
+    const p2 = new THREE.Vector3(arenaPolarX(4.65, th), floorY + 0.045, arenaPolarZ(4.65, th));
+    const p3 = new THREE.Vector3(arenaPolarX(5.05, th), floorY + 0.12,  arenaPolarZ(5.05, th));
+    const curve = new THREE.CubicBezierCurve3(p0, p1, p2, p3);
+    const tube = new THREE.Mesh(
+      new THREE.TubeGeometry(curve, 24, 0.012, 8, false),
+      idx % 2 === 0 ? matCopperMetal : matArenaBezel
+    );
+    telemetryArenaGroup.add(tube);
+
+    const orb = new THREE.Mesh(new THREE.SphereGeometry(0.030, 10, 10), matPhotonPulse);
+    telemetryArenaGroup.add(orb);
+    arenaFloorPackets.push({ mesh: orb, curve, offset: idx * 0.17 });
   });
 
-  const envHit = new THREE.Mesh(new THREE.BoxGeometry(4.7, 0.9, 0.6), new THREE.MeshBasicMaterial({ visible: false }));
-  envHit.userData = { arenaWingId: 0, focusX: 0, focusY: 3.6, focusZ: -2.2, focusYaw: 0.0 };
-  envBridgeGroup.add(envHit);
+  // 2. Build Left & Right Grounded Two-Tier Stepped Curved Terraces + Subtle Radial Scale Ticks
+  function buildCurvedWingArchitecture(a0, a1, wingLowId, wingHighId) {
+    // Tier 1: Solid Lower Front Curved Terrace (R = 5.14 .. 6.02, grounded to DECK_LOW_Y = -2.35)
+    const lowBody = new THREE.Mesh(
+      createRingSectorGeo(5.14, 6.02, floorY + 0.22, DECK_LOW_Y - 0.05, a0, a1, 36),
+      matArenaBackplate
+    );
+    const lowDeck = new THREE.Mesh(
+      createRingSectorGeo(5.12, 6.03, DECK_LOW_Y - 0.05, DECK_LOW_Y, a0, a1, 36),
+      matArenaPlinth
+    );
+    const lowRim = new THREE.Mesh(
+      createRingSectorGeo(5.105, 5.135, DECK_LOW_Y - 0.025, DECK_LOW_Y + 0.008, a0, a1, 36),
+      matArenaBezel
+    );
+    lowBody.receiveShadow = true;
+    lowDeck.receiveShadow = true;
+    telemetryArenaGroup.add(lowBody, lowDeck, lowRim);
+
+    // Tier 2: Solid Upper Rear Curved Terrace Rising Behind Tier 1 (R = 6.03 .. 6.96, up to DECK_HIGH_Y = -0.32)
+    const highBody = new THREE.Mesh(
+      createRingSectorGeo(6.03, 6.96, floorY + 0.22, DECK_HIGH_Y - 0.06, a0, a1, 36),
+      matArenaBackplate
+    );
+    const highDeck = new THREE.Mesh(
+      createRingSectorGeo(6.01, 6.98, DECK_HIGH_Y - 0.06, DECK_HIGH_Y, a0, a1, 36),
+      matArenaPlinth
+    );
+    const highRim = new THREE.Mesh(
+      createRingSectorGeo(5.995, 6.025, DECK_HIGH_Y - 0.03, DECK_HIGH_Y + 0.010, a0, a1, 36),
+      matCopperMetal
+    );
+    // Mid-Wall Brushed Titanium Architectural Reveal Band on the Upper Terrace Facade
+    const midReveal = new THREE.Mesh(
+      createRingSectorGeo(6.018, 6.04, -1.36, -1.32, a0, a1, 36),
+      matArenaBezel
+    );
+    highBody.receiveShadow = true;
+    highDeck.receiveShadow = true;
+    telemetryArenaGroup.add(highBody, highDeck, highRim, midReveal);
+
+    // Subtle Curved Instrument Grid Lines on Both Decks
+    const gPts = [];
+    for (let k = 0; k <= 8; k++) {
+      const th = a0 + 0.03 + (k / 8) * (a1 - a0 - 0.06);
+      gPts.push(
+        new THREE.Vector3(arenaPolarX(5.20, th), DECK_LOW_Y + 0.004, arenaPolarZ(5.20, th)),
+        new THREE.Vector3(arenaPolarX(5.96, th), DECK_LOW_Y + 0.004, arenaPolarZ(5.96, th)),
+        new THREE.Vector3(arenaPolarX(6.10, th), DECK_HIGH_Y + 0.004, arenaPolarZ(6.10, th)),
+        new THREE.Vector3(arenaPolarX(6.90, th), DECK_HIGH_Y + 0.004, arenaPolarZ(6.90, th))
+      );
+    }
+    telemetryArenaGroup.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(gPts), matArenaGridLine));
+
+    // Invisible Raycast Hitboxes for Click-to-Inspect Camera Focus on Each Curved Terrace
+    const midTh = 0.5 * (a0 + a1);
+    const hitLow = new THREE.Mesh(
+      new THREE.BoxGeometry(3.4, 1.8, 1.2),
+      new THREE.MeshBasicMaterial({ visible: false })
+    );
+    hitLow.position.set(arenaPolarX(5.56, midTh), DECK_LOW_Y + 0.85, arenaPolarZ(5.56, midTh));
+    hitLow.rotation.y = -midTh;
+    hitLow.userData = {
+      arenaWingId: wingLowId,
+      focusX: arenaPolarX(5.56, midTh) * 0.84,
+      focusY: DECK_LOW_Y + 0.72,
+      focusZ: arenaPolarZ(5.56, midTh) + 1.1,
+      focusYaw: midTh * 0.45
+    };
+
+    const hitHigh = new THREE.Mesh(
+      new THREE.BoxGeometry(3.8, 2.2, 1.2),
+      new THREE.MeshBasicMaterial({ visible: false })
+    );
+    hitHigh.position.set(arenaPolarX(6.48, midTh), DECK_HIGH_Y + 0.95, arenaPolarZ(6.48, midTh));
+    hitHigh.rotation.y = -midTh;
+    hitHigh.userData = {
+      arenaWingId: wingHighId,
+      focusX: arenaPolarX(6.48, midTh) * 0.84,
+      focusY: DECK_HIGH_Y + 0.85,
+      focusZ: arenaPolarZ(6.48, midTh) + 1.2,
+      focusYaw: midTh * 0.45
+    };
+    telemetryArenaGroup.add(hitLow, hitHigh);
+    arenaHitBoxes.push(hitLow, hitHigh);
+  }
+
+  buildCurvedWingArchitecture(WING_L0, WING_L1, 2, 1);
+  buildCurvedWingArchitecture(WING_R0, WING_R1, 4, 3);
+
+  // Helper to Place a Floating VisionOS Capsule Pill Above Any Curved Sector
+  function mountSectorVisionPill(rPill, thetaMid, yPill, wWorld, hWorld, cw, ch) {
+    const pill = createVisionPill(wWorld, hWorld, cw, ch);
+    pill.mesh.position.set(arenaPolarX(rPill, thetaMid), yPill, arenaPolarZ(rPill, thetaMid));
+    pill.mesh.rotation.y = -thetaMid * 0.38; // Subtle inward angle facing the viewer's eyes!
+    telemetryArenaGroup.add(pill.mesh);
+    return pill;
+  }
+
+  // -------------------------------------------------------------------------
+  // SCULPTURE 0: OVERHEAD CURVED 8.00 GiB CROWN ENVELOPE ARC (θ = -0.37..+0.37)
+  // -------------------------------------------------------------------------
+  const CROWN_R_IN = 5.72, CROWN_R_OUT = 6.14;
+  const CROWN_Y0 = 3.56, CROWN_Y1 = 3.82;
+  const CROWN_A0 = -0.37, CROWN_A1 = 0.37;
+
+  // Sleek Curved Brushed-Titanium Cradle Supporting the 4 Segmented Crystal Arcs
+  const crownCradle = new THREE.Mesh(
+    createRingSectorGeo(CROWN_R_IN - 0.05, CROWN_R_OUT + 0.05, CROWN_Y0 - 0.08, CROWN_Y0, CROWN_A0 - 0.025, CROWN_A1 + 0.035, 36),
+    matArenaPlinth
+  );
+  const crownGoldLip = new THREE.Mesh(
+    createRingSectorGeo(CROWN_R_IN - 0.06, CROWN_R_IN - 0.03, CROWN_Y0 - 0.05, CROWN_Y0 + 0.01, CROWN_A0 - 0.025, CROWN_A1 + 0.035, 36),
+    matCopperMetal
+  );
+  telemetryArenaGroup.add(crownCradle, crownGoldLip);
+
+  // Two Slender Curved-Back Titanium Pylons Anchoring the Crown Arc to the Base Promenade (Zero Skinny Front Stilts!)
+  [-0.36, 0.36].forEach(th => {
+    const px = arenaPolarX(6.02, th), pz = arenaPolarZ(6.02, th);
+    const pylonH = CROWN_Y0 - 0.08 - (floorY + 0.22);
+    const pylon = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.034, pylonH, 16), matArenaBezel);
+    pylon.position.set(px, floorY + 0.22 + pylonH * 0.5, pz);
+    const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.064, 0.072, 0.08, 16), matCopperMetal);
+    collar.position.set(px, floorY + 0.26, pz);
+    telemetryArenaGroup.add(pylon, collar);
+  });
+
+  // Physical Signal Coral 8.00 GiB Limit Fin at Right End of Crown Arc
+  const crownWallGate = new THREE.Mesh(
+    createRingSectorGeo(CROWN_R_IN - 0.06, CROWN_R_OUT + 0.06, CROWN_Y0 - 0.04, CROWN_Y1 + 0.07, CROWN_A1, CROWN_A1 + 0.018, 4),
+    matCoralBlade
+  );
+  telemetryArenaGroup.add(crownWallGate);
+
+  const matSegWeights = new THREE.MeshPhysicalMaterial({ color: 0x0057E7, metalness: 0.28, roughness: 0.18, clearcoat: 0.45 });
+  const matSegKv      = new THREE.MeshPhysicalMaterial({ color: 0x0D9488, metalness: 0.28, roughness: 0.18, clearcoat: 0.45 });
+  const matSegWs      = new THREE.MeshPhysicalMaterial({ color: 0xD9822B, metalness: 0.48, roughness: 0.20, clearcoat: 0.40 });
+  const matSegFree    = new THREE.MeshPhysicalMaterial({ color: 0x94A3B8, metalness: 0.15, roughness: 0.35, transparent: true, opacity: 0.26 });
+
+  const seg3DGeos = [
+    createRingSectorGeo(CROWN_R_IN, CROWN_R_OUT, CROWN_Y0 + 0.01, CROWN_Y1, -0.36, 0.20, 20),
+    createRingSectorGeo(CROWN_R_IN, CROWN_R_OUT, CROWN_Y0 + 0.01, CROWN_Y1,  0.20, 0.25, 8),
+    createRingSectorGeo(CROWN_R_IN, CROWN_R_OUT, CROWN_Y0 + 0.01, CROWN_Y1,  0.25, 0.28, 6),
+    createRingSectorGeo(CROWN_R_IN, CROWN_R_OUT, CROWN_Y0 + 0.01, CROWN_Y1,  0.28, 0.36, 10)
+  ];
+  const seg3DMeshes = [
+    new THREE.Mesh(seg3DGeos[0], matSegWeights),
+    new THREE.Mesh(seg3DGeos[1], matSegKv),
+    new THREE.Mesh(seg3DGeos[2], matSegWs),
+    new THREE.Mesh(seg3DGeos[3], matSegFree)
+  ];
+  seg3DMeshes.forEach(m => telemetryArenaGroup.add(m));
+
+  const crownPill = mountSectorVisionPill(5.86, 0.0, 4.24, 4.45, 0.68, 1408, 224);
+
+  const envHit = new THREE.Mesh(new THREE.BoxGeometry(4.6, 1.1, 0.9), new THREE.MeshBasicMaterial({ visible: false }));
+  envHit.position.set(0, 3.92, arenaPolarZ(5.90, 0));
+  envHit.userData = { arenaWingId: 0, focusX: 0, focusY: 3.55, focusZ: arenaPolarZ(5.90, 0) + 1.6, focusYaw: 0.0 };
+  telemetryArenaGroup.add(envHit);
   arenaHitBoxes.push(envHit);
 
   // -------------------------------------------------------------------------
-  // SCULPTURE 1 (LEFT UPPER): 3D GPU VRAM WATERFALL & 8.00 GiB CEILING BLADE
+  // SCULPTURE 1 (LEFT UPPER TERRACE): GPU VRAM CRYSTAL RADIAL FAN & CUDA SILK WAVE
   // -------------------------------------------------------------------------
-  const bay1 = build3DGraphBay(-4.92, 1.76, -3.02, 0.30, 1);
   const N_BARS_32 = 32;
-  const unitBarGeo = new THREE.BoxGeometry(0.064, 1.0, 0.20);
-  unitBarGeo.translate(0, 0.5, 0); // Bottom-anchored at y = 0!
+  const crystalColGeo = createChamferBox(0.072, 1.0, 0.24, 0.010, 2);
+  crystalColGeo.translate(0, 0.5, 0); // Bottom-anchored at y = 0!
 
-  const vram3DBars = new THREE.InstancedMesh(unitBarGeo, matArenaPrism, N_BARS_32);
+  const vram3DBars = new THREE.InstancedMesh(crystalColGeo, matArenaPrism, N_BARS_32);
   vram3DBars.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   for (let i = 0; i < N_BARS_32; i++) vram3DBars.setColorAt(i, initCol);
-  bay1.bay.add(vram3DBars);
+  telemetryArenaGroup.add(vram3DBars);
 
-  // Dynamic Front-Plane 3D Extruded Ribbon + Crest Tube for CUDA Allocated Trace
-  const vramRibbonGeo = new THREE.BufferGeometry();
-  vramRibbonGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N_BARS_32 * 2 * 3), 3));
-  const ribIndices = [];
-  for (let i = 0; i < N_BARS_32 - 1; i++) {
-    const a = i * 2, b = a + 1, c = a + 2, d = a + 3;
-    ribIndices.push(a, b, c, b, d, c);
-  }
-  vramRibbonGeo.setIndex(ribIndices);
-  const vram3DRibbon = new THREE.Mesh(
-    vramRibbonGeo,
-    new THREE.MeshBasicMaterial({ color: 0x10B981, transparent: true, opacity: 0.24, side: THREE.DoubleSide })
+  const vramCudaWave = createCurvedTubeAndCurtain(
+    6.20, WING_L0 + 0.03, WING_L1 - 0.03, N_BARS_32, 0.020, 0x14B8A6, 0.34
   );
-  bay1.bay.add(vram3DRibbon);
 
-  const vramCrestGeo = new THREE.BufferGeometry();
-  vramCrestGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N_BARS_32 * 3), 3));
-  const vram3DCrest = new THREE.Line(
-    vramCrestGeo,
-    new THREE.LineBasicMaterial({ color: 0x10B981, linewidth: 2 })
-  );
-  bay1.bay.add(vram3DCrest);
+  const vramCeilingGeo = createRingSectorGeo(6.14, 6.32, -0.016, 0.016, WING_L0 + 0.01, WING_L1 - 0.01, 32);
+  const vram3DCeiling = new THREE.Mesh(vramCeilingGeo, matCoralBlade);
+  vram3DCeiling.position.y = DECK_HIGH_Y + 1.05;
+  telemetryArenaGroup.add(vram3DCeiling);
 
-  // Physical Signal Coral 8.00 GiB 3D Ceiling Blade Slicing Across the 32 Prisms!
-  const vram3DCeiling = new THREE.Mesh(createChamferBox(2.84, 0.026, 0.42, 0.005, 1), matCoralBlade);
-  vram3DCeiling.position.set(0, bay1.deckY + 0.98, 0.02);
-  bay1.bay.add(vram3DCeiling);
+  const pillWing1 = mountSectorVisionPill(6.18, -0.83, DECK_HIGH_Y + 1.78, 3.32, 0.69, 1088, 232);
 
   // -------------------------------------------------------------------------
-  // SCULPTURE 2 (LEFT LOWER): LIVE 1Hz MAC OS KERNEL (vm_stat) 3D OSCILLOSCOPE
+  // SCULPTURE 2 (LEFT LOWER TERRACE): LIVE 1Hz MAC OS KERNEL (vm_stat + CPU WAVE)
   // -------------------------------------------------------------------------
-  const bay2 = build3DGraphBay(-4.92, -0.98, -3.02, 0.30, 2);
-
-  const macRam3DBars = new THREE.InstancedMesh(unitBarGeo, matArenaPrism, N_BARS_32);
+  const macRam3DBars = new THREE.InstancedMesh(crystalColGeo, matArenaPrism, N_BARS_32);
   macRam3DBars.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   for (let i = 0; i < N_BARS_32; i++) macRam3DBars.setColorAt(i, initCol);
-  bay2.bay.add(macRam3DBars);
+  telemetryArenaGroup.add(macRam3DBars);
 
-  // Second Z-Plane (z = +0.16): 32 Floating 3D Copper CPU Load Voxels + Live 3D CPU Waveform!
-  const cpuCubeGeo = createChamferBox(0.056, 0.048, 0.068, 0.006, 1);
-  const macCpu3DCubes = new THREE.InstancedMesh(cpuCubeGeo, matCopperMetal, N_BARS_32);
-  macCpu3DCubes.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-  bay2.bay.add(macCpu3DCubes);
-
-  const macCpuLineGeo = new THREE.BufferGeometry();
-  macCpuLineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N_BARS_32 * 3), 3));
-  const macCpu3DLine = new THREE.Line(
-    macCpuLineGeo,
-    new THREE.LineBasicMaterial({ color: 0xF59E0B })
+  const macCpuWave = createCurvedTubeAndCurtain(
+    5.30, WING_L0 + 0.03, WING_L1 - 0.03, N_BARS_32, 0.018, 0xE5A23C, 0.32
   );
-  bay2.bay.add(macCpu3DLine);
+
+  // Floats cleanly at R = 4.92 in front of the Upper Terrace wall so zero edges ever clip!
+  const pillWing2 = mountSectorVisionPill(4.92, -0.84, DECK_LOW_Y + 1.42, 3.06, 0.64, 1088, 232);
 
   // -------------------------------------------------------------------------
-  // SCULPTURE 3 (RIGHT UPPER): 3D 52-LAYER SCALING & OOM CRASH SKYLINE (3 Z-TRACKS!)
+  // SCULPTURE 3 (RIGHT UPPER TERRACE): 52-LAYER SCALING & OOM CRASH ARCS
   // -------------------------------------------------------------------------
-  const bay3 = build3DGraphBay(4.92, 1.76, -3.02, -0.30, 3);
-  const N_TOWERS_26 = 26; // Pairs of the 52 layers across 3 depth tracks (78 physical 3D towers!)
-  const towerUnitGeo = new THREE.BoxGeometry(0.078, 1.0, 0.11);
-  towerUnitGeo.translate(0, 0.5, 0);
+  const N_TOWERS_26 = 26;
+  const oomLeanPillars = new THREE.InstancedMesh(crystalColGeo, matArenaPrism, N_TOWERS_26);
+  oomLeanPillars.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  for (let i = 0; i < N_TOWERS_26; i++) oomLeanPillars.setColorAt(i, initCol);
+  telemetryArenaGroup.add(oomLeanPillars);
 
-  const oom3DTowers = new THREE.InstancedMesh(towerUnitGeo, matArenaPrism, N_TOWERS_26 * 3);
-  oom3DTowers.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-  for (let i = 0; i < N_TOWERS_26 * 3; i++) oom3DTowers.setColorAt(i, initCol);
-  bay3.bay.add(oom3DTowers);
+  // 3 Concentric Curved 3D Specular Trajectory Tubes + Silk Curtains (FP16 Coral, Q4 Gold, LEAN Sapphire!)
+  const oomWaveFp16 = createCurvedTubeAndCurtain(6.74, WING_R0 + 0.03, WING_R1 - 0.03, N_TOWERS_26, 0.022, 0xFF5A5F, 0.30);
+  const oomWaveQ4   = createCurvedTubeAndCurtain(6.50, WING_R0 + 0.03, WING_R1 - 0.03, N_TOWERS_26, 0.020, 0xE5A23C, 0.28);
+  const oomWaveLean = createCurvedTubeAndCurtain(6.24, WING_R0 + 0.03, WING_R1 - 0.03, N_TOWERS_26, 0.022, 0x38BDF8, 0.34);
 
-  const oom3DCeiling = new THREE.Mesh(createChamferBox(2.84, 0.026, 0.46, 0.005, 1), matCoralBlade);
-  oom3DCeiling.position.set(0, bay3.deckY + 0.62, 0.0);
-  bay3.bay.add(oom3DCeiling);
+  const oom3DCeiling = new THREE.Mesh(
+    createRingSectorGeo(6.14, 6.34, -0.016, 0.016, WING_R0 + 0.01, WING_R1 - 0.01, 32),
+    matCoralBlade
+  );
+  telemetryArenaGroup.add(oom3DCeiling);
 
-  // 10 Tumbling 3D OOM Fracture Shards Above FP16 L08 & Q4 L26 Crash Points!
+  // Faceted Crystal OOM Fracture Shards Hovering at FP16 L08 & Q4 L26 Crash Points!
   const oomShards = [];
-  const shardOctGeo = new THREE.OctahedronGeometry(0.055, 0);
+  const shardOctGeo = new THREE.OctahedronGeometry(0.052, 0);
   for (let s = 0; s < 10; s++) {
     const isFp16 = s < 6;
     const m = new THREE.Mesh(shardOctGeo, isFp16 ? matCoralBlade : matCopperMetal);
-    bay3.bay.add(m);
-    oomShards.push({ mesh: m, isFp16, phase: s * 1.13 });
+    telemetryArenaGroup.add(m);
+    oomShards.push({ mesh: m, isFp16, phase: s * 1.15 });
   }
 
-  // Active Layer 3D Vertical Beacon Ring Tracking selectedLayer / liveWaveLayer!
+  // Luminous Vertical Active-Layer Tracking Ring Along the Muse-Glimmer-30B Curve!
   const oomActiveBeacon = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.016, 0.016, 1.26, 10),
-    new THREE.MeshBasicMaterial({ color: 0x38BDF8, transparent: true, opacity: 0.85 })
+    new THREE.TorusGeometry(0.11, 0.014, 12, 28),
+    matPhotonPulse
   );
-  oomActiveBeacon.position.set(0, bay3.deckY + 0.63, 0.15);
-  bay3.bay.add(oomActiveBeacon);
+  telemetryArenaGroup.add(oomActiveBeacon);
+
+  const pillWing3 = mountSectorVisionPill(6.18, 0.83, DECK_HIGH_Y + 1.78, 3.32, 0.69, 1088, 232);
 
   // -------------------------------------------------------------------------
-  // SCULPTURE 4 (RIGHT LOWER): 3D DECODE SPEED TURBINES & 4 SHARD MONOLITHS
+  // SCULPTURE 4 (RIGHT LOWER TERRACE): CURVED DECODE TURBINES & 4 SHARD JEWELS
   // -------------------------------------------------------------------------
-  const bay4 = build3DGraphBay(4.92, -0.98, -3.02, -0.30, 4);
-  const pistonGeo = new THREE.BoxGeometry(1.0, 0.135, 0.18);
-  pistonGeo.translate(0.5, 0, 0); // Extrudes rightward from x = -1.30!
-
-  const pistonMats = [
+  const SPD_A0 = WING_R0 + 0.035, SPD_A1 = WING_R1 - 0.035;
+  const speedMats = [
     matCoralBlade,
-    new THREE.MeshPhysicalMaterial({ color: 0x0057E7, metalness: 0.32, roughness: 0.24, clearcoat: 0.28 }),
-    new THREE.MeshPhysicalMaterial({ color: 0x059669, metalness: 0.32, roughness: 0.24, clearcoat: 0.28 })
+    new THREE.MeshPhysicalMaterial({ color: 0x0057E7, metalness: 0.30, roughness: 0.18, clearcoat: 0.45 }),
+    new THREE.MeshPhysicalMaterial({ color: 0x0D9488, metalness: 0.30, roughness: 0.18, clearcoat: 0.45 })
   ];
-  const speed3DPistons = [];
-  const speed3DRings = [];
-  [0.34, 0.08, -0.18].forEach((py, idx) => {
-    // Machined Track Groove
-    const track = new THREE.Mesh(new THREE.BoxGeometry(2.60, 0.04, 0.06), matArenaBezel);
-    track.position.set(0.0, py, -0.02);
-    bay4.bay.add(track);
-
-    const bar = new THREE.Mesh(pistonGeo, pistonMats[idx]);
-    bar.position.set(-1.30, py, 0.02);
-    bay4.bay.add(bar);
-    speed3DPistons.push(bar);
-
-    const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(0.095, 0.016, 10, 24),
-      matPhotonPulse
+  const speed3DArcs = [];
+  const speed3DPearls = [];
+  [0.78, 0.52, 0.26].forEach((yRel, idx) => {
+    const yMid = DECK_LOW_Y + yRel;
+    // Recessed Curved Brushed-Titanium Track Groove
+    const track = new THREE.Mesh(
+      createRingSectorGeo(5.52, 5.64, yMid - 0.022, yMid + 0.022, SPD_A0, SPD_A1, 28),
+      matArenaBezel
     );
-    ring.rotation.y = Math.PI * 0.5;
-    ring.position.set(-1.25, py, 0.02);
-    bay4.bay.add(ring);
-    speed3DRings.push(ring);
+    telemetryArenaGroup.add(track);
+
+    const dynGeo = createRingSectorGeo(5.46, 5.70, yMid - 0.062, yMid + 0.062, SPD_A0, SPD_A0 + 0.25, 20);
+    const barMesh = new THREE.Mesh(dynGeo, speedMats[idx]);
+    telemetryArenaGroup.add(barMesh);
+    speed3DArcs.push({ mesh: barMesh, geo: dynGeo, yMid });
+
+    const pearl = new THREE.Mesh(new THREE.SphereGeometry(0.052, 14, 14), matPhotonPulse);
+    telemetryArenaGroup.add(pearl);
+    speed3DPearls.push(pearl);
   });
 
-  // 4 Physical 3D .safetensors Shard Monoliths Along the Lower Deck!
-  const shardMonolithGeo = new THREE.BoxGeometry(1.0, 0.22, 0.26);
-  shardMonolithGeo.translate(0.5, 0, 0);
+  // 4 Curved Solid Jewel .safetensors Shard Monoliths Embedded on the Lower Right Deck!
   const shardMats4 = [
-    new THREE.MeshPhysicalMaterial({ color: 0x0057E7, metalness: 0.32, roughness: 0.25, clearcoat: 0.28 }),
-    new THREE.MeshPhysicalMaterial({ color: 0x059669, metalness: 0.32, roughness: 0.25, clearcoat: 0.28 }),
+    new THREE.MeshPhysicalMaterial({ color: 0x0057E7, metalness: 0.30, roughness: 0.20, clearcoat: 0.42 }),
+    new THREE.MeshPhysicalMaterial({ color: 0x0D9488, metalness: 0.30, roughness: 0.20, clearcoat: 0.42 }),
     matCoralBlade,
     matCopperMetal
   ];
-  const shard3DMeshes = [];
+  const shard3DArcs = [];
   for (let s = 0; s < 4; s++) {
-    const sm = new THREE.Mesh(shardMonolithGeo, shardMats4[s]);
-    sm.position.set(-1.30 + s * 0.66, -0.54, 0.02);
-    sm.scale.set(0.58, 1, 1);
-    bay4.bay.add(sm);
-    shard3DMeshes.push(sm);
+    const sGeo = createRingSectorGeo(5.22, 5.44, DECK_LOW_Y + 0.01, DECK_LOW_Y + 0.16, SPD_A0 + s * 0.15, SPD_A0 + (s + 1) * 0.14, 10);
+    const sMesh = new THREE.Mesh(sGeo, shardMats4[s]);
+    telemetryArenaGroup.add(sMesh);
+    shard3DArcs.push({ mesh: sMesh, geo: sGeo, liftCurr: 0.0 });
   }
+
+  const pillWing4 = mountSectorVisionPill(4.92, 0.84, DECK_LOW_Y + 1.42, 3.06, 0.64, 1088, 232);
 
   // Live 3D Telemetry State Buffers (100% Driven by Real Backend Data, Smoothly Lerped at 60 FPS!)
   const tel3D = {
@@ -3838,6 +4004,7 @@ Check: bat costs $1.05, total $1.10</div>
     vramCurr:   new Float32Array(N_BARS_32).fill(0.2),
     cudaTarget: new Float32Array(N_BARS_32).fill(7.03),
     cudaCurr:   new Float32Array(N_BARS_32).fill(0.2),
+    cudaHeights: new Float32Array(N_BARS_32).fill(0.1),
     macTotalGib: 8.0,
     macUsedGib: 6.0,
     macFreeGib: 2.0,
@@ -3847,12 +4014,15 @@ Check: bat costs $1.05, total $1.10</div>
     macRamCurr:   new Float32Array(N_BARS_32).fill(0.2),
     macCpuTarget: new Float32Array(N_BARS_32).fill(20.0),
     macCpuCurr:   new Float32Array(N_BARS_32).fill(2.0),
+    macCpuHeights: new Float32Array(N_BARS_32).fill(0.1),
     fp16CrashL: 8,
     q4CrashL: 26,
     oomFp16: new Float32Array(N_TOWERS_26),
     oomQ4:   new Float32Array(N_TOWERS_26),
     oomLean: new Float32Array(N_TOWERS_26),
-    oomCurr: new Float32Array(N_TOWERS_26 * 3).fill(0.05),
+    oomFpHeights: new Float32Array(N_TOWERS_26).fill(0.05),
+    oomQ4Heights: new Float32Array(N_TOWERS_26).fill(0.05),
+    oomLnHeights: new Float32Array(N_TOWERS_26).fill(0.05),
     speedTarget: [0.15, 9.00, 19.41],
     speedCurr:   [0.15, 9.00, 19.41],
     shardsGib:   [1.59, 1.42, 1.42, 1.76]
@@ -3930,7 +4100,6 @@ Check: bat costs $1.05, total $1.10</div>
 
     const hostHist = (gr.host_live_60s || []).slice(-N_BARS_32);
     if (hostHist.length > 0) {
-      // Pad left with earliest real sample so newest live samples march cleanly in from the right!
       const ramPadded = [];
       const cpuPadded = [];
       const padCount = Math.max(0, N_BARS_32 - hostHist.length);
@@ -3980,262 +4149,228 @@ Check: bat costs $1.05, total $1.10</div>
     const wall = tel3D.wallGib;
     const isFractureOverflow = rigCurr.fp16Bloated > 0.35;
 
-    // 0. World Monument & Floor Telemetry Packets
-    renderWorldMonument(isDarkTheme, wall, tel3D.crushStr);
+    // 0. Animate Plaza Radial Optical Conduit Pearls
     arenaFloorPackets.forEach(pkt => {
-      const u = (t * (isGenerating ? 0.95 : 0.38) + pkt.offset) % 1.0;
+      const u = (t * (isGenerating ? 0.92 : 0.36) + pkt.offset) % 1.0;
       pkt.mesh.position.copy(pkt.curve.getPointAt(u));
     });
 
-    // 1. Center-Overhead 8.00 GiB Segmented Hardware Wall Bridge
-    const innerSpan = 4.16;
-    let curX = -2.08;
+    // 1. Sculpture 0: Overhead Curved 8.00 GiB Crown Arc
+    const crownSpan = CROWN_A1 - CROWN_A0;
+    let curAng = CROWN_A0;
     for (let k = 0; k < 4; k++) {
       const tgt = (k === 0 && isFractureOverflow)
-        ? wall * (1.0 + rigCurr.fp16Bloated * 0.22)
+        ? wall * (1.0 + rigCurr.fp16Bloated * 0.18)
         : tel3D.segTarget[k];
       tel3D.segCurr[k] += (tgt - tel3D.segCurr[k]) * 0.14;
     }
-    matSegWeights.color.setHex(isFractureOverflow ? 0xFF5A5F : (isDarkTheme ? 0x2E90FA : 0x0057E7)).convertSRGBToLinear();
+    matSegWeights.color.setHex(isFractureOverflow ? 0xFF5A5F : (isDarkTheme ? 0x3B82F6 : 0x0057E7)).convertSRGBToLinear();
 
-    const segMeshes = [seg3DWeights, seg3DKv, seg3DWs, seg3DFree];
-    segMeshes.forEach((m, idx) => {
-      const wFrac = Math.max(0.0, tel3D.segCurr[idx] / wall);
-      const wWorld = wFrac * innerSpan;
-      m.visible = wWorld > 0.018 && !(isFractureOverflow && idx > 0);
-      m.position.x = curX;
-      m.scale.x = Math.max(0.015, wWorld - 0.022);
-      curX += wWorld;
+    seg3DMeshes.forEach((m, idx) => {
+      const aFrac = Math.max(0.0, tel3D.segCurr[idx] / wall);
+      const aSweep = aFrac * crownSpan;
+      const showSeg = aSweep > 0.010 && !(isFractureOverflow && idx > 0);
+      m.visible = showSeg;
+      if (showSeg) {
+        const aEnd = curAng + Math.max(0.008, aSweep - 0.008);
+        updateRingSectorGeo(seg3DGeos[idx], CROWN_R_IN, CROWN_R_OUT, CROWN_Y0 + 0.01, CROWN_Y1, curAng, aEnd);
+      }
+      curAng += aSweep;
     });
 
-    const envBadge = tel3D.colabLive
-      ? `LIVE COLAB STREAM · ${tel3D.pingMs}ms RTT`
-      : '8.00 GiB VRAM HARDWARE ENVELOPE';
-    const envSummary = isFractureOverflow
-      ? `RAW FP16 59.90 GB > ${wall.toFixed(2)} GiB OOM!`
-      : `${tel3D.peakGib.toFixed(2)} / ${wall.toFixed(2)} GiB (${Math.max(0, wall - tel3D.peakGib).toFixed(2)}G FREE)`;
-    updateEnvBridgePlaque(envSummary, envBadge, tel3D.colabLive, isDarkTheme);
+    updateVisionPill(
+      crownPill,
+      tel3D.colabLive ? 'Colab Hardware Envelope · Live' : '8.00 GiB Hardware Envelope',
+      isFractureOverflow
+        ? `OVERFLOW: 59.90 GB > ${wall.toFixed(2)} GiB WALL`
+        : `Weights ${tel3D.segCurr[0].toFixed(2)}G · KV ${(tel3D.segCurr[1] * 1024).toFixed(0)}M · Free ${Math.max(0, wall - tel3D.peakGib).toFixed(2)}G`,
+      isFractureOverflow ? 'CUDA OOM' : `${tel3D.peakGib.toFixed(2)} / ${wall.toFixed(1)}G`,
+      isFractureOverflow ? '#FF5A5F' : (tel3D.colabLive ? '#10B981' : '#3B82F6'),
+      isDarkTheme
+    );
 
-    // 2. Sculpture 1: 32-Column 3D GPU VRAM Waterfall + Front-Plane 3D CUDA Ribbon
+    // 2. Sculpture 1 (Left Upper Terrace): 32 Radial GPU VRAM Crystals + Specular CUDA Silk Wave
+    const maxH_High = 1.34;
     const maxVramScale = Math.max(wall * 1.18, ...tel3D.vramTarget);
-    const ceilY1 = bay1.deckY + (wall / maxVramScale) * bay1.maxBarH;
+    const ceilY1 = DECK_HIGH_Y + (wall / maxVramScale) * maxH_High;
     vram3DCeiling.position.y += (ceilY1 - vram3DCeiling.position.y) * 0.15;
 
-    const ribArr = vramRibbonGeo.attributes.position.array;
-    const crsArr = vramCrestGeo.attributes.position.array;
-
     for (let i = 0; i < N_BARS_32; i++) {
-      const bx = -1.32 + (i / (N_BARS_32 - 1)) * 2.64;
+      const th = WING_L0 + 0.03 + (i / (N_BARS_32 - 1)) * (WING_L1 - WING_L0 - 0.06);
       const waveBoost = isGenerating && activeLayerIdx >= 0
-        ? Math.exp(-Math.pow((i / 31) - (activeLayerIdx / 51), 2) * 36.0) * 0.22
+        ? Math.exp(-Math.pow((i / 31) - (activeLayerIdx / 51), 2) * 36.0) * 0.24
         : 0.0;
       const tgtV = isFractureOverflow
         ? wall * (1.06 + 0.10 * Math.sin(i * 0.35 + t * 4.0))
         : (tel3D.vramTarget[i] + waveBoost);
-      const tgtC = isFractureOverflow ? tgtV * 0.94 : (tel3D.cudaTarget[i] + waveBoost * 0.7);
+      const tgtC = isFractureOverflow ? tgtV * 0.93 : (tel3D.cudaTarget[i] + waveBoost * 0.7);
 
       tel3D.vramCurr[i] += (tgtV - tel3D.vramCurr[i]) * 0.14;
       tel3D.cudaCurr[i] += (tgtC - tel3D.cudaCurr[i]) * 0.14;
 
-      const hBar = Math.max(0.03, Math.min(bay1.maxBarH * 1.06, (tel3D.vramCurr[i] / maxVramScale) * bay1.maxBarH));
-      barDummy.position.set(bx, bay1.deckY, -0.02);
-      barDummy.rotation.set(0, 0, 0);
+      const hBar = Math.max(0.04, Math.min(maxH_High * 1.06, (tel3D.vramCurr[i] / maxVramScale) * maxH_High));
+      barDummy.position.set(arenaPolarX(6.50, th), DECK_HIGH_Y, arenaPolarZ(6.50, th));
+      barDummy.rotation.set(0, -th, 0);
       barDummy.scale.set(1, hBar, 1);
       barDummy.updateMatrix();
       vram3DBars.setMatrixAt(i, barDummy.matrix);
 
-      if (tel3D.vramCurr[i] > wall) {
-        barColTmp.copy(colCoralMid);
-      } else if (waveBoost > 0.06) {
-        barColTmp.copy(colBlueBright);
-      } else {
-        barColTmp.copy(colCrownSapphire);
-      }
+      if (tel3D.vramCurr[i] > wall) barColTmp.copy(colCoralMid);
+      else if (waveBoost > 0.06 || i === N_BARS_32 - 1) barColTmp.copy(colBlueBright);
+      else barColTmp.copy(colCrownSapphire);
       vram3DBars.setColorAt(i, barColTmp);
 
-      const hCuda = Math.max(0.02, Math.min(bay1.maxBarH, (tel3D.cudaCurr[i] / maxVramScale) * bay1.maxBarH));
-      ribArr[i * 6]     = bx; ribArr[i * 6 + 1] = bay1.deckY;          ribArr[i * 6 + 2] = 0.15;
-      ribArr[i * 6 + 3] = bx; ribArr[i * 6 + 4] = bay1.deckY + hCuda;  ribArr[i * 6 + 5] = 0.15;
-      crsArr[i * 3]     = bx; crsArr[i * 3 + 1] = bay1.deckY + hCuda;  crsArr[i * 3 + 2] = 0.155;
+      tel3D.cudaHeights[i] = Math.max(0.03, Math.min(maxH_High, (tel3D.cudaCurr[i] / maxVramScale) * maxH_High));
     }
     vram3DBars.instanceMatrix.needsUpdate = true;
     if (vram3DBars.instanceColor) vram3DBars.instanceColor.needsUpdate = true;
-    vramRibbonGeo.attributes.position.needsUpdate = true;
-    vramCrestGeo.attributes.position.needsUpdate = true;
+    vramCudaWave.updateHeights(DECK_HIGH_Y, tel3D.cudaHeights);
 
-    updateHeaderPlaque(
-      bay1.headPlaque,
-      tel3D.colabLive ? '01 · COLAB VRAM LIVE' : '01 · GPU VRAM TRACE',
+    updateVisionPill(
+      pillWing1,
+      tel3D.colabLive ? 'Colab GPU VRAM · Live' : 'GPU VRAM Stage Trace',
+      `CUDA ${tel3D.allocGib.toFixed(2)} GiB · Wall ${wall.toFixed(2)} GiB`,
       isFractureOverflow ? '59.9 GB!' : `${tel3D.peakGib.toFixed(2)} GiB`,
-      isFractureOverflow ? '#FF5A5F' : (tel3D.colabLive ? '#10B981' : '#2E90FA'),
-      isDarkTheme
-    );
-    updateFooterPlaque(
-      bay1.footPlaque,
-      `ALLOC ${tel3D.allocGib.toFixed(2)} GiB`,
-      `WALL ${wall.toFixed(2)} GiB`,
-      '#FF5A5F',
+      isFractureOverflow ? '#FF5A5F' : (tel3D.colabLive ? '#10B981' : '#3B82F6'),
       isDarkTheme
     );
 
-    // 3. Sculpture 2: Live 1Hz Local Mac Kernel (vm_stat RAM Prisms + Floating Copper CPU Cubes)
-    const cpuArr = macCpuLineGeo.attributes.position.array;
+    // 3. Sculpture 2 (Left Lower Terrace): Live 1Hz Mac OS Kernel (vm_stat RAM Crystals + Gold CPU Wave)
+    const maxH_Low = 1.06;
     for (let i = 0; i < N_BARS_32; i++) {
-      const bx = -1.32 + (i / (N_BARS_32 - 1)) * 2.64;
+      const th = WING_L0 + 0.03 + (i / (N_BARS_32 - 1)) * (WING_L1 - WING_L0 - 0.06);
       tel3D.macRamCurr[i] += (tel3D.macRamTarget[i] - tel3D.macRamCurr[i]) * 0.14;
       tel3D.macCpuCurr[i] += (tel3D.macCpuTarget[i] - tel3D.macCpuCurr[i]) * 0.14;
 
-      const hRam = Math.max(0.04, Math.min(bay2.maxBarH, (tel3D.macRamCurr[i] / tel3D.macTotalGib) * bay2.maxBarH));
-      barDummy.position.set(bx, bay2.deckY, -0.04);
+      const hRam = Math.max(0.04, Math.min(maxH_Low, (tel3D.macRamCurr[i] / tel3D.macTotalGib) * maxH_Low));
+      barDummy.position.set(arenaPolarX(5.64, th), DECK_LOW_Y, arenaPolarZ(5.64, th));
+      barDummy.rotation.set(0, -th, 0);
       barDummy.scale.set(1, hRam, 1);
       barDummy.updateMatrix();
       macRam3DBars.setMatrixAt(i, barDummy.matrix);
       macRam3DBars.setColorAt(i, i === N_BARS_32 - 1 ? colBlueBright : colEmerald);
 
-      const yCpu = bay2.deckY + Math.max(0.05, Math.min(bay2.maxBarH, (tel3D.macCpuCurr[i] / 100.0) * bay2.maxBarH));
-      barDummy.position.set(bx, yCpu, 0.16);
-      barDummy.scale.set(1, 1, 1);
-      barDummy.updateMatrix();
-      macCpu3DCubes.setMatrixAt(i, barDummy.matrix);
-
-      cpuArr[i * 3] = bx; cpuArr[i * 3 + 1] = yCpu; cpuArr[i * 3 + 2] = 0.16;
+      tel3D.macCpuHeights[i] = Math.max(0.05, Math.min(maxH_Low, (tel3D.macCpuCurr[i] / 100.0) * maxH_Low));
     }
     macRam3DBars.instanceMatrix.needsUpdate = true;
     if (macRam3DBars.instanceColor) macRam3DBars.instanceColor.needsUpdate = true;
-    macCpu3DCubes.instanceMatrix.needsUpdate = true;
-    macCpuLineGeo.attributes.position.needsUpdate = true;
+    macCpuWave.updateHeights(DECK_LOW_Y, tel3D.macCpuHeights);
 
-    updateHeaderPlaque(
-      bay2.headPlaque,
-      '02 · MAC KERNEL (1HZ)',
+    updateVisionPill(
+      pillWing2,
+      'Mac Kernel · 1Hz Live',
+      `CPU ${tel3D.macCpuPct.toFixed(1)}% · Free ${tel3D.macFreeGib.toFixed(2)} GiB`,
       `${tel3D.macUsedGib.toFixed(2)} GiB`,
       '#10B981',
       isDarkTheme
     );
-    updateFooterPlaque(
-      bay2.footPlaque,
-      `CPU ${tel3D.macCpuPct.toFixed(1)}% · vm_stat`,
-      `FREE ${tel3D.macFreeGib.toFixed(2)}G`,
-      isDarkTheme ? '#38BDF8' : '#0057E7',
-      isDarkTheme
-    );
 
-    // 4. Sculpture 3: 3-Track 52-Layer Scaling & OOM Crash Skyline (78 Stepped 3D Towers!)
+    // 4. Sculpture 3 (Right Upper Terrace): 52-Layer Scaling & OOM Falsification Proof
     const capOomGib = 14.5;
-    const ceilY3 = bay3.deckY + (wall / capOomGib) * bay3.maxBarH;
+    const ceilY3 = DECK_HIGH_Y + (wall / capOomGib) * maxH_High;
     oom3DCeiling.position.y = ceilY3;
 
-    const fp16CutIdx = Math.max(1, Math.floor(tel3D.fp16CrashL / 2));
-    const q4CutIdx   = Math.max(2, Math.floor(tel3D.q4CrashL / 2));
+    const fp16CutIdx = Math.max(2, Math.floor(tel3D.fp16CrashL / 2));
+    const q4CutIdx   = Math.max(3, Math.floor(tel3D.q4CrashL / 2));
     const focusTower = Math.min(N_TOWERS_26 - 1, Math.floor((activeLayerIdx >= 0 ? activeLayerIdx : selectedLayer) / 2));
 
     for (let i = 0; i < N_TOWERS_26; i++) {
-      const tx = -1.30 + (i / (N_TOWERS_26 - 1)) * 2.60;
-
-      // Track 0 (Rear z = -0.15): FP16 30B -> Crashes at L08!
-      const hFpTgt = i <= fp16CutIdx ? Math.min(bay3.maxBarH * 1.05, (tel3D.oomFp16[i] / capOomGib) * bay3.maxBarH) : 0.001;
-      tel3D.oomCurr[i] += (hFpTgt - tel3D.oomCurr[i]) * 0.14;
-      barDummy.position.set(tx, bay3.deckY, -0.15);
-      barDummy.scale.set(i <= fp16CutIdx ? 1 : 0.001, Math.max(0.001, tel3D.oomCurr[i]), 1);
-      barDummy.updateMatrix();
-      oom3DTowers.setMatrixAt(i, barDummy.matrix);
-      oom3DTowers.setColorAt(i, colCoralMid);
-
-      // Track 1 (Mid z = 0.00): Uniform Q4_K_M -> Crashes at L26!
-      const idxQ = N_TOWERS_26 + i;
-      const hQ4Tgt = i <= q4CutIdx ? Math.min(bay3.maxBarH * 0.96, (tel3D.oomQ4[i] / capOomGib) * bay3.maxBarH) : 0.001;
-      tel3D.oomCurr[idxQ] += (hQ4Tgt - tel3D.oomCurr[idxQ]) * 0.14;
-      barDummy.position.set(tx, bay3.deckY, 0.0);
-      barDummy.scale.set(i <= q4CutIdx ? 1 : 0.001, Math.max(0.001, tel3D.oomCurr[idxQ]), 1);
-      barDummy.updateMatrix();
-      oom3DTowers.setMatrixAt(idxQ, barDummy.matrix);
-      oom3DTowers.setColorAt(idxQ, colCopperPin);
-
-      // Track 2 (Front z = +0.15): Muse-Glimmer-30B -> Completes all 52/52 Layers Safely Under 8.0 GiB!
-      const idxL = N_TOWERS_26 * 2 + i;
+      const th = WING_R0 + 0.03 + (i / (N_TOWERS_26 - 1)) * (WING_R1 - WING_R0 - 0.06);
+      const hFpTgt = Math.min(maxH_High * 1.04, (tel3D.oomFp16[i] / capOomGib) * maxH_High);
+      const hQ4Tgt = Math.min(maxH_High * 0.96, (tel3D.oomQ4[i] / capOomGib) * maxH_High);
       const isFocus = i === focusTower;
-      const hLnTgt = Math.min(bay3.maxBarH, (tel3D.oomLean[i] / capOomGib) * bay3.maxBarH) + (isFocus ? 0.09 : 0.0);
-      tel3D.oomCurr[idxL] += (hLnTgt - tel3D.oomCurr[idxL]) * 0.16;
-      barDummy.position.set(tx, bay3.deckY, 0.15);
-      barDummy.scale.set(isFocus ? 1.25 : 1.0, Math.max(0.03, tel3D.oomCurr[idxL]), isFocus ? 1.25 : 1.0);
+      const hLnTgt = Math.min(maxH_High, (tel3D.oomLean[i] / capOomGib) * maxH_High) + (isFocus ? 0.08 : 0.0);
+
+      tel3D.oomFpHeights[i] += (hFpTgt - tel3D.oomFpHeights[i]) * 0.14;
+      tel3D.oomQ4Heights[i] += (hQ4Tgt - tel3D.oomQ4Heights[i]) * 0.14;
+      tel3D.oomLnHeights[i] += (hLnTgt - tel3D.oomLnHeights[i]) * 0.16;
+
+      barDummy.position.set(arenaPolarX(6.24, th), DECK_HIGH_Y, arenaPolarZ(6.24, th));
+      barDummy.rotation.set(0, -th, 0);
+      barDummy.scale.set(isFocus ? 1.25 : 0.88, Math.max(0.03, tel3D.oomLnHeights[i] - 0.02), 0.72);
       barDummy.updateMatrix();
-      oom3DTowers.setMatrixAt(idxL, barDummy.matrix);
-      oom3DTowers.setColorAt(idxL, isFocus ? colBlueBright : colEmerald);
+      oomLeanPillars.setMatrixAt(i, barDummy.matrix);
+      oomLeanPillars.setColorAt(i, isFocus ? colBlueBright : colCrownSapphire);
 
       if (isFocus) {
-        oomActiveBeacon.position.x = tx;
+        oomActiveBeacon.position.set(
+          arenaPolarX(6.24, th),
+          DECK_HIGH_Y + tel3D.oomLnHeights[i],
+          arenaPolarZ(6.24, th)
+        );
+        oomActiveBeacon.rotation.y = -th;
       }
     }
-    oom3DTowers.instanceMatrix.needsUpdate = true;
-    if (oom3DTowers.instanceColor) oom3DTowers.instanceColor.needsUpdate = true;
+    oomLeanPillars.instanceMatrix.needsUpdate = true;
+    if (oomLeanPillars.instanceColor) oomLeanPillars.instanceColor.needsUpdate = true;
 
-    // Animate Tumbling 3D OOM Fracture Shards at FP16 L08 & Q4 L26!
-    const fpCrashX = -1.30 + (fp16CutIdx / (N_TOWERS_26 - 1)) * 2.60;
-    const q4CrashX = -1.30 + (q4CutIdx / (N_TOWERS_26 - 1)) * 2.60;
+    oomWaveFp16.updateHeights(DECK_HIGH_Y, tel3D.oomFpHeights, fp16CutIdx + 1);
+    oomWaveQ4.updateHeights(DECK_HIGH_Y, tel3D.oomQ4Heights, q4CutIdx + 1);
+    oomWaveLean.updateHeights(DECK_HIGH_Y, tel3D.oomLnHeights, N_TOWERS_26);
+
+    const fpTh = WING_R0 + 0.03 + (fp16CutIdx / (N_TOWERS_26 - 1)) * (WING_R1 - WING_R0 - 0.06);
+    const q4Th = WING_R0 + 0.03 + (q4CutIdx / (N_TOWERS_26 - 1)) * (WING_R1 - WING_R0 - 0.06);
     oomShards.forEach((sh, k) => {
-      const cx = sh.isFp16 ? fpCrashX : q4CrashX;
-      const cz = sh.isFp16 ? -0.15 : 0.0;
-      const ang = t * 1.8 + sh.phase;
+      const cTh = sh.isFp16 ? fpTh : q4Th;
+      const cR  = sh.isFp16 ? 6.74 : 6.50;
+      const ang = t * 1.7 + sh.phase;
       sh.mesh.position.set(
-        cx + Math.cos(ang) * 0.13,
-        ceilY3 + 0.12 + (k % 3) * 0.08 + Math.sin(t * 2.4 + sh.phase) * 0.03,
-        cz + Math.sin(ang) * 0.09
+        arenaPolarX(cR, cTh) + Math.cos(ang) * 0.11,
+        ceilY3 + 0.11 + (k % 3) * 0.07 + Math.sin(t * 2.2 + sh.phase) * 0.025,
+        arenaPolarZ(cR, cTh) + Math.sin(ang) * 0.09
       );
-      sh.mesh.rotation.set(t * 2.1 + sh.phase, t * 1.6, 0);
+      sh.mesh.rotation.set(t * 1.9 + sh.phase, t * 1.4, 0);
     });
 
-    updateHeaderPlaque(
-      bay3.headPlaque,
-      '03 · 52L SCALING & OOM',
-      `${tel3D.crushStr} Crush`,
+    updateVisionPill(
+      pillWing3,
+      '52-Layer OOM Proof',
+      `✕ FP16 L0${tel3D.fp16CrashL} · ✕ Q4 L${tel3D.q4CrashL} · ✓ L${(activeLayerIdx >= 0 ? activeLayerIdx : selectedLayer) + 1}/52`,
+      tel3D.crushStr,
       '#FF5A5F',
       isDarkTheme
     );
-    updateFooterPlaque(
-      bay3.footPlaque,
-      `✕ FP16 L0${tel3D.fp16CrashL} · ✕ Q4 L${tel3D.q4CrashL}`,
-      `✓ LEAN L${(activeLayerIdx >= 0 ? activeLayerIdx : selectedLayer) + 1}/52`,
-      '#10B981',
-      isDarkTheme
-    );
 
-    // 5. Sculpture 4: 3D Decode Speed Pistons + Racing Photon Rings + 4 Safetensors Shards
+    // 5. Sculpture 4 (Right Lower Terrace): Curved 3D Decode Speed Arcs + 4 Jewel Safetensors Shards
     const maxSpd = Math.max(20.0, ...tel3D.speedTarget) * 1.06;
+    const spdSpan = SPD_A1 - SPD_A0;
     for (let k = 0; k < 3; k++) {
       tel3D.speedCurr[k] += (tel3D.speedTarget[k] - tel3D.speedCurr[k]) * 0.14;
-      const barW = Math.max(0.06, (tel3D.speedCurr[k] / maxSpd) * 2.56);
-      speed3DPistons[k].scale.x = barW;
+      const aSweep = Math.max(0.028, (tel3D.speedCurr[k] / maxSpd) * spdSpan);
+      const arcObj = speed3DArcs[k];
+      updateRingSectorGeo(arcObj.geo, 5.46, 5.70, arcObj.yMid - 0.055, arcObj.yMid + 0.055, SPD_A0, SPD_A0 + aSweep);
 
-      const rate = Math.max(0.08, tel3D.speedCurr[k] * 0.16);
-      const uRing = (t * rate) % 1.0;
-      speed3DRings[k].position.x = -1.28 + uRing * Math.max(0.08, barW - 0.04);
+      const rate = Math.max(0.08, tel3D.speedCurr[k] * 0.15);
+      const thP = SPD_A0 + ((t * rate) % 1.0) * Math.max(0.02, aSweep - 0.01);
+      speed3DPearls[k].position.set(arenaPolarX(5.43, thP), arcObj.yMid, arenaPolarZ(5.43, thP));
     }
 
     const totShG = tel3D.shardsGib.reduce((a, b) => a + b, 0) || 6.19;
     const activeShard = Math.floor(((activeLayerIdx >= 0 ? activeLayerIdx : selectedLayer)) / 13);
-    let sx = -1.30;
+    let shAng = SPD_A0;
     for (let s = 0; s < 4; s++) {
-      const sw = ((tel3D.shardsGib[s] || 1.5) / totShG) * 2.60;
-      const isActShard = s === activeShard;
-      shard3DMeshes[s].position.x = sx;
-      shard3DMeshes[s].position.z += ((isActShard ? 0.13 : 0.02) - shard3DMeshes[s].position.z) * 0.16;
-      shard3DMeshes[s].scale.x = Math.max(0.1, sw - 0.045);
-      shard3DMeshes[s].scale.y += ((isActShard ? 1.24 : 1.0) - shard3DMeshes[s].scale.y) * 0.16;
-      sx += sw;
+      const shSweep = ((tel3D.shardsGib[s] || 1.5) / totShG) * spdSpan;
+      const isAct = s === activeShard;
+      const sObj = shard3DArcs[s];
+      sObj.liftCurr += ((isAct ? 0.065 : 0.0) - sObj.liftCurr) * 0.16;
+      updateRingSectorGeo(
+        sObj.geo,
+        5.18,
+        5.42,
+        DECK_LOW_Y + 0.012 + sObj.liftCurr,
+        DECK_LOW_Y + 0.155 + sObj.liftCurr * 1.2,
+        shAng,
+        shAng + Math.max(0.02, shSweep - 0.016)
+      );
+      shAng += shSweep;
     }
 
-    updateHeaderPlaque(
-      bay4.headPlaque,
-      '04 · DECODE & 4 SHARDS',
+    updateVisionPill(
+      pillWing4,
+      'Decode & 4 Shards',
+      `SMI ${tel3D.smiMib.toLocaleString()} MiB · S${activeShard + 1}/4 (${tel3D.payloadGb.toFixed(2)}G)`,
       `${tel3D.speedTarget[1].toFixed(2)} tok/s`,
-      '#2E90FA',
-      isDarkTheme
-    );
-    updateFooterPlaque(
-      bay4.footPlaque,
-      `SMI ${tel3D.smiMib.toLocaleString()} MiB`,
-      `S${activeShard + 1}/4 · ${tel3D.payloadGb.toFixed(2)} GB`,
-      '#10B981',
+      '#3B82F6',
       isDarkTheme
     );
   }
@@ -4287,10 +4422,10 @@ Check: bat costs $1.05, total $1.10</div>
   // Camera Spherical Orbit Targets
   const camTarget = {
     yaw: userYawOffset,
-    pitch: 0.13,
-    dist: inPortal ? 12.6 : (arena3DVisible ? 15.6 : 12.6),
+    pitch: 0.21,
+    dist: inPortal ? 12.6 : (arena3DVisible ? 15.8 : 12.6),
     lookX: 0.0,
-    lookY: inPortal ? 0.0 : 0.24,
+    lookY: inPortal ? 0.0 : 0.20,
     lookZ: 0.0
   };
 
@@ -4372,7 +4507,7 @@ Check: bat costs $1.05, total $1.10</div>
       if (b) b.classList.toggle('active', m === mode);
     });
 
-    const openDist = arena3DVisible ? 15.6 : 12.6;
+    const openDist = arena3DVisible ? 15.8 : 12.6;
     if (mode === 'monolith') {
       rigTarget.shellOpen = 0.0;
       rigTarget.fp16Bloated = 0.0;
@@ -4381,9 +4516,9 @@ Check: bat costs $1.05, total $1.10</div>
       rigTarget.layerGap = 0.0;
       rigTarget.fpvTunnel = 0.0;
       camTarget.dist = openDist;
-      camTarget.pitch = 0.14;
+      camTarget.pitch = 0.20;
       camTarget.lookX = computeStageLookX();
-      camTarget.lookY = 0.24;
+      camTarget.lookY = 0.20;
       camTarget.lookZ = 0.0;
     } else if (mode === 'fracture') {
       rigTarget.shellOpen = 1.45;
@@ -4392,10 +4527,10 @@ Check: bat costs $1.05, total $1.10</div>
       rigTarget.pinExtract = 0.30;
       rigTarget.layerGap = 0.11;
       rigTarget.fpvTunnel = 0.0;
-      camTarget.dist = arena3DVisible ? 16.0 : 13.4;
-      camTarget.pitch = 0.16;
+      camTarget.dist = arena3DVisible ? 16.2 : 13.4;
+      camTarget.pitch = 0.22;
       camTarget.lookX = computeStageLookX();
-      camTarget.lookY = 0.24;
+      camTarget.lookY = 0.20;
       camTarget.lookZ = 0.0;
     } else if (mode === 'quantize') {
       rigTarget.shellOpen = 1.0;
@@ -4405,9 +4540,9 @@ Check: bat costs $1.05, total $1.10</div>
       rigTarget.layerGap = 0.09;
       rigTarget.fpvTunnel = 0.0;
       camTarget.dist = openDist;
-      camTarget.pitch = 0.13;
+      camTarget.pitch = 0.21;
       camTarget.lookX = computeStageLookX();
-      camTarget.lookY = 0.24;
+      camTarget.lookY = 0.20;
       camTarget.lookZ = 0.0;
     } else if (mode === 'arena') {
       toggleArena3D(true);
@@ -4417,11 +4552,11 @@ Check: bat costs $1.05, total $1.10</div>
       rigTarget.pinExtract = 1.0;
       rigTarget.layerGap = 0.09;
       rigTarget.fpvTunnel = 0.0;
-      camTarget.dist = 14.8;
-      camTarget.pitch = 0.11;
+      camTarget.dist = 14.9;
+      camTarget.pitch = 0.23;
       camTarget.lookX = computeStageLookX();
-      camTarget.lookY = 0.42;
-      camTarget.lookZ = -0.5;
+      camTarget.lookY = 0.30;
+      camTarget.lookZ = -0.55;
     } else if (mode === 'dive') {
       rigTarget.shellOpen = 1.35;
       rigTarget.fp16Bloated = 0.0;
@@ -4772,13 +4907,12 @@ Check: bat costs $1.05, total $1.10</div>
     wallWire.material.color.setHex(isDarkTheme ? 0x3B82F6 : 0x0057E7);
     streamPoints.material.color.setHex(isDarkTheme ? 0x60A5FA : 0x0057E7);
 
-    // Theme-Aware 3D Telemetry Amphitheater Materials (Airy Silver-Alabaster in Daylight, Gunmetal-Obsidian in Dark!)
-    matArenaBezel.color.setHex(isDarkTheme ? 0x363E52 : 0xCFD6E6).convertSRGBToLinear();
-    matArenaBackplate.color.setHex(isDarkTheme ? 0x141824 : 0xEFF2F8).convertSRGBToLinear();
-    matArenaPlinth.color.setHex(isDarkTheme ? 0x1D2230 : 0x262E40).convertSRGBToLinear();
-    matArenaGridLine.color.setHex(isDarkTheme ? 0x384158 : 0xB8C2D6);
+    // Theme-Aware Curved 3D Telemetry Amphitheater Materials (Apple Gallery Alabaster in Daylight, Satin Obsidian in Dark!)
+    matArenaBezel.color.setHex(isDarkTheme ? 0x3D465E : 0xD2DAE8).convertSRGBToLinear();
+    matArenaBackplate.color.setHex(isDarkTheme ? 0x131722 : 0xEEF2F9).convertSRGBToLinear();
+    matArenaPlinth.color.setHex(isDarkTheme ? 0x1D2332 : 0xDCE3F0).convertSRGBToLinear();
+    matArenaGridLine.color.setHex(isDarkTheme ? 0x323B52 : 0xBCC6DA);
     arenaFloorArc.material.color.setHex(isDarkTheme ? 0x3B82F6 : 0x0057E7);
-    monumentCacheKey = '';
     arenaPlaques.forEach(p => { p.cacheKey = ''; });
 
     // High-contrast wafer palette:
@@ -4973,13 +5107,9 @@ Check: bat costs $1.05, total $1.10</div>
       wallWire.scale.y = spanH / 5.82;
       wallWire.position.y = (botInterposerY + topCrownY) * 0.5;
 
-      // 1. Animate 4-Shard Heat-Spreader Shields
-      shardShields.forEach(sh => {
-        const xDist = 1.56 + rigCurr.shellOpen * 0.85 + rigCurr.fp16Bloated * 0.65 + rigCurr.fpvTunnel * 0.22;
-        sh.lShield.position.x = -xDist;
-        sh.rShield.position.x =  xDist;
-        sh.lShield.position.y = sh.baseY * stackScale + baseLift;
-        sh.rShield.position.y = sh.baseY * stackScale + baseLift;
+      // 1. Sync Column-Mounted Champagne-Gold Shard Divider Collars
+      shardCollars.forEach(sc => {
+        sc.mesh.position.y = sc.baseY * stackScale + baseLift;
       });
 
       // 2. Animate All 2,496 Tensor Voxel Instances Across 52 Layers
