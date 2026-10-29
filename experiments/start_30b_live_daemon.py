@@ -29,7 +29,10 @@ import os
 import gc
 import json
 import time
+import threading
+import subprocess
 import traceback
+from collections import deque
 from pathlib import Path
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Dict, List, Optional, Tuple
@@ -874,23 +877,165 @@ class FusedTriton8GBWallEngine:
 
 
 ENGINE: Optional[FusedTriton8GBWallEngine] = None
+BOOT_TS = time.time()
+LIVE_STATS = {
+    "is_generating": False,
+    "requests_served": 0,
+    "last_tokens_per_sec": 0.0,
+    "last_tokens_generated": 0,
+    "last_elapsed_sec": 0.0,
+    "active_dma_ring_layer": 8,
+    "dma_transfers_count": 0,
+}
+TELEMETRY_HISTORY = deque(maxlen=90)
+
+
+def query_real_colab_hardware() -> Dict:
+    alloc_gib = round(torch.cuda.memory_allocated() / (1024**3), 4) if torch.cuda.is_available() else 0.0
+    peak_gib = round(torch.cuda.max_memory_allocated() / (1024**3), 4) if torch.cuda.is_available() else 0.0
+    reserved_gib = round(torch.cuda.memory_reserved() / (1024**3), 4) if torch.cuda.is_available() else 0.0
+    gpu_name = torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CUDA Device"
+    total_vram_gib = (
+        round(torch.cuda.get_device_properties(0).total_memory / (1024**3), 2)
+        if torch.cuda.is_available()
+        else 0.0
+    )
+
+    smi_used_mib = int(round(reserved_gib * 1024))
+    smi_total_mib = int(round(total_vram_gib * 1024))
+    gpu_util_pct = 0.0
+    mem_bw_pct = 0.0
+    gpu_temp_c = 0.0
+    gpu_power_w = 0.0
+    sm_clock_mhz = 0
+    try:
+        smi_raw = subprocess.check_output(
+            [
+                "nvidia-smi",
+                "--query-gpu=name,memory.used,memory.total,utilization.gpu,utilization.memory,temperature.gpu,power.draw,clocks.current.sm",
+                "--format=csv,noheader,nounits",
+            ],
+            text=True,
+            timeout=1.5,
+        ).strip().splitlines()[0]
+        parts = [p.strip() for p in smi_raw.split(",")]
+        if len(parts) >= 8:
+            gpu_name = parts[0]
+            smi_used_mib = int(float(parts[1]))
+            smi_total_mib = int(float(parts[2]))
+            gpu_util_pct = float(parts[3]) if parts[3] != "[N/A]" else 0.0
+            mem_bw_pct = float(parts[4]) if parts[4] != "[N/A]" else 0.0
+            gpu_temp_c = float(parts[5]) if parts[5] != "[N/A]" else 0.0
+            gpu_power_w = float(parts[6]) if parts[6] != "[N/A]" else 0.0
+            sm_clock_mhz = int(float(parts[7])) if parts[7] != "[N/A]" else 0
+    except Exception:
+        pass
+
+    host_ram_total_gib = 0.0
+    host_ram_used_gib = 0.0
+    try:
+        meminfo = {}
+        for line in Path("/proc/meminfo").read_text().splitlines():
+            if ":" in line:
+                k, v = line.split(":", 1)
+                meminfo[k.strip()] = int(v.strip().split()[0]) * 1024
+        if "MemTotal" in meminfo and "MemAvailable" in meminfo:
+            host_ram_total_gib = round(meminfo["MemTotal"] / (1024**3), 2)
+            host_ram_used_gib = round((meminfo["MemTotal"] - meminfo["MemAvailable"]) / (1024**3), 2)
+    except Exception:
+        pass
+
+    try:
+        ncpu = os.cpu_count() or 1
+        host_cpu_pct = round(min(100.0, (os.getloadavg()[0] / ncpu) * 100.0), 1)
+    except Exception:
+        host_cpu_pct = 0.0
+
+    pers_gib = ENGINE.gpu_persistent_gib if ENGINE is not None else alloc_gib
+    wall_gib = 8.00
+    snap = {
+        "ts": round(time.time(), 3),
+        "uptime_sec": round(time.time() - BOOT_TS, 1),
+        "status": "ready" if ENGINE is not None else "loading",
+        "gpu_name": gpu_name,
+        "gpu_total_gib": total_vram_gib,
+        "vram_persistent_gib": round(pers_gib, 4),
+        "vram_allocated_gib": alloc_gib,
+        "vram_peak_gib": max(peak_gib, alloc_gib),
+        "vram_reserved_gib": reserved_gib,
+        "hardware_wall_gib": wall_gib,
+        "headroom_below_wall_gib": round(wall_gib - max(peak_gib, alloc_gib), 4),
+        "smi_used_mib": smi_used_mib,
+        "smi_total_mib": smi_total_mib,
+        "gpu_util_pct": gpu_util_pct,
+        "mem_bw_pct": mem_bw_pct,
+        "gpu_temp_c": gpu_temp_c,
+        "gpu_power_w": gpu_power_w,
+        "sm_clock_mhz": sm_clock_mhz,
+        "colab_ram_used_gib": host_ram_used_gib,
+        "colab_ram_total_gib": host_ram_total_gib,
+        "colab_cpu_pct": host_cpu_pct,
+        "is_generating": LIVE_STATS["is_generating"],
+        "requests_served": LIVE_STATS["requests_served"],
+        "tokens_per_sec": LIVE_STATS["last_tokens_per_sec"],
+        "tokens_generated": LIVE_STATS["last_tokens_generated"],
+        "elapsed_sec": LIVE_STATS["last_elapsed_sec"],
+        "active_dma_ring_layer": LIVE_STATS["active_dma_ring_layer"],
+        "dma_transfers_count": LIVE_STATS["dma_transfers_count"],
+    }
+    return snap
+
+
+def _background_telemetry_sampler():
+    while True:
+        try:
+            s = query_real_colab_hardware()
+            TELEMETRY_HISTORY.append({
+                "ts": s["ts"],
+                "vram_gib": s["vram_allocated_gib"],
+                "peak_gib": s["vram_peak_gib"],
+                "smi_mib": s["smi_used_mib"],
+                "tok_s": s["tokens_per_sec"],
+                "gpu_util": s["gpu_util_pct"],
+                "power_w": s["gpu_power_w"],
+                "temp_c": s["gpu_temp_c"],
+            })
+        except Exception:
+            pass
+        time.sleep(1.0)
 
 
 class InferHandler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         return
 
+    def _send_cors(self):
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self._send_cors()
+        self.end_headers()
+
     def _send_json(self, code: int, payload: Dict):
         raw = json.dumps(payload).encode("utf-8")
         self.send_response(code)
+        self._send_cors()
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(raw)))
         self.end_headers()
         self.wfile.write(raw)
 
     def do_GET(self):
-        if self.path == "/health":
-            return self._send_json(200, {"status": "ready" if ENGINE is not None else "loading"})
+        if self.path.startswith("/health"):
+            snap = query_real_colab_hardware()
+            return self._send_json(200, {"status": snap["status"], "gpu_name": snap["gpu_name"], "vram_allocated_gib": snap["vram_allocated_gib"]})
+        if self.path.startswith("/telemetry"):
+            snap = query_real_colab_hardware()
+            snap["history"] = list(TELEMETRY_HISTORY)
+            return self._send_json(200, snap)
         return self._send_json(404, {"error": "Not found"})
 
     def do_POST(self):
@@ -900,9 +1045,18 @@ class InferHandler(BaseHTTPRequestHandler):
                 body = json.loads(self.rfile.read(length).decode("utf-8")) if length > 0 else {}
                 prompt = body.get("prompt", "Hello!")
                 max_new_tokens = int(body.get("max_new_tokens", 128))
-                res = ENGINE.generate(prompt, max_new_tokens=max_new_tokens)
+                LIVE_STATS["is_generating"] = True
+                try:
+                    res = ENGINE.generate(prompt, max_new_tokens=max_new_tokens)
+                    LIVE_STATS["requests_served"] += 1
+                    LIVE_STATS["last_tokens_per_sec"] = res["tokens_per_sec"]
+                    LIVE_STATS["last_tokens_generated"] = res["tokens_generated"]
+                    LIVE_STATS["last_elapsed_sec"] = res["elapsed_sec"]
+                finally:
+                    LIVE_STATS["is_generating"] = False
                 return self._send_json(200, res)
             except Exception as e:
+                LIVE_STATS["is_generating"] = False
                 return self._send_json(200, {"error": str(e), "traceback": traceback.format_exc()})
         elif self.path == "/generate_stream":
             try:
@@ -911,16 +1065,33 @@ class InferHandler(BaseHTTPRequestHandler):
                 prompt = body.get("prompt", "Hello!")
                 max_new_tokens = int(body.get("max_new_tokens", 160))
                 self.send_response(200)
+                self._send_cors()
                 self.send_header("Content-Type", "application/x-ndjson")
                 self.send_header("Cache-Control", "no-cache")
                 self.send_header("X-Accel-Buffering", "no")
                 self.end_headers()
-                for evt in ENGINE.generate_stream(prompt, max_new_tokens=max_new_tokens):
-                    line = (json.dumps(evt) + "\n").encode("utf-8")
-                    self.wfile.write(line)
-                    self.wfile.flush()
+                LIVE_STATS["is_generating"] = True
+                try:
+                    for evt in ENGINE.generate_stream(prompt, max_new_tokens=max_new_tokens):
+                        if evt.get("event") == "token":
+                            LIVE_STATS["last_tokens_per_sec"] = evt.get("tokens_per_sec", 0.0)
+                            LIVE_STATS["last_tokens_generated"] = evt.get("step", 0)
+                            LIVE_STATS["active_dma_ring_layer"] = evt.get("active_dma_ring_layer", 8)
+                            LIVE_STATS["dma_transfers_count"] += 5
+                            evt["vram_allocated_gib"] = round(torch.cuda.memory_allocated() / (1024**3), 4)
+                        elif evt.get("event") == "done":
+                            LIVE_STATS["requests_served"] += 1
+                            LIVE_STATS["last_tokens_per_sec"] = evt.get("tokens_per_sec", 0.0)
+                            LIVE_STATS["last_tokens_generated"] = evt.get("tokens_generated", 0)
+                            LIVE_STATS["last_elapsed_sec"] = evt.get("elapsed_sec", 0.0)
+                        line = (json.dumps(evt) + "\n").encode("utf-8")
+                        self.wfile.write(line)
+                        self.wfile.flush()
+                finally:
+                    LIVE_STATS["is_generating"] = False
                 return
             except Exception as e:
+                LIVE_STATS["is_generating"] = False
                 try:
                     err_line = (json.dumps({"event": "error", "error": str(e)}) + "\n").encode("utf-8")
                     self.wfile.write(err_line)
@@ -932,6 +1103,7 @@ class InferHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
+    threading.Thread(target=_background_telemetry_sampler, daemon=True).start()
     ENGINE = FusedTriton8GBWallEngine(Path("release_30b"))
     srv = ThreadingHTTPServer(("127.0.0.1", 18766), InferHandler)
     print("[DAEMON_READY_PORT_18766]", flush=True)
