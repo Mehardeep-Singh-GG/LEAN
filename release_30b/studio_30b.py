@@ -1803,11 +1803,12 @@ HTML_PAGE = r"""<!DOCTYPE html>
     <div class="v-sep"></div>
     <span class="chip-title">Muse-Glimmer-30B</span>
     <span class="chip-spec" id="top-chip-spec">--L Silicon Core</span>
-    <div class="live-wall-pill" onclick="toggleTelemetryDrawer()" title="Open Google Colab Hardware Link &amp; Live Telemetry Graphs">
+    <div class="live-wall-pill" onclick="toggleTelemetryDrawer()" title="Open Google Colab Hardware Link &amp; 2D Telemetry Sheet">
       <span class="live-wall-dot" id="top-wall-dot"></span>
       <span id="top-wall-text">Probing Hardware…</span>
     </div>
-    <button class="toggle-panel-btn" id="telemetry-toggle-btn" onclick="toggleTelemetryDrawer()">Colab &amp; Graphs</button>
+    <button class="toggle-panel-btn" id="telemetry-toggle-btn" onclick="toggleTelemetryDrawer()">Colab Link</button>
+    <button class="toggle-panel-btn active-pill" id="arena3d-toggle-btn" onclick="toggleArena3D()">3D Graphs</button>
     <button class="toggle-panel-btn" id="theme-toggle-btn" onclick="toggleTheme()">☾ Dark</button>
     <button class="toggle-panel-btn" id="toggle-sheet-btn" onclick="toggleChatSheet()">Full 3D View</button>
   </header>
@@ -1937,11 +1938,14 @@ HTML_PAGE = r"""<!DOCTYPE html>
     <button class="fpv-cam-btn" id="fpv-cam-btn" onclick="toggleFpvCamera()">Cam: FPV Inside</button>
   </div>
 
-  <!-- Single Contextual 3D-Tracked Layer Inspector Card (Zero Crowding!) -->
-  <aside class="floating-node-card" id="node-inspector">
+  <!-- Single Contextual 3D-Tracked Layer Inspector Card (Appears in Tensor Dive or when clicking a layer!) -->
+  <aside class="floating-node-card hidden-by-tel" id="node-inspector">
     <div class="fn-header">
       <span class="fn-badge emerald" id="fn-badge">LAYER 26 · DMA RING</span>
-      <span class="fn-ratio" id="fn-ratio">1,146.9 MB → 112.1 MB (10.2×)</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="fn-ratio" id="fn-ratio">1,146.9 MB → 112.1 MB (10.2×)</span>
+        <button class="td-close-btn" style="width:20px;height:20px;font-size:10px;" onclick="dismissInspector()" title="Close Layer Inspector">✕</button>
+      </div>
     </div>
     <div class="fn-title" id="fn-title">Circular Async DMA Ring · 2-Bit Group-64 Wafer</div>
     <div class="fn-grid">
@@ -2005,6 +2009,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
       <button class="dir-btn active" id="btn-quantize" onclick="setStageMode('quantize')">02 Quantize 6.53 GB</button>
       <button class="dir-btn" id="btn-dive" onclick="setStageMode('dive')">03 Tensor Dive</button>
       <button class="dir-btn" id="btn-fpv" onclick="setStageMode('fpv')">04 FPV Flight</button>
+      <button class="dir-btn" id="btn-arena" onclick="setStageMode('arena')">05 3D Graphs</button>
     </div>
   </div>
 
@@ -3276,31 +3281,1000 @@ Check: bat costs $1.05, total $1.10</div>
   const synTmp   = new THREE.Vector3();
 
   // =========================================================================
-  // 3. STATE MACHINE: PORTAL <-> SILICON MODES & FPV INTERIOR CANYON RIG
+  // 2I. LIVE-UPDATING 3D WORLD-SPACE TELEMETRY AMPHITHEATER BEHIND THE MODEL!
+  //     (5 Volumetric CNC & Crystal Hardware Sculptures Driven by Real 1Hz OS,
+  //      Live Colab CUDA Stream, 52L OOM Curves & Safetensors Shards!)
+  // =========================================================================
+  const telemetryArenaGroup = new THREE.Group();
+  siliconWorld.add(telemetryArenaGroup);
+
+  const arenaHitBoxes = [];
+  const arenaPlaques = [];
+
+  // Shared Theme-Aware Physical Materials for the 3D Telemetry Amphitheater
+  const matArenaBezel = new THREE.MeshPhysicalMaterial({
+    color: 0xCFD6E4,
+    metalness: 0.62,
+    roughness: 0.28,
+    clearcoat: 0.14,
+    bumpMap: brushedMap,
+    bumpScale: 0.003,
+    envMapIntensity: 0.88
+  });
+
+  const matArenaBackplate = new THREE.MeshPhysicalMaterial({
+    color: 0xECEFF6,
+    metalness: 0.12,
+    roughness: 0.55,
+    clearcoat: 0.08,
+    envMapIntensity: 0.45
+  });
+
+  const matArenaPlinth = new THREE.MeshPhysicalMaterial({
+    color: 0x222938,
+    metalness: 0.48,
+    roughness: 0.32,
+    clearcoat: 0.14,
+    bumpMap: brushedMap,
+    bumpScale: 0.0025,
+    envMapIntensity: 0.78
+  });
+
+  const matCoralBlade = new THREE.MeshPhysicalMaterial({
+    color: 0xFF5A5F,
+    emissive: 0x521215,
+    emissiveIntensity: 0.24,
+    metalness: 0.24,
+    roughness: 0.26,
+    clearcoat: 0.25
+  });
+
+  const matArenaPrism = new THREE.MeshPhysicalMaterial({
+    color: 0xFFFFFF,
+    metalness: 0.28,
+    roughness: 0.28,
+    clearcoat: 0.20,
+    clearcoatRoughness: 0.18,
+    bumpMap: siliconMaps.bumpTex,
+    bumpScale: 0.0018,
+    envMapIntensity: 0.72
+  });
+
+  const matArenaGridLine = new THREE.LineBasicMaterial({
+    color: 0x9AA4B8,
+    transparent: true,
+    opacity: 0.42
+  });
+
+  // 1. Giant 3D World-Space Monument Backdrop Behind the Central Superchip (MOTION.md Plane 1!)
+  const monumentCnv = document.createElement('canvas');
+  monumentCnv.width = 1536;
+  monumentCnv.height = 512;
+  const monumentCtx = monumentCnv.getContext('2d');
+  const monumentTex = new THREE.CanvasTexture(monumentCnv);
+  monumentTex.encoding = THREE.sRGBEncoding;
+  monumentTex.anisotropy = 4;
+  const monumentMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(8.8, 2.93),
+    new THREE.MeshBasicMaterial({ map: monumentTex, transparent: true, depthWrite: false })
+  );
+  monumentMesh.position.set(0, 0.52, -4.85);
+  telemetryArenaGroup.add(monumentMesh);
+
+  let monumentCacheKey = '';
+  function renderWorldMonument(darkNow, wallGib, crushText) {
+    const key = `${darkNow ? 1 : 0}|${wallGib}|${crushText}`;
+    if (monumentCacheKey === key) return;
+    monumentCacheKey = key;
+    const cw = 1536, ch = 512;
+    monumentCtx.clearRect(0, 0, cw, ch);
+
+    monumentCtx.strokeStyle = darkNow ? 'rgba(94, 102, 126, 0.26)' : 'rgba(90, 102, 128, 0.22)';
+    monumentCtx.lineWidth = 4;
+    monumentCtx.font = '800 186px "Space Grotesk", -apple-system, sans-serif';
+    monumentCtx.textAlign = 'center';
+    monumentCtx.textBaseline = 'middle';
+    monumentCtx.strokeText(`${wallGib.toFixed(2)} GiB WALL`, cw * 0.5, ch * 0.36);
+
+    monumentCtx.font = '900 112px "Inter", -apple-system, sans-serif';
+    monumentCtx.strokeStyle = darkNow ? 'rgba(255, 90, 95, 0.22)' : 'rgba(255, 90, 95, 0.20)';
+    monumentCtx.strokeText(`${crushText || '9.12x'} PRICED QUANTA`, cw * 0.5, ch * 0.74);
+    monumentTex.needsUpdate = true;
+  }
+
+  // 2. Curved Architectural Floor Track + 4 CoWoS Copper Telemetry Conduits & 8 Racing Data Packets
+  const arenaArcPts = [];
+  for (let i = 0; i <= 96; i++) {
+    const ang = -Math.PI * 0.78 + (i / 96) * Math.PI * 0.56; // Sweeps behind z < 0
+    const theta = (i / 96 - 0.5) * 1.68;
+    arenaArcPts.push(new THREE.Vector3(Math.sin(theta) * 5.65, floorY + 0.014, -Math.cos(theta) * 4.15 - 0.35));
+  }
+  const arenaFloorArc = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(arenaArcPts),
+    new THREE.LineBasicMaterial({ color: 0x0057E7, transparent: true, opacity: 0.45 })
+  );
+  telemetryArenaGroup.add(arenaFloorArc);
+
+  const arenaBusTargets = [
+    [-1.15, -4.92, -3.02],
+    [-0.45, -2.18, -3.40],
+    [ 0.45,  2.18, -3.40],
+    [ 1.15,  4.92, -3.02]
+  ];
+  const arenaFloorPackets = [];
+  arenaBusTargets.forEach(([sx, ex, ez], idx) => {
+    const curve = new THREE.CubicBezierCurve3(
+      new THREE.Vector3(sx, floorY + 0.05, -1.36),
+      new THREE.Vector3(sx * 1.5, floorY + 0.05, -2.15),
+      new THREE.Vector3(ex * 0.82, floorY + 0.05, ez + 0.55),
+      new THREE.Vector3(ex, floorY + 0.08, ez)
+    );
+    const tube = new THREE.Mesh(
+      new THREE.TubeGeometry(curve, 32, 0.016, 8, false),
+      idx % 2 === 0 ? matCopperMetal : matEmeraldBus
+    );
+    telemetryArenaGroup.add(tube);
+
+    for (let p = 0; p < 2; p++) {
+      const orb = new THREE.Mesh(new THREE.SphereGeometry(0.042, 10, 10), matPhotonPulse);
+      telemetryArenaGroup.add(orb);
+      arenaFloorPackets.push({ mesh: orb, curve, offset: idx * 0.23 + p * 0.5 });
+    }
+  });
+
+  // Full-Height Floor-to-Crown Brushed Titanium Amphitheater Truss Columns
+  [
+    [-6.26, -2.54], [-3.56, -3.48],
+    [-2.18, -3.40], [ 2.18, -3.40],
+    [ 3.56, -3.48], [ 6.26, -2.54]
+  ].forEach(([tx, tz], k) => {
+    const colH = (k === 2 || k === 3) ? 7.45 : 6.18;
+    const colCenterY = floorY + colH * 0.5;
+    const truss = new THREE.Mesh(new THREE.CylinderGeometry(0.030, 0.030, colH, 16), matArenaBezel);
+    truss.position.set(tx, colCenterY, tz);
+    telemetryArenaGroup.add(truss);
+
+    const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.095, 0.10, 16), matCopperMetal);
+    foot.position.set(tx, floorY + 0.05, tz);
+    telemetryArenaGroup.add(foot);
+  });
+
+  // Helper: Crisp 2x Retina Dynamic CNC Plaque Texture (Zero frame cost unless text/theme changes!)
+  function createDynamicPlaque(wWorld, hWorld, cw, ch) {
+    const cnv = document.createElement('canvas');
+    cnv.width = cw;
+    cnv.height = ch;
+    const ctx = cnv.getContext('2d');
+    const tex = new THREE.CanvasTexture(cnv);
+    tex.encoding = THREE.sRGBEncoding;
+    tex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    const mesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(wWorld, hWorld),
+      new THREE.MeshBasicMaterial({ map: tex, transparent: true })
+    );
+    const meta = { mesh, cnv, ctx, tex, cw, ch, cacheKey: '' };
+    arenaPlaques.push(meta);
+    return meta;
+  }
+
+  function updateHeaderPlaque(plaque, kicker, kpi, dotHex, darkNow) {
+    const key = `${darkNow ? 1 : 0}|${kicker}|${kpi}|${dotHex}`;
+    if (plaque.cacheKey === key) return;
+    plaque.cacheKey = key;
+    const { ctx, cw, ch, tex } = plaque;
+    ctx.clearRect(0, 0, cw, ch);
+
+    ctx.fillStyle = darkNow ? 'rgba(20, 24, 34, 0.96)' : 'rgba(255, 255, 255, 0.96)';
+    ctx.strokeStyle = darkNow ? '#343C52' : '#CFD6E6';
+    ctx.lineWidth = 4;
+    const r = 18;
+    ctx.beginPath();
+    ctx.moveTo(r, 4); ctx.lineTo(cw - r, 4);
+    ctx.quadraticCurveTo(cw - 4, 4, cw - 4, r);
+    ctx.lineTo(cw - 4, ch - r);
+    ctx.quadraticCurveTo(cw - 4, ch - 4, cw - r, ch - 4);
+    ctx.lineTo(r, ch - 4);
+    ctx.quadraticCurveTo(4, ch - 4, 4, ch - r);
+    ctx.lineTo(4, r);
+    ctx.quadraticCurveTo(4, 4, r, 4);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = dotHex;
+    ctx.beginPath();
+    ctx.arc(34, ch * 0.5, 10, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = darkNow ? '#9AA4BA' : '#586174';
+    ctx.font = '700 28px "JetBrains Mono", -apple-system, monospace';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(kicker, 58, ch * 0.5 + 1);
+
+    ctx.fillStyle = darkNow ? '#F4F6FA' : '#12151E';
+    ctx.font = '700 46px "Space Grotesk", -apple-system, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(kpi, cw - 28, ch * 0.5 + 2);
+    tex.needsUpdate = true;
+  }
+
+  function updateFooterPlaque(plaque, leftTxt, rightTxt, rightHex, darkNow) {
+    const key = `${darkNow ? 1 : 0}|${leftTxt}|${rightTxt}|${rightHex}`;
+    if (plaque.cacheKey === key) return;
+    plaque.cacheKey = key;
+    const { ctx, cw, ch, tex } = plaque;
+    ctx.clearRect(0, 0, cw, ch);
+
+    ctx.fillStyle = darkNow ? 'rgba(22, 26, 36, 0.94)' : 'rgba(244, 246, 251, 0.96)';
+    ctx.strokeStyle = darkNow ? '#2E3548' : '#D5DCEB';
+    ctx.lineWidth = 3;
+    ctx.fillRect(4, 4, cw - 8, ch - 8);
+    ctx.strokeRect(4, 4, cw - 8, ch - 8);
+
+    ctx.font = '700 26px "JetBrains Mono", -apple-system, monospace';
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = darkNow ? '#A4AEC4' : '#4E5668';
+    ctx.fillText(leftTxt, 24, ch * 0.5 + 1);
+
+    ctx.textAlign = 'right';
+    ctx.fillStyle = rightHex || (darkNow ? '#E2E8F0' : '#1E293B');
+    ctx.fillText(rightTxt, cw - 24, ch * 0.5 + 1);
+    tex.needsUpdate = true;
+  }
+
+  // Reusable 3D CNC Instrument Stage Builder (Physical Recessed Backplate + Plinth + 3D Depth Cage)
+  function build3DGraphBay(x, y, z, rotY, wingId) {
+    const bay = new THREE.Group();
+    bay.position.set(x, y, z);
+    bay.rotation.y = rotY;
+    telemetryArenaGroup.add(bay);
+
+    const W = 3.04, H = 2.10, D = 0.56;
+
+    // Recessed Matte Backplate
+    const backMesh = new THREE.Mesh(createChamferBox(W, H - 0.16, 0.06, 0.010, 1), matArenaBackplate);
+    backMesh.position.set(0, 0.02, -0.22);
+    bay.add(backMesh);
+
+    // Bottom CNC Stage Deck Plinth + Copper Corner Bolts
+    const deckMesh = new THREE.Mesh(createChamferBox(W + 0.08, 0.13, D, 0.014, 2), matArenaPlinth);
+    deckMesh.position.set(0, -0.78, 0.02);
+    bay.add(deckMesh);
+
+    const topRail = new THREE.Mesh(createChamferBox(W + 0.06, 0.08, 0.30, 0.010, 1), matArenaBezel);
+    topRail.position.set(0, 1.04, -0.10);
+    bay.add(topRail);
+
+    [-W * 0.49, W * 0.49].forEach(rx => {
+      const sidePost = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, H - 0.06, 12), matArenaBezel);
+      sidePost.position.set(rx, 0.12, -0.18);
+      const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.044, 0.044, 0.06, 12), matCopperMetal);
+      collar.position.set(rx, -0.68, -0.18);
+      bay.add(sidePost, collar);
+    });
+
+    // 3D Volumetric Coordinate Grid Cage (Back + Side Depth Ticks!)
+    const gPts = [];
+    const y0 = -0.71, yTop = 0.56;
+    [0.0, 0.33, 0.66, 1.0].forEach(f => {
+      const gy = y0 + f * (yTop - y0);
+      gPts.push(new THREE.Vector3(-1.38, gy, -0.185), new THREE.Vector3(1.38, gy, -0.185));
+      gPts.push(new THREE.Vector3(-1.38, gy, -0.185), new THREE.Vector3(-1.38, gy, 0.22));
+      gPts.push(new THREE.Vector3( 1.38, gy, -0.185), new THREE.Vector3( 1.38, gy, 0.22));
+    });
+    for (let gx = -3; gx <= 3; gx++) {
+      const vx = gx * 0.45;
+      gPts.push(new THREE.Vector3(vx, y0, -0.185), new THREE.Vector3(vx, yTop, -0.185));
+      gPts.push(new THREE.Vector3(vx, y0, -0.185), new THREE.Vector3(vx, y0, 0.24));
+    }
+    bay.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(gPts), matArenaGridLine));
+
+    // Dynamic 2x Retina CNC Header & Plinth Footer Plaques
+    const headPlaque = createDynamicPlaque(2.94, 0.38, 896, 116);
+    headPlaque.mesh.position.set(0, 0.80, -0.06);
+    bay.add(headPlaque.mesh);
+
+    const footPlaque = createDynamicPlaque(2.96, 0.25, 896, 78);
+    footPlaque.mesh.position.set(0, -0.96, 0.20);
+    bay.add(footPlaque.mesh);
+
+    // Invisible Raycast Hitbox so clicking any 3D Graph Bay smoothly zooms in to inspect it!
+    const hitBox = new THREE.Mesh(
+      new THREE.BoxGeometry(W + 0.1, H + 0.3, D + 0.2),
+      new THREE.MeshBasicMaterial({ visible: false })
+    );
+    hitBox.userData = { arenaWingId: wingId, focusX: x * 0.82, focusY: y, focusZ: z + 0.8, focusYaw: -rotY * 0.55 };
+    bay.add(hitBox);
+    arenaHitBoxes.push(hitBox);
+
+    return { bay, headPlaque, footPlaque, deckY: -0.71, maxBarH: 1.24 };
+  }
+
+  // -------------------------------------------------------------------------
+  // SCULPTURE 0: CENTER-OVERHEAD 3D SEGMENTED 8.00 GiB HARDWARE WALL BRIDGE
+  // -------------------------------------------------------------------------
+  const envBridgeGroup = new THREE.Group();
+  envBridgeGroup.position.set(0, 4.10, -3.40);
+  telemetryArenaGroup.add(envBridgeGroup);
+
+  const envHousing = new THREE.Mesh(createChamferBox(4.56, 0.36, 0.40, 0.016, 2), matArenaPlinth);
+  envHousing.position.set(0, -0.16, 0);
+  envBridgeGroup.add(envHousing);
+
+  const envBackTrim = new THREE.Mesh(createChamferBox(4.64, 0.07, 0.44, 0.010, 1), matArenaBezel);
+  envBackTrim.position.set(0, 0.05, 0);
+  envBridgeGroup.add(envBackTrim);
+
+  // Physical Signal Coral 8.00 GiB Hardware Wall Gate on the Right End (+2.08)
+  const envWallGate = new THREE.Mesh(createChamferBox(0.055, 0.46, 0.48, 0.008, 1), matCoralBlade);
+  envWallGate.position.set(2.08, -0.14, 0.02);
+  envBridgeGroup.add(envWallGate);
+
+  const envPlaque = createDynamicPlaque(4.48, 0.36, 1280, 104);
+  envPlaque.mesh.position.set(0, 0.29, 0.04);
+  envBridgeGroup.add(envPlaque.mesh);
+
+  function updateEnvBridgePlaque(summaryStr, badgeStr, isLiveColab, darkNow) {
+    const key = `${darkNow ? 1 : 0}|${summaryStr}|${badgeStr}|${isLiveColab ? 1 : 0}`;
+    if (envPlaque.cacheKey === key) return;
+    envPlaque.cacheKey = key;
+    const { ctx, cw, ch, tex } = envPlaque;
+    ctx.clearRect(0, 0, cw, ch);
+
+    ctx.fillStyle = darkNow ? 'rgba(20, 24, 34, 0.96)' : 'rgba(255, 255, 255, 0.97)';
+    ctx.strokeStyle = darkNow ? '#363E54' : '#CBD3E4';
+    ctx.lineWidth = 4;
+    ctx.fillRect(4, 4, cw - 8, ch - 8);
+    ctx.strokeRect(4, 4, cw - 8, ch - 8);
+
+    ctx.fillStyle = isLiveColab ? '#10B981' : '#F59E0B';
+    ctx.beginPath();
+    ctx.arc(34, ch * 0.5, 11, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.font = '700 27px "JetBrains Mono", monospace';
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = darkNow ? '#A4AEC4' : '#4E5668';
+    ctx.fillText(badgeStr, 58, ch * 0.5 + 1);
+
+    ctx.font = '700 38px "Space Grotesk", sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillStyle = darkNow ? '#F4F6FA' : '#12151E';
+    ctx.fillText(summaryStr, cw - 26, ch * 0.5 + 2);
+    tex.needsUpdate = true;
+  }
+
+  // 4 Dynamic Volumetric 3D Crystal Segments (Weights, KV Cache, Split-K, Free Headroom)
+  const segUnitGeo = new THREE.BoxGeometry(1.0, 0.22, 0.28);
+  segUnitGeo.translate(0.5, 0, 0); // Left-anchored at x = 0 so scale.x extrudes cleanly rightward!
+  const matSegWeights = new THREE.MeshPhysicalMaterial({ color: 0x0057E7, metalness: 0.30, roughness: 0.24, clearcoat: 0.3 });
+  const matSegKv      = new THREE.MeshPhysicalMaterial({ color: 0x059669, metalness: 0.30, roughness: 0.24, clearcoat: 0.3 });
+  const matSegWs      = new THREE.MeshPhysicalMaterial({ color: 0xD97706, metalness: 0.45, roughness: 0.24, clearcoat: 0.3 });
+  const matSegFree    = new THREE.MeshPhysicalMaterial({ color: 0x64748B, metalness: 0.15, roughness: 0.45, transparent: true, opacity: 0.28 });
+
+  const seg3DWeights = new THREE.Mesh(segUnitGeo, matSegWeights);
+  const seg3DKv      = new THREE.Mesh(segUnitGeo, matSegKv);
+  const seg3DWs      = new THREE.Mesh(segUnitGeo, matSegWs);
+  const seg3DFree    = new THREE.Mesh(segUnitGeo, matSegFree);
+  [seg3DWeights, seg3DKv, seg3DWs, seg3DFree].forEach(m => {
+    m.position.set(-2.08, -0.15, 0.08);
+    envBridgeGroup.add(m);
+  });
+
+  const envHit = new THREE.Mesh(new THREE.BoxGeometry(4.7, 0.9, 0.6), new THREE.MeshBasicMaterial({ visible: false }));
+  envHit.userData = { arenaWingId: 0, focusX: 0, focusY: 3.6, focusZ: -2.2, focusYaw: 0.0 };
+  envBridgeGroup.add(envHit);
+  arenaHitBoxes.push(envHit);
+
+  // -------------------------------------------------------------------------
+  // SCULPTURE 1 (LEFT UPPER): 3D GPU VRAM WATERFALL & 8.00 GiB CEILING BLADE
+  // -------------------------------------------------------------------------
+  const bay1 = build3DGraphBay(-4.92, 1.76, -3.02, 0.30, 1);
+  const N_BARS_32 = 32;
+  const unitBarGeo = new THREE.BoxGeometry(0.064, 1.0, 0.20);
+  unitBarGeo.translate(0, 0.5, 0); // Bottom-anchored at y = 0!
+
+  const vram3DBars = new THREE.InstancedMesh(unitBarGeo, matArenaPrism, N_BARS_32);
+  vram3DBars.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  for (let i = 0; i < N_BARS_32; i++) vram3DBars.setColorAt(i, initCol);
+  bay1.bay.add(vram3DBars);
+
+  // Dynamic Front-Plane 3D Extruded Ribbon + Crest Tube for CUDA Allocated Trace
+  const vramRibbonGeo = new THREE.BufferGeometry();
+  vramRibbonGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N_BARS_32 * 2 * 3), 3));
+  const ribIndices = [];
+  for (let i = 0; i < N_BARS_32 - 1; i++) {
+    const a = i * 2, b = a + 1, c = a + 2, d = a + 3;
+    ribIndices.push(a, b, c, b, d, c);
+  }
+  vramRibbonGeo.setIndex(ribIndices);
+  const vram3DRibbon = new THREE.Mesh(
+    vramRibbonGeo,
+    new THREE.MeshBasicMaterial({ color: 0x10B981, transparent: true, opacity: 0.24, side: THREE.DoubleSide })
+  );
+  bay1.bay.add(vram3DRibbon);
+
+  const vramCrestGeo = new THREE.BufferGeometry();
+  vramCrestGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N_BARS_32 * 3), 3));
+  const vram3DCrest = new THREE.Line(
+    vramCrestGeo,
+    new THREE.LineBasicMaterial({ color: 0x10B981, linewidth: 2 })
+  );
+  bay1.bay.add(vram3DCrest);
+
+  // Physical Signal Coral 8.00 GiB 3D Ceiling Blade Slicing Across the 32 Prisms!
+  const vram3DCeiling = new THREE.Mesh(createChamferBox(2.84, 0.026, 0.42, 0.005, 1), matCoralBlade);
+  vram3DCeiling.position.set(0, bay1.deckY + 0.98, 0.02);
+  bay1.bay.add(vram3DCeiling);
+
+  // -------------------------------------------------------------------------
+  // SCULPTURE 2 (LEFT LOWER): LIVE 1Hz MAC OS KERNEL (vm_stat) 3D OSCILLOSCOPE
+  // -------------------------------------------------------------------------
+  const bay2 = build3DGraphBay(-4.92, -0.98, -3.02, 0.30, 2);
+
+  const macRam3DBars = new THREE.InstancedMesh(unitBarGeo, matArenaPrism, N_BARS_32);
+  macRam3DBars.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  for (let i = 0; i < N_BARS_32; i++) macRam3DBars.setColorAt(i, initCol);
+  bay2.bay.add(macRam3DBars);
+
+  // Second Z-Plane (z = +0.16): 32 Floating 3D Copper CPU Load Voxels + Live 3D CPU Waveform!
+  const cpuCubeGeo = createChamferBox(0.056, 0.048, 0.068, 0.006, 1);
+  const macCpu3DCubes = new THREE.InstancedMesh(cpuCubeGeo, matCopperMetal, N_BARS_32);
+  macCpu3DCubes.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  bay2.bay.add(macCpu3DCubes);
+
+  const macCpuLineGeo = new THREE.BufferGeometry();
+  macCpuLineGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(N_BARS_32 * 3), 3));
+  const macCpu3DLine = new THREE.Line(
+    macCpuLineGeo,
+    new THREE.LineBasicMaterial({ color: 0xF59E0B })
+  );
+  bay2.bay.add(macCpu3DLine);
+
+  // -------------------------------------------------------------------------
+  // SCULPTURE 3 (RIGHT UPPER): 3D 52-LAYER SCALING & OOM CRASH SKYLINE (3 Z-TRACKS!)
+  // -------------------------------------------------------------------------
+  const bay3 = build3DGraphBay(4.92, 1.76, -3.02, -0.30, 3);
+  const N_TOWERS_26 = 26; // Pairs of the 52 layers across 3 depth tracks (78 physical 3D towers!)
+  const towerUnitGeo = new THREE.BoxGeometry(0.078, 1.0, 0.11);
+  towerUnitGeo.translate(0, 0.5, 0);
+
+  const oom3DTowers = new THREE.InstancedMesh(towerUnitGeo, matArenaPrism, N_TOWERS_26 * 3);
+  oom3DTowers.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+  for (let i = 0; i < N_TOWERS_26 * 3; i++) oom3DTowers.setColorAt(i, initCol);
+  bay3.bay.add(oom3DTowers);
+
+  const oom3DCeiling = new THREE.Mesh(createChamferBox(2.84, 0.026, 0.46, 0.005, 1), matCoralBlade);
+  oom3DCeiling.position.set(0, bay3.deckY + 0.62, 0.0);
+  bay3.bay.add(oom3DCeiling);
+
+  // 10 Tumbling 3D OOM Fracture Shards Above FP16 L08 & Q4 L26 Crash Points!
+  const oomShards = [];
+  const shardOctGeo = new THREE.OctahedronGeometry(0.055, 0);
+  for (let s = 0; s < 10; s++) {
+    const isFp16 = s < 6;
+    const m = new THREE.Mesh(shardOctGeo, isFp16 ? matCoralBlade : matCopperMetal);
+    bay3.bay.add(m);
+    oomShards.push({ mesh: m, isFp16, phase: s * 1.13 });
+  }
+
+  // Active Layer 3D Vertical Beacon Ring Tracking selectedLayer / liveWaveLayer!
+  const oomActiveBeacon = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.016, 0.016, 1.26, 10),
+    new THREE.MeshBasicMaterial({ color: 0x38BDF8, transparent: true, opacity: 0.85 })
+  );
+  oomActiveBeacon.position.set(0, bay3.deckY + 0.63, 0.15);
+  bay3.bay.add(oomActiveBeacon);
+
+  // -------------------------------------------------------------------------
+  // SCULPTURE 4 (RIGHT LOWER): 3D DECODE SPEED TURBINES & 4 SHARD MONOLITHS
+  // -------------------------------------------------------------------------
+  const bay4 = build3DGraphBay(4.92, -0.98, -3.02, -0.30, 4);
+  const pistonGeo = new THREE.BoxGeometry(1.0, 0.135, 0.18);
+  pistonGeo.translate(0.5, 0, 0); // Extrudes rightward from x = -1.30!
+
+  const pistonMats = [
+    matCoralBlade,
+    new THREE.MeshPhysicalMaterial({ color: 0x0057E7, metalness: 0.32, roughness: 0.24, clearcoat: 0.28 }),
+    new THREE.MeshPhysicalMaterial({ color: 0x059669, metalness: 0.32, roughness: 0.24, clearcoat: 0.28 })
+  ];
+  const speed3DPistons = [];
+  const speed3DRings = [];
+  [0.34, 0.08, -0.18].forEach((py, idx) => {
+    // Machined Track Groove
+    const track = new THREE.Mesh(new THREE.BoxGeometry(2.60, 0.04, 0.06), matArenaBezel);
+    track.position.set(0.0, py, -0.02);
+    bay4.bay.add(track);
+
+    const bar = new THREE.Mesh(pistonGeo, pistonMats[idx]);
+    bar.position.set(-1.30, py, 0.02);
+    bay4.bay.add(bar);
+    speed3DPistons.push(bar);
+
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(0.095, 0.016, 10, 24),
+      matPhotonPulse
+    );
+    ring.rotation.y = Math.PI * 0.5;
+    ring.position.set(-1.25, py, 0.02);
+    bay4.bay.add(ring);
+    speed3DRings.push(ring);
+  });
+
+  // 4 Physical 3D .safetensors Shard Monoliths Along the Lower Deck!
+  const shardMonolithGeo = new THREE.BoxGeometry(1.0, 0.22, 0.26);
+  shardMonolithGeo.translate(0.5, 0, 0);
+  const shardMats4 = [
+    new THREE.MeshPhysicalMaterial({ color: 0x0057E7, metalness: 0.32, roughness: 0.25, clearcoat: 0.28 }),
+    new THREE.MeshPhysicalMaterial({ color: 0x059669, metalness: 0.32, roughness: 0.25, clearcoat: 0.28 }),
+    matCoralBlade,
+    matCopperMetal
+  ];
+  const shard3DMeshes = [];
+  for (let s = 0; s < 4; s++) {
+    const sm = new THREE.Mesh(shardMonolithGeo, shardMats4[s]);
+    sm.position.set(-1.30 + s * 0.66, -0.54, 0.02);
+    sm.scale.set(0.58, 1, 1);
+    bay4.bay.add(sm);
+    shard3DMeshes.push(sm);
+  }
+
+  // Live 3D Telemetry State Buffers (100% Driven by Real Backend Data, Smoothly Lerped at 60 FPS!)
+  const tel3D = {
+    wallGib: 8.0,
+    peakGib: 7.29,
+    allocGib: 7.03,
+    smiMib: 8108,
+    payloadGb: 6.53,
+    crushStr: '9.12x',
+    colabLive: false,
+    pingMs: 0,
+    segTarget: [7.03, 0.24, 0.02, 0.71],
+    segCurr:   [7.03, 0.24, 0.02, 0.71],
+    vramTarget: new Float32Array(N_BARS_32).fill(7.27),
+    vramCurr:   new Float32Array(N_BARS_32).fill(0.2),
+    cudaTarget: new Float32Array(N_BARS_32).fill(7.03),
+    cudaCurr:   new Float32Array(N_BARS_32).fill(0.2),
+    macTotalGib: 8.0,
+    macUsedGib: 6.0,
+    macFreeGib: 2.0,
+    macCpuPct: 20.0,
+    macPlatform: 'Darwin arm64',
+    macRamTarget: new Float32Array(N_BARS_32).fill(6.0),
+    macRamCurr:   new Float32Array(N_BARS_32).fill(0.2),
+    macCpuTarget: new Float32Array(N_BARS_32).fill(20.0),
+    macCpuCurr:   new Float32Array(N_BARS_32).fill(2.0),
+    fp16CrashL: 8,
+    q4CrashL: 26,
+    oomFp16: new Float32Array(N_TOWERS_26),
+    oomQ4:   new Float32Array(N_TOWERS_26),
+    oomLean: new Float32Array(N_TOWERS_26),
+    oomCurr: new Float32Array(N_TOWERS_26 * 3).fill(0.05),
+    speedTarget: [0.15, 9.00, 19.41],
+    speedCurr:   [0.15, 9.00, 19.41],
+    shardsGib:   [1.59, 1.42, 1.42, 1.76]
+  };
+  for (let i = 0; i < N_TOWERS_26; i++) {
+    const lIdx = i * 2 + 1;
+    tel3D.oomFp16[i] = (lIdx / 52) * 55.5;
+    tel3D.oomQ4[i]   = (lIdx / 52) * 15.8;
+    tel3D.oomLean[i] = 0.8 + (lIdx / 52) * 6.49;
+  }
+
+  function resampleArrayTo(srcArr, nOut, fallbackVal) {
+    const out = new Float32Array(nOut);
+    if (!srcArr || srcArr.length === 0) {
+      out.fill(fallbackVal);
+      return out;
+    }
+    if (srcArr.length === 1) {
+      out.fill(srcArr[0]);
+      return out;
+    }
+    for (let i = 0; i < nOut; i++) {
+      const u = (i / (nOut - 1)) * (srcArr.length - 1);
+      const i0 = Math.floor(u);
+      const i1 = Math.min(srcArr.length - 1, i0 + 1);
+      const f = u - i0;
+      out[i] = srcArr[i0] * (1 - f) + srcArr[i1] * f;
+    }
+    return out;
+  }
+
+  function update3DTelemetryState(data) {
+    const g = data.gpu_telemetry || {};
+    const h = data.host_telemetry || {};
+    const tp = data.throughput || {};
+    const arch = data.architecture || {};
+    const gr = data.graphs || {};
+    const colab = data.colab || {};
+
+    tel3D.wallGib = Math.max(1.0, g.wall_gib || 8.0);
+    tel3D.peakGib = g.peak_gib || 0;
+    tel3D.allocGib = g.allocated_gib || g.persistent_gib || 0;
+    tel3D.smiMib = g.nvidia_smi_mib || 0;
+    tel3D.payloadGb = arch.payload_gb || 6.53;
+    tel3D.crushStr = arch.compression_ratio || '9.12x';
+    tel3D.colabLive = !!colab.connected;
+    tel3D.pingMs = colab.ping_ms || 0;
+
+    const seg = g.segments_gib || {};
+    tel3D.segTarget = [
+      seg.weights_gib || 0,
+      seg.kv_cache_gib || 0,
+      seg.workspace_gib || 0,
+      Math.max(0, seg.headroom_gib || 0)
+    ];
+
+    const liveGpu = gr.gpu_live_60s || [];
+    const m18Trace = gr.stage_trace_m18 || [];
+    const useLive = tel3D.colabLive && liveGpu.length >= 2;
+    const vRaw = useLive
+      ? liveGpu.slice(-N_BARS_32).map(p => p.peak_gib || p.vram_gib || 0)
+      : m18Trace.map(p => p.effective_gib || p.cuda_alloc_gib || 0);
+    const cRaw = useLive
+      ? liveGpu.slice(-N_BARS_32).map(p => p.vram_gib || 0)
+      : m18Trace.map(p => p.cuda_alloc_gib || 0);
+    tel3D.vramTarget = resampleArrayTo(vRaw, N_BARS_32, tel3D.peakGib);
+    tel3D.cudaTarget = resampleArrayTo(cRaw, N_BARS_32, tel3D.allocGib);
+
+    // 100% Real-Time 1Hz Local Mac Kernel Stream (Shifts & Morphs Every Second!)
+    tel3D.macTotalGib = Math.max(1.0, h.mac_ram_total_gb || 8.0);
+    tel3D.macUsedGib  = h.mac_ram_used_gb || 0;
+    tel3D.macFreeGib  = h.mac_ram_free_gb || 0;
+    tel3D.macCpuPct   = h.mac_cpu_pct || 0;
+    tel3D.macPlatform = h.mac_platform || 'Darwin';
+
+    const hostHist = (gr.host_live_60s || []).slice(-N_BARS_32);
+    if (hostHist.length > 0) {
+      // Pad left with earliest real sample so newest live samples march cleanly in from the right!
+      const ramPadded = [];
+      const cpuPadded = [];
+      const padCount = Math.max(0, N_BARS_32 - hostHist.length);
+      for (let k = 0; k < padCount; k++) {
+        ramPadded.push(hostHist[0].ram_used_gib);
+        cpuPadded.push(hostHist[0].cpu_pct);
+      }
+      hostHist.forEach(pt => {
+        ramPadded.push(pt.ram_used_gib);
+        cpuPadded.push(pt.cpu_pct);
+      });
+      tel3D.macRamTarget = Float32Array.from(ramPadded);
+      tel3D.macCpuTarget = Float32Array.from(cpuPadded);
+    }
+
+    const lTraces = gr.layer_scaling_52 || [];
+    const oom = gr.oom_meta || {};
+    tel3D.fp16CrashL = oom.fp16_crash_layer || 8;
+    tel3D.q4CrashL   = oom.q4_crash_layer || 26;
+    if (lTraces.length >= 26) {
+      for (let i = 0; i < N_TOWERS_26; i++) {
+        const d = lTraces[Math.min(lTraces.length - 1, i * 2 + 1)];
+        tel3D.oomFp16[i] = d.fp16_30b_theoretical_gib || 0;
+        tel3D.oomQ4[i]   = d.q4_k_m_30b_theoretical_gib || 0;
+        tel3D.oomLean[i] = d.lean_30b_rss_gib || 0;
+      }
+    }
+
+    tel3D.speedTarget = [
+      tp.airllm_ssd_tok_per_sec || 0.15,
+      tp.last_tok_per_sec || 0,
+      tp.in_ram_tok_per_sec || tp.last_tok_per_sec || 19.41
+    ];
+
+    const shards = arch.shards || [];
+    if (shards.length >= 4) {
+      tel3D.shardsGib = shards.slice(0, 4).map(s => s.size_gib || 1.5);
+    }
+  }
+
+  const barDummy = new THREE.Object3D();
+  const barColTmp = new THREE.Color();
+
+  function update3DTelemetryMeshes(t, activeLayerIdx) {
+    if (!telemetryArenaGroup.visible) return;
+
+    const wall = tel3D.wallGib;
+    const isFractureOverflow = rigCurr.fp16Bloated > 0.35;
+
+    // 0. World Monument & Floor Telemetry Packets
+    renderWorldMonument(isDarkTheme, wall, tel3D.crushStr);
+    arenaFloorPackets.forEach(pkt => {
+      const u = (t * (isGenerating ? 0.95 : 0.38) + pkt.offset) % 1.0;
+      pkt.mesh.position.copy(pkt.curve.getPointAt(u));
+    });
+
+    // 1. Center-Overhead 8.00 GiB Segmented Hardware Wall Bridge
+    const innerSpan = 4.16;
+    let curX = -2.08;
+    for (let k = 0; k < 4; k++) {
+      const tgt = (k === 0 && isFractureOverflow)
+        ? wall * (1.0 + rigCurr.fp16Bloated * 0.22)
+        : tel3D.segTarget[k];
+      tel3D.segCurr[k] += (tgt - tel3D.segCurr[k]) * 0.14;
+    }
+    matSegWeights.color.setHex(isFractureOverflow ? 0xFF5A5F : (isDarkTheme ? 0x2E90FA : 0x0057E7)).convertSRGBToLinear();
+
+    const segMeshes = [seg3DWeights, seg3DKv, seg3DWs, seg3DFree];
+    segMeshes.forEach((m, idx) => {
+      const wFrac = Math.max(0.0, tel3D.segCurr[idx] / wall);
+      const wWorld = wFrac * innerSpan;
+      m.visible = wWorld > 0.018 && !(isFractureOverflow && idx > 0);
+      m.position.x = curX;
+      m.scale.x = Math.max(0.015, wWorld - 0.022);
+      curX += wWorld;
+    });
+
+    const envBadge = tel3D.colabLive
+      ? `LIVE COLAB STREAM · ${tel3D.pingMs}ms RTT`
+      : '8.00 GiB VRAM HARDWARE ENVELOPE';
+    const envSummary = isFractureOverflow
+      ? `RAW FP16 59.90 GB > ${wall.toFixed(2)} GiB OOM!`
+      : `${tel3D.peakGib.toFixed(2)} / ${wall.toFixed(2)} GiB (${Math.max(0, wall - tel3D.peakGib).toFixed(2)}G FREE)`;
+    updateEnvBridgePlaque(envSummary, envBadge, tel3D.colabLive, isDarkTheme);
+
+    // 2. Sculpture 1: 32-Column 3D GPU VRAM Waterfall + Front-Plane 3D CUDA Ribbon
+    const maxVramScale = Math.max(wall * 1.18, ...tel3D.vramTarget);
+    const ceilY1 = bay1.deckY + (wall / maxVramScale) * bay1.maxBarH;
+    vram3DCeiling.position.y += (ceilY1 - vram3DCeiling.position.y) * 0.15;
+
+    const ribArr = vramRibbonGeo.attributes.position.array;
+    const crsArr = vramCrestGeo.attributes.position.array;
+
+    for (let i = 0; i < N_BARS_32; i++) {
+      const bx = -1.32 + (i / (N_BARS_32 - 1)) * 2.64;
+      const waveBoost = isGenerating && activeLayerIdx >= 0
+        ? Math.exp(-Math.pow((i / 31) - (activeLayerIdx / 51), 2) * 36.0) * 0.22
+        : 0.0;
+      const tgtV = isFractureOverflow
+        ? wall * (1.06 + 0.10 * Math.sin(i * 0.35 + t * 4.0))
+        : (tel3D.vramTarget[i] + waveBoost);
+      const tgtC = isFractureOverflow ? tgtV * 0.94 : (tel3D.cudaTarget[i] + waveBoost * 0.7);
+
+      tel3D.vramCurr[i] += (tgtV - tel3D.vramCurr[i]) * 0.14;
+      tel3D.cudaCurr[i] += (tgtC - tel3D.cudaCurr[i]) * 0.14;
+
+      const hBar = Math.max(0.03, Math.min(bay1.maxBarH * 1.06, (tel3D.vramCurr[i] / maxVramScale) * bay1.maxBarH));
+      barDummy.position.set(bx, bay1.deckY, -0.02);
+      barDummy.rotation.set(0, 0, 0);
+      barDummy.scale.set(1, hBar, 1);
+      barDummy.updateMatrix();
+      vram3DBars.setMatrixAt(i, barDummy.matrix);
+
+      if (tel3D.vramCurr[i] > wall) {
+        barColTmp.copy(colCoralMid);
+      } else if (waveBoost > 0.06) {
+        barColTmp.copy(colBlueBright);
+      } else {
+        barColTmp.copy(colCrownSapphire);
+      }
+      vram3DBars.setColorAt(i, barColTmp);
+
+      const hCuda = Math.max(0.02, Math.min(bay1.maxBarH, (tel3D.cudaCurr[i] / maxVramScale) * bay1.maxBarH));
+      ribArr[i * 6]     = bx; ribArr[i * 6 + 1] = bay1.deckY;          ribArr[i * 6 + 2] = 0.15;
+      ribArr[i * 6 + 3] = bx; ribArr[i * 6 + 4] = bay1.deckY + hCuda;  ribArr[i * 6 + 5] = 0.15;
+      crsArr[i * 3]     = bx; crsArr[i * 3 + 1] = bay1.deckY + hCuda;  crsArr[i * 3 + 2] = 0.155;
+    }
+    vram3DBars.instanceMatrix.needsUpdate = true;
+    if (vram3DBars.instanceColor) vram3DBars.instanceColor.needsUpdate = true;
+    vramRibbonGeo.attributes.position.needsUpdate = true;
+    vramCrestGeo.attributes.position.needsUpdate = true;
+
+    updateHeaderPlaque(
+      bay1.headPlaque,
+      tel3D.colabLive ? '01 · COLAB VRAM LIVE' : '01 · GPU VRAM TRACE',
+      isFractureOverflow ? '59.9 GB!' : `${tel3D.peakGib.toFixed(2)} GiB`,
+      isFractureOverflow ? '#FF5A5F' : (tel3D.colabLive ? '#10B981' : '#2E90FA'),
+      isDarkTheme
+    );
+    updateFooterPlaque(
+      bay1.footPlaque,
+      `ALLOC ${tel3D.allocGib.toFixed(2)} GiB`,
+      `WALL ${wall.toFixed(2)} GiB`,
+      '#FF5A5F',
+      isDarkTheme
+    );
+
+    // 3. Sculpture 2: Live 1Hz Local Mac Kernel (vm_stat RAM Prisms + Floating Copper CPU Cubes)
+    const cpuArr = macCpuLineGeo.attributes.position.array;
+    for (let i = 0; i < N_BARS_32; i++) {
+      const bx = -1.32 + (i / (N_BARS_32 - 1)) * 2.64;
+      tel3D.macRamCurr[i] += (tel3D.macRamTarget[i] - tel3D.macRamCurr[i]) * 0.14;
+      tel3D.macCpuCurr[i] += (tel3D.macCpuTarget[i] - tel3D.macCpuCurr[i]) * 0.14;
+
+      const hRam = Math.max(0.04, Math.min(bay2.maxBarH, (tel3D.macRamCurr[i] / tel3D.macTotalGib) * bay2.maxBarH));
+      barDummy.position.set(bx, bay2.deckY, -0.04);
+      barDummy.scale.set(1, hRam, 1);
+      barDummy.updateMatrix();
+      macRam3DBars.setMatrixAt(i, barDummy.matrix);
+      macRam3DBars.setColorAt(i, i === N_BARS_32 - 1 ? colBlueBright : colEmerald);
+
+      const yCpu = bay2.deckY + Math.max(0.05, Math.min(bay2.maxBarH, (tel3D.macCpuCurr[i] / 100.0) * bay2.maxBarH));
+      barDummy.position.set(bx, yCpu, 0.16);
+      barDummy.scale.set(1, 1, 1);
+      barDummy.updateMatrix();
+      macCpu3DCubes.setMatrixAt(i, barDummy.matrix);
+
+      cpuArr[i * 3] = bx; cpuArr[i * 3 + 1] = yCpu; cpuArr[i * 3 + 2] = 0.16;
+    }
+    macRam3DBars.instanceMatrix.needsUpdate = true;
+    if (macRam3DBars.instanceColor) macRam3DBars.instanceColor.needsUpdate = true;
+    macCpu3DCubes.instanceMatrix.needsUpdate = true;
+    macCpuLineGeo.attributes.position.needsUpdate = true;
+
+    updateHeaderPlaque(
+      bay2.headPlaque,
+      '02 · MAC KERNEL (1HZ)',
+      `${tel3D.macUsedGib.toFixed(2)} GiB`,
+      '#10B981',
+      isDarkTheme
+    );
+    updateFooterPlaque(
+      bay2.footPlaque,
+      `CPU ${tel3D.macCpuPct.toFixed(1)}% · vm_stat`,
+      `FREE ${tel3D.macFreeGib.toFixed(2)}G`,
+      isDarkTheme ? '#38BDF8' : '#0057E7',
+      isDarkTheme
+    );
+
+    // 4. Sculpture 3: 3-Track 52-Layer Scaling & OOM Crash Skyline (78 Stepped 3D Towers!)
+    const capOomGib = 14.5;
+    const ceilY3 = bay3.deckY + (wall / capOomGib) * bay3.maxBarH;
+    oom3DCeiling.position.y = ceilY3;
+
+    const fp16CutIdx = Math.max(1, Math.floor(tel3D.fp16CrashL / 2));
+    const q4CutIdx   = Math.max(2, Math.floor(tel3D.q4CrashL / 2));
+    const focusTower = Math.min(N_TOWERS_26 - 1, Math.floor((activeLayerIdx >= 0 ? activeLayerIdx : selectedLayer) / 2));
+
+    for (let i = 0; i < N_TOWERS_26; i++) {
+      const tx = -1.30 + (i / (N_TOWERS_26 - 1)) * 2.60;
+
+      // Track 0 (Rear z = -0.15): FP16 30B -> Crashes at L08!
+      const hFpTgt = i <= fp16CutIdx ? Math.min(bay3.maxBarH * 1.05, (tel3D.oomFp16[i] / capOomGib) * bay3.maxBarH) : 0.001;
+      tel3D.oomCurr[i] += (hFpTgt - tel3D.oomCurr[i]) * 0.14;
+      barDummy.position.set(tx, bay3.deckY, -0.15);
+      barDummy.scale.set(i <= fp16CutIdx ? 1 : 0.001, Math.max(0.001, tel3D.oomCurr[i]), 1);
+      barDummy.updateMatrix();
+      oom3DTowers.setMatrixAt(i, barDummy.matrix);
+      oom3DTowers.setColorAt(i, colCoralMid);
+
+      // Track 1 (Mid z = 0.00): Uniform Q4_K_M -> Crashes at L26!
+      const idxQ = N_TOWERS_26 + i;
+      const hQ4Tgt = i <= q4CutIdx ? Math.min(bay3.maxBarH * 0.96, (tel3D.oomQ4[i] / capOomGib) * bay3.maxBarH) : 0.001;
+      tel3D.oomCurr[idxQ] += (hQ4Tgt - tel3D.oomCurr[idxQ]) * 0.14;
+      barDummy.position.set(tx, bay3.deckY, 0.0);
+      barDummy.scale.set(i <= q4CutIdx ? 1 : 0.001, Math.max(0.001, tel3D.oomCurr[idxQ]), 1);
+      barDummy.updateMatrix();
+      oom3DTowers.setMatrixAt(idxQ, barDummy.matrix);
+      oom3DTowers.setColorAt(idxQ, colCopperPin);
+
+      // Track 2 (Front z = +0.15): Muse-Glimmer-30B -> Completes all 52/52 Layers Safely Under 8.0 GiB!
+      const idxL = N_TOWERS_26 * 2 + i;
+      const isFocus = i === focusTower;
+      const hLnTgt = Math.min(bay3.maxBarH, (tel3D.oomLean[i] / capOomGib) * bay3.maxBarH) + (isFocus ? 0.09 : 0.0);
+      tel3D.oomCurr[idxL] += (hLnTgt - tel3D.oomCurr[idxL]) * 0.16;
+      barDummy.position.set(tx, bay3.deckY, 0.15);
+      barDummy.scale.set(isFocus ? 1.25 : 1.0, Math.max(0.03, tel3D.oomCurr[idxL]), isFocus ? 1.25 : 1.0);
+      barDummy.updateMatrix();
+      oom3DTowers.setMatrixAt(idxL, barDummy.matrix);
+      oom3DTowers.setColorAt(idxL, isFocus ? colBlueBright : colEmerald);
+
+      if (isFocus) {
+        oomActiveBeacon.position.x = tx;
+      }
+    }
+    oom3DTowers.instanceMatrix.needsUpdate = true;
+    if (oom3DTowers.instanceColor) oom3DTowers.instanceColor.needsUpdate = true;
+
+    // Animate Tumbling 3D OOM Fracture Shards at FP16 L08 & Q4 L26!
+    const fpCrashX = -1.30 + (fp16CutIdx / (N_TOWERS_26 - 1)) * 2.60;
+    const q4CrashX = -1.30 + (q4CutIdx / (N_TOWERS_26 - 1)) * 2.60;
+    oomShards.forEach((sh, k) => {
+      const cx = sh.isFp16 ? fpCrashX : q4CrashX;
+      const cz = sh.isFp16 ? -0.15 : 0.0;
+      const ang = t * 1.8 + sh.phase;
+      sh.mesh.position.set(
+        cx + Math.cos(ang) * 0.13,
+        ceilY3 + 0.12 + (k % 3) * 0.08 + Math.sin(t * 2.4 + sh.phase) * 0.03,
+        cz + Math.sin(ang) * 0.09
+      );
+      sh.mesh.rotation.set(t * 2.1 + sh.phase, t * 1.6, 0);
+    });
+
+    updateHeaderPlaque(
+      bay3.headPlaque,
+      '03 · 52L SCALING & OOM',
+      `${tel3D.crushStr} Crush`,
+      '#FF5A5F',
+      isDarkTheme
+    );
+    updateFooterPlaque(
+      bay3.footPlaque,
+      `✕ FP16 L0${tel3D.fp16CrashL} · ✕ Q4 L${tel3D.q4CrashL}`,
+      `✓ LEAN L${(activeLayerIdx >= 0 ? activeLayerIdx : selectedLayer) + 1}/52`,
+      '#10B981',
+      isDarkTheme
+    );
+
+    // 5. Sculpture 4: 3D Decode Speed Pistons + Racing Photon Rings + 4 Safetensors Shards
+    const maxSpd = Math.max(20.0, ...tel3D.speedTarget) * 1.06;
+    for (let k = 0; k < 3; k++) {
+      tel3D.speedCurr[k] += (tel3D.speedTarget[k] - tel3D.speedCurr[k]) * 0.14;
+      const barW = Math.max(0.06, (tel3D.speedCurr[k] / maxSpd) * 2.56);
+      speed3DPistons[k].scale.x = barW;
+
+      const rate = Math.max(0.08, tel3D.speedCurr[k] * 0.16);
+      const uRing = (t * rate) % 1.0;
+      speed3DRings[k].position.x = -1.28 + uRing * Math.max(0.08, barW - 0.04);
+    }
+
+    const totShG = tel3D.shardsGib.reduce((a, b) => a + b, 0) || 6.19;
+    const activeShard = Math.floor(((activeLayerIdx >= 0 ? activeLayerIdx : selectedLayer)) / 13);
+    let sx = -1.30;
+    for (let s = 0; s < 4; s++) {
+      const sw = ((tel3D.shardsGib[s] || 1.5) / totShG) * 2.60;
+      const isActShard = s === activeShard;
+      shard3DMeshes[s].position.x = sx;
+      shard3DMeshes[s].position.z += ((isActShard ? 0.13 : 0.02) - shard3DMeshes[s].position.z) * 0.16;
+      shard3DMeshes[s].scale.x = Math.max(0.1, sw - 0.045);
+      shard3DMeshes[s].scale.y += ((isActShard ? 1.24 : 1.0) - shard3DMeshes[s].scale.y) * 0.16;
+      sx += sw;
+    }
+
+    updateHeaderPlaque(
+      bay4.headPlaque,
+      '04 · DECODE & 4 SHARDS',
+      `${tel3D.speedTarget[1].toFixed(2)} tok/s`,
+      '#2E90FA',
+      isDarkTheme
+    );
+    updateFooterPlaque(
+      bay4.footPlaque,
+      `SMI ${tel3D.smiMib.toLocaleString()} MiB`,
+      `S${activeShard + 1}/4 · ${tel3D.payloadGb.toFixed(2)} GB`,
+      '#10B981',
+      isDarkTheme
+    );
+  }
+
+  // =========================================================================
+  // 3. STATE MACHINE: PORTAL <-> SILICON MODES, 3D TELEMETRY ARENA & FPV RIG
   // =========================================================================
   const urlParams = new URLSearchParams(window.location.search);
   let inPortal = !urlParams.has('studio');
-  let stageMode = urlParams.get('mode') || 'quantize'; // 'monolith' | 'fracture' | 'quantize' | 'dive' | 'fpv'
+  let stageMode = urlParams.get('mode') || 'quantize'; // 'monolith' | 'fracture' | 'quantize' | 'dive' | 'fpv' | 'arena'
   const fixedUParam = urlParams.has('u') ? parseFloat(urlParams.get('u')) : null;
   const fixedYawParam = urlParams.has('yaw') ? parseFloat(urlParams.get('yaw')) : null;
   let selectedLayer = 26;
   let hoveredLayer = -1;
+  let hoveredArenaHit = null;
+  let focusedArenaWing = -1;
+  let inspectorPinned = false;
+  let arena3DVisible = urlParams.get('arena3d') !== '0';
+  let userYawOffset = (fixedYawParam !== null && !isNaN(fixedYawParam)) ? fixedYawParam : 0.0;
   let isGenerating = false;
   let liveWaveLayer = -1;
   let liveDmaLayer = 26;
   let sheetCollapsed = false;
   let telemetryOpen = urlParams.get('telemetry') === '1';
+  let currViewShiftPx = 0.0;
 
   function computeStageLookX() {
     if (inPortal) return 0.0;
-    if (stageMode === 'dive') {
-      if (telemetryOpen && !sheetCollapsed) return -0.10;
-      if (telemetryOpen && sheetCollapsed) return -0.65;
-      return sheetCollapsed ? 0.0 : 0.55;
+    if (focusedArenaWing >= 0 && arenaHitBoxes[focusedArenaWing]) {
+      return arenaHitBoxes[focusedArenaWing].userData.focusX || 0.0;
     }
-    if (telemetryOpen && !sheetCollapsed) return -0.18; // Centers 3D chip cleanly between 504px Telemetry Sheet & 450px Console!
-    if (telemetryOpen && sheetCollapsed)  return -0.92;
-    return sheetCollapsed ? 0.0 : 1.08;
+    return 0.0;
+  }
+
+  function computeDesiredViewShiftPx() {
+    if (inPortal || sheetCollapsed) return 0.0;
+    if (telemetryOpen) return -window.innerWidth * 0.018; // Centered between 504px left sheet & 450px right console!
+    const fpvNow = (stageMode === 'fpv' || promptFpvActive) && fpvCamEnabled;
+    return window.innerWidth * (fpvNow ? 0.068 : 0.132);  // Symmetrically centers 3D Chip + 3D Graphs in open 0..1130px stage!
   }
 
   // FPV Prompt Tracking & Interior Canyon State
@@ -3310,13 +4284,13 @@ Check: bat costs $1.05, total $1.10</div>
   let fpvBlend = (stageMode === 'fpv' && !inPortal) ? 1.0 : 0.0;
   let activePromptSnippet = '6,656-D RESIDUAL';
 
-  // Camera Spherical Orbit Targets (Poised front-hero angle so all 3 columns read cleanly with breathing room!)
+  // Camera Spherical Orbit Targets
   const camTarget = {
-    yaw: (fixedYawParam !== null && !isNaN(fixedYawParam)) ? fixedYawParam : 0.28,
-    pitch: 0.17,
-    dist: inPortal ? 12.6 : (telemetryOpen ? 13.4 : 12.6),
-    lookX: computeStageLookX(),
-    lookY: inPortal ? 0.0 : -0.06,
+    yaw: userYawOffset,
+    pitch: 0.13,
+    dist: inPortal ? 12.6 : (arena3DVisible ? 15.6 : 12.6),
+    lookX: 0.0,
+    lookY: inPortal ? 0.0 : 0.24,
     lookZ: 0.0
   };
 
@@ -3365,15 +4339,40 @@ Check: bat costs $1.05, total $1.10</div>
     fillEl.style.width = `${pct}%`;
   }
 
+  function syncInspectorVisibility() {
+    const insp = document.getElementById('node-inspector');
+    if (!insp) return;
+    const showInsp = !inPortal && !telemetryOpen && (stageMode === 'dive' || inspectorPinned);
+    insp.classList.toggle('hidden-by-tel', !showInsp);
+    if (!showInsp) leaderSvg.innerHTML = '';
+  }
+
+  function dismissInspector() {
+    inspectorPinned = false;
+    syncInspectorVisibility();
+  }
+
+  function toggleArena3D(forceVal) {
+    arena3DVisible = (typeof forceVal === 'boolean') ? forceVal : !arena3DVisible;
+    telemetryArenaGroup.visible = arena3DVisible;
+    const btn = document.getElementById('arena3d-toggle-btn');
+    if (btn) btn.classList.toggle('active-pill', arena3DVisible);
+    if (!arena3DVisible) focusedArenaWing = -1;
+    if (!inPortal && (stageMode === 'quantize' || stageMode === 'monolith' || stageMode === 'arena')) {
+      camTarget.dist = arena3DVisible ? 15.6 : 12.6;
+      camTarget.lookX = computeStageLookX();
+    }
+  }
+
   function setStageMode(mode) {
     stageMode = mode;
-    ['monolith', 'fracture', 'quantize', 'dive', 'fpv'].forEach(m => {
+    if (mode !== 'arena') focusedArenaWing = -1;
+    ['monolith', 'fracture', 'quantize', 'dive', 'fpv', 'arena'].forEach(m => {
       const b = document.getElementById('btn-' + m);
       if (b) b.classList.toggle('active', m === mode);
     });
 
-    const lookXBase = computeStageLookX();
-    const openDist = telemetryOpen ? 13.4 : 12.6;
+    const openDist = arena3DVisible ? 15.6 : 12.6;
     if (mode === 'monolith') {
       rigTarget.shellOpen = 0.0;
       rigTarget.fp16Bloated = 0.0;
@@ -3382,20 +4381,22 @@ Check: bat costs $1.05, total $1.10</div>
       rigTarget.layerGap = 0.0;
       rigTarget.fpvTunnel = 0.0;
       camTarget.dist = openDist;
-      camTarget.pitch = 0.20;
-      camTarget.lookX = lookXBase;
-      camTarget.lookY = -0.10;
+      camTarget.pitch = 0.14;
+      camTarget.lookX = computeStageLookX();
+      camTarget.lookY = 0.24;
+      camTarget.lookZ = 0.0;
     } else if (mode === 'fracture') {
       rigTarget.shellOpen = 1.45;
-      rigTarget.fp16Bloated = 1.0; // Explodes all 1,248 MLP matrix voxels outside the 8 GiB cage!
+      rigTarget.fp16Bloated = 1.0; // Explodes all 1,248 MLP matrix voxels outside the 8 GiB cage + surges 3D VRAM bars!
       rigTarget.wingSpread = 0.95;
       rigTarget.pinExtract = 0.30;
       rigTarget.layerGap = 0.11;
       rigTarget.fpvTunnel = 0.0;
-      camTarget.dist = telemetryOpen ? 14.1 : 13.4;
-      camTarget.pitch = 0.24;
-      camTarget.lookX = lookXBase;
-      camTarget.lookY = -0.05;
+      camTarget.dist = arena3DVisible ? 16.0 : 13.4;
+      camTarget.pitch = 0.16;
+      camTarget.lookX = computeStageLookX();
+      camTarget.lookY = 0.24;
+      camTarget.lookZ = 0.0;
     } else if (mode === 'quantize') {
       rigTarget.shellOpen = 1.0;
       rigTarget.fp16Bloated = 0.0; // Crushes 9.17x inward into crystalline 2-bit/4-bit wafers!
@@ -3404,9 +4405,23 @@ Check: bat costs $1.05, total $1.10</div>
       rigTarget.layerGap = 0.09;
       rigTarget.fpvTunnel = 0.0;
       camTarget.dist = openDist;
-      camTarget.pitch = 0.17;
-      camTarget.lookX = lookXBase;
-      camTarget.lookY = -0.06;
+      camTarget.pitch = 0.13;
+      camTarget.lookX = computeStageLookX();
+      camTarget.lookY = 0.24;
+      camTarget.lookZ = 0.0;
+    } else if (mode === 'arena') {
+      toggleArena3D(true);
+      rigTarget.shellOpen = 1.0;
+      rigTarget.fp16Bloated = 0.0;
+      rigTarget.wingSpread = 1.0;
+      rigTarget.pinExtract = 1.0;
+      rigTarget.layerGap = 0.09;
+      rigTarget.fpvTunnel = 0.0;
+      camTarget.dist = 14.8;
+      camTarget.pitch = 0.11;
+      camTarget.lookX = computeStageLookX();
+      camTarget.lookY = 0.42;
+      camTarget.lookZ = -0.5;
     } else if (mode === 'dive') {
       rigTarget.shellOpen = 1.35;
       rigTarget.fp16Bloated = 0.0;
@@ -3417,8 +4432,9 @@ Check: bat costs $1.05, total $1.10</div>
       const selY = (-2.52 + (selectedLayer / 51) * 5.04) * 1.22;
       camTarget.dist = 5.4;
       camTarget.pitch = 0.34;
-      camTarget.lookX = computeStageLookX();
+      camTarget.lookX = 0.0;
       camTarget.lookY = selY;
+      camTarget.lookZ = 0.0;
     } else if (mode === 'fpv') {
       fpvCamEnabled = true;
       const camBtn = document.getElementById('fpv-cam-btn');
@@ -3429,20 +4445,27 @@ Check: bat costs $1.05, total $1.10</div>
       rigTarget.pinExtract = 1.26;
       rigTarget.layerGap = 0.24;
       rigTarget.fpvTunnel = 1.0;
-      camTarget.dist = 12.8;
-      camTarget.pitch = 0.22;
-      camTarget.lookX = lookXBase;
-      camTarget.lookY = 0.85;
+      camTarget.dist = 13.8;
+      camTarget.pitch = 0.18;
+      camTarget.lookX = 0.0;
+      camTarget.lookY = 0.65;
+      camTarget.lookZ = 0.0;
     }
+    syncInspectorVisibility();
     updateNodeInspector(selectedLayer);
     updateFpvHud(selectedLayer, fpvClimbU);
   }
+
+  telemetryArenaGroup.visible = arena3DVisible;
+  const aBtnInit = document.getElementById('arena3d-toggle-btn');
+  if (aBtnInit) aBtnInit.classList.toggle('active-pill', arena3DVisible);
 
   if (!inPortal) {
     document.getElementById('portal-overlay').classList.add('hidden');
     document.getElementById('studio-ui').classList.add('active');
     siliconWorld.visible = true;
     portalRingsGroup.visible = false;
+    currViewShiftPx = computeDesiredViewShiftPx();
     setStageMode(stageMode);
   }
 
@@ -3486,18 +4509,13 @@ Check: bat costs $1.05, total $1.10</div>
 
   function syncTelemetryDrawerUI() {
     const drw = document.getElementById('telemetry-drawer');
-    const insp = document.getElementById('node-inspector');
     const tBtn = document.getElementById('telemetry-toggle-btn');
     const rBadge = document.getElementById('tel-ribbon-badge');
     if (drw) drw.classList.toggle('open', telemetryOpen);
-    if (insp) insp.classList.toggle('hidden-by-tel', telemetryOpen);
     if (tBtn) tBtn.classList.toggle('active-pill', telemetryOpen);
-    if (rBadge) rBadge.textContent = telemetryOpen ? 'Close ✕' : 'Graphs ↗';
-    if (telemetryOpen) leaderSvg.innerHTML = '';
+    if (rBadge) rBadge.textContent = telemetryOpen ? 'Close ✕' : 'Colab ↗';
+    syncInspectorVisibility();
     camTarget.lookX = computeStageLookX();
-    if (stageMode === 'quantize' || stageMode === 'monolith') {
-      camTarget.dist = telemetryOpen ? 13.4 : 12.6;
-    }
   }
 
   function toggleTelemetryDrawer(forceState) {
@@ -3545,13 +4563,20 @@ Check: bat costs $1.05, total $1.10</div>
       const dy = e.clientY - dragStart.y;
       dragStart.x = e.clientX;
       dragStart.y = e.clientY;
-      camTarget.yaw -= dx * 0.0065;
+      userYawOffset -= dx * 0.0065;
+      camTarget.yaw = userYawOffset;
       camTarget.pitch = Math.max(-0.12, Math.min(0.85, camTarget.pitch + dy * 0.0055));
     } else if (!inPortal && e.target === canvas) {
       raycaster.setFromCamera(pointerNDC, camera);
       const hits = raycaster.intersectObjects(hitSlabs, false);
       hoveredLayer = hits.length > 0 ? hits[0].object.userData.layerIdx : -1;
-      canvas.style.cursor = hoveredLayer >= 0 ? 'pointer' : 'grab';
+      if (hoveredLayer < 0 && arena3DVisible) {
+        const aHits = raycaster.intersectObjects(arenaHitBoxes, false);
+        hoveredArenaHit = aHits.length > 0 ? aHits[0].object : null;
+      } else {
+        hoveredArenaHit = null;
+      }
+      canvas.style.cursor = (hoveredLayer >= 0 || hoveredArenaHit) ? 'pointer' : 'grab';
     }
   });
 
@@ -3569,11 +4594,33 @@ Check: bat costs $1.05, total $1.10</div>
     if (!isDragging) return;
     const moved = Math.hypot(e.clientX - dragStart.x, e.clientY - dragStart.y);
     isDragging = false;
-    if (moved < 5 && hoveredLayer >= 0) {
-      selectedLayer = hoveredLayer;
-      updateNodeInspector(selectedLayer);
-      if (stageMode === 'dive') {
-        camTarget.lookY = (-2.52 + (selectedLayer / 51) * 5.04) * (1 + rigTarget.layerGap);
+    if (moved < 5) {
+      if (hoveredLayer >= 0) {
+        selectedLayer = hoveredLayer;
+        inspectorPinned = true;
+        syncInspectorVisibility();
+        updateNodeInspector(selectedLayer);
+        if (stageMode === 'dive') {
+          camTarget.lookY = (-2.52 + (selectedLayer / 51) * 5.04) * (1 + rigTarget.layerGap);
+        }
+      } else if (hoveredArenaHit) {
+        const ud = hoveredArenaHit.userData;
+        if (focusedArenaWing === ud.arenaWingId) {
+          focusedArenaWing = -1;
+          setStageMode('quantize');
+        } else {
+          focusedArenaWing = ud.arenaWingId;
+          camTarget.lookX = ud.focusX;
+          camTarget.lookY = ud.focusY;
+          camTarget.lookZ = ud.focusZ;
+          userYawOffset = ud.focusYaw;
+          camTarget.yaw = ud.focusYaw;
+          camTarget.dist = 6.2;
+          camTarget.pitch = 0.08;
+        }
+      } else if (focusedArenaWing >= 0) {
+        focusedArenaWing = -1;
+        setStageMode(stageMode === 'arena' ? 'arena' : 'quantize');
       }
     }
   });
@@ -3725,6 +4772,15 @@ Check: bat costs $1.05, total $1.10</div>
     wallWire.material.color.setHex(isDarkTheme ? 0x3B82F6 : 0x0057E7);
     streamPoints.material.color.setHex(isDarkTheme ? 0x60A5FA : 0x0057E7);
 
+    // Theme-Aware 3D Telemetry Amphitheater Materials (Airy Silver-Alabaster in Daylight, Gunmetal-Obsidian in Dark!)
+    matArenaBezel.color.setHex(isDarkTheme ? 0x363E52 : 0xCFD6E6).convertSRGBToLinear();
+    matArenaBackplate.color.setHex(isDarkTheme ? 0x141824 : 0xEFF2F8).convertSRGBToLinear();
+    matArenaPlinth.color.setHex(isDarkTheme ? 0x1D2230 : 0x262E40).convertSRGBToLinear();
+    matArenaGridLine.color.setHex(isDarkTheme ? 0x384158 : 0xB8C2D6);
+    arenaFloorArc.material.color.setHex(isDarkTheme ? 0x3B82F6 : 0x0057E7);
+    monumentCacheKey = '';
+    arenaPlaques.forEach(p => { p.cacheKey = ''; });
+
     // High-contrast wafer palette:
     // - Bulk 2-bit core: Deep Space-Indigo Slate (0x2A3244) in Light Mode so every layer pops against #F3F4F6!
     //                    Rich Satin Gunmetal-Slate (0x3A455C) in Dark Mode so every layer stands out on #0B0B0E!
@@ -3792,9 +4848,14 @@ Check: bat costs $1.05, total $1.10</div>
       }
     }
 
-    // Gentle orbital motion when idle in exterior Studio view (locked when ?yaw= is specified for front inspection)
-    if (!inPortal && !isDragging && fpvBlend < 0.25 && fixedYawParam === null) {
-      camTarget.yaw += isGenerating ? 0.0024 : 0.00055;
+    // Gentle front-arc parallax sweep when 3D Graphs are visible so the Superchip glides in front of the 3D Amphitheater!
+    if (!inPortal && !isDragging && fpvBlend < 0.25 && fixedYawParam === null && focusedArenaWing < 0) {
+      if (arena3DVisible) {
+        camTarget.yaw = userYawOffset + Math.sin(t * 0.32) * (isGenerating ? 0.22 : 0.14);
+      } else {
+        userYawOffset += isGenerating ? 0.0024 : 0.00055;
+        camTarget.yaw = userYawOffset;
+      }
     }
 
     // Smooth Spring Damping
@@ -3804,6 +4865,8 @@ Check: bat costs $1.05, total $1.10</div>
     for (const k of Object.keys(rigTarget)) {
       rigCurr[k] += (rigTarget[k] - rigCurr[k]) * 0.085;
     }
+    const desiredShiftPx = computeDesiredViewShiftPx();
+    currViewShiftPx += (desiredShiftPx - currViewShiftPx) * 0.10;
 
     portalUniforms.uImplode.value = rigCurr.implode;
     portalUniforms.uOpacity.value = Math.max(0.0, 1.0 - rigCurr.implode * 0.92);
@@ -3866,19 +4929,20 @@ Check: bat costs $1.05, total $1.10</div>
       );
 
       const desiredFov = 40.0 + 16.0 * b;
-      if (Math.abs(camera.fov - desiredFov) > 0.02 || b > 0.004) {
-        camera.fov = desiredFov;
-        if (b > 0.004 && !sheetCollapsed) {
-          const shiftLeftPx = Math.round(window.innerWidth * 0.062 * b);
-          camera.setViewOffset(window.innerWidth, window.innerHeight, shiftLeftPx, 0, window.innerWidth, window.innerHeight);
-        } else {
-          camera.clearViewOffset();
-        }
-        camera.updateProjectionMatrix();
+      camera.fov = desiredFov;
+      if (Math.abs(currViewShiftPx) > 0.5) {
+        camera.setViewOffset(
+          window.innerWidth,
+          window.innerHeight,
+          Math.round(currViewShiftPx),
+          0,
+          window.innerWidth,
+          window.innerHeight
+        );
       } else if (camera.view && camera.view.enabled) {
         camera.clearViewOffset();
-        camera.updateProjectionMatrix();
       }
+      camera.updateProjectionMatrix();
     }
 
     // Update Silicon Superchip Voxels & FPV Prompt Carrier when visible
@@ -4092,8 +5156,8 @@ Check: bat costs $1.05, total $1.10</div>
         pkt.mesh.position.copy(pkt.curve.getPointAt(u));
       });
 
-      // 4. Position Macro Tensor Data-Flow Rays & Hide Exterior Overview Sprites During FPV Flight or 3-Column Mode
-      const showOverviewSprites = stageMode !== 'dive' && !wantCanyonFlight && !telemetryOpen && fpvBlend < 0.15 && camCurr.dist > 7.2;
+      // 4. Position Macro Tensor Data-Flow Rays & Hide 2D Sprites When 3D Telemetry Arena or FPV Flight is Active
+      const showOverviewSprites = stageMode !== 'dive' && !wantCanyonFlight && !telemetryOpen && !arena3DVisible && fpvBlend < 0.15 && camCurr.dist > 7.2;
       cadSprites.forEach(s => { s.visible = showOverviewSprites; });
       macroRayGroup.visible = (stageMode === 'dive' || (isGenerating && fpvBlend < 0.25)) && rigCurr.wingSpread > 0.4;
       if (macroRayGroup.visible) {
@@ -4111,9 +5175,12 @@ Check: bat costs $1.05, total $1.10</div>
       }
       streamGeo.attributes.position.needsUpdate = true;
 
+      // 5B. Update All 5 Volumetric 3D Telemetry Sculptures Behind the Superchip at 60 FPS!
+      update3DTelemetryMeshes(t, activeWave);
+
       // 6. Draw Single Clean SVG Leader Line (o───) from Contextual Inspector Card to Selected 3D Layer!
       const inspCard = document.getElementById('node-inspector');
-      if (inspCard && !inPortal && !telemetryOpen) {
+      if (inspCard && !inPortal && !telemetryOpen && !inspCard.classList.contains('hidden-by-tel')) {
         const cRect = inspCard.getBoundingClientRect();
         const sx = cRect.right;
         const sy = cRect.top + 34;
@@ -4167,6 +5234,7 @@ Check: bat costs $1.05, total $1.10</div>
   }
 
   function renderTelemetryGraphs(data) {
+    update3DTelemetryState(data);
     const g = data.gpu_telemetry;
     const h = data.host_telemetry;
     const tp = data.throughput;
@@ -4648,6 +5716,8 @@ Check: bat costs $1.05, total $1.10</div>
         lastTokenTick = now;
         if (streamedOk && liveSnapIdx < liveSnapshots.length) {
           const evt = liveSnapshots[liveSnapIdx++];
+          if (evt.tokens_per_sec) tel3D.speedTarget[1] = evt.tokens_per_sec;
+          if (evt.gpu_peak_gib) tel3D.peakGib = evt.gpu_peak_gib;
           const clean = (evt.text || '').replace(/\\\(|\\\)|\\\[|\\\]/g, '');
           bodyEl.innerHTML = clean.replace(/</g, '&lt;') + '<span class="stream-cursor"></span>';
           metaEl.textContent = `FPV L${padL}/51 · Token #${evt.step} (${evt.tokens_per_sec.toFixed(2)} tok/s)`;
