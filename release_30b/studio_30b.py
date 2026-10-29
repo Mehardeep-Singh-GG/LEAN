@@ -574,6 +574,7 @@ HTML_PAGE = r"""<!DOCTYPE html>
   }
   .fn-badge.blue { background: var(--blue); color: #FFFFFF; }
   .fn-badge.emerald { background: var(--emerald); color: #FFFFFF; }
+  .fn-badge.coral { background: #FF5A5F; color: #FFFFFF; }
 
   .fn-ratio {
     font-family: 'JetBrains Mono', monospace;
@@ -1306,10 +1307,9 @@ Check: bat costs $1.05, total $1.10</div>
 
   function buildStudioEnvironment(darkStudio) {
     const envScene = new THREE.Scene();
-    envScene.background = new THREE.Color(darkStudio ? 0x050508 : 0x262830);
+    envScene.background = new THREE.Color(darkStudio ? 0x090B10 : 0x20242E);
 
-    // High-Dynamic-Range (HDR > 1.0) Studio Softbox Panels + Dark Negative-Fill Flags
-    // Alternating bright softboxes & dark negative-fill gives real CNC metal & silicon razor-sharp specular roll!
+    // Controlled Satin Studio Softboxes (No 6.0x HDR glare blowouts — preserves deep, rich wafer color!)
     const addPanel = (w, h, x, y, z, rx, ry, rz, r, g, b) => {
       const mat = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
       mat.color.setRGB(r, g, b);
@@ -1319,21 +1319,21 @@ Check: bat costs $1.05, total $1.10</div>
       envScene.add(m);
     };
 
-    // Main Overhead Apple-Keynote Diffused Softbox Bank
-    addPanel(26, 18, 0, 15, 2, Math.PI * 0.5, 0, 0, darkStudio ? 5.5 : 4.6, darkStudio ? 5.7 : 4.7, darkStudio ? 6.4 : 5.0);
-    // Front-Left Grazing Specular Strip (Catches wafer & aluminum bevel chamfers!)
-    addPanel(8, 22, -13, 4, 11, 0, Math.PI * 0.28, 0, 2.4, 3.3, 5.2);
-    // Front-Right Warm Copper/Tungsten Rim Strip
-    addPanel(8, 22, 14, 5, 9, 0, -Math.PI * 0.32, 0, 4.6, 3.2, 1.7);
-    // Back Rim Kicker Strip (Defines silhouette inside & outside canyon)
-    addPanel(24, 10, 0, 9, -15, 0.22, 0, 0, 2.8, 3.6, 4.8);
-    // Deep Negative-Fill Contrast Flags on Left/Right Sides so chrome & silicon look truly metallic
-    addPanel(16, 18, -17, 0, -2, 0, Math.PI * 0.5, 0, 0.03, 0.03, 0.04);
-    addPanel(16, 18,  17, 0, -2, 0, -Math.PI * 0.5, 0, 0.03, 0.03, 0.04);
-    // Studio Bounce Floor
-    addPanel(32, 32, 0, -14, 0, -Math.PI * 0.5, 0, 0, darkStudio ? 0.12 : 0.85, darkStudio ? 0.14 : 0.88, darkStudio ? 0.20 : 0.95);
+    // Diffused Overhead Key Softbox (Balanced so horizontal wafer faces keep 100% rich saturation)
+    addPanel(24, 16, 0, 15, 3, Math.PI * 0.5, 0, 0, darkStudio ? 1.55 : 1.35, darkStudio ? 1.62 : 1.40, darkStudio ? 1.80 : 1.50);
+    // Front-Left Cool Sapphire Edge Strip (Highlights CNC bevels cleanly from the front)
+    addPanel(9, 20, -13, 4, 12, 0, Math.PI * 0.28, 0, 0.95, 1.35, 2.15);
+    // Front-Right Warm Copper/Coral Edge Strip
+    addPanel(9, 20, 13, 4, 11, 0, -Math.PI * 0.30, 0, 1.95, 1.25, 0.85);
+    // Subtle Back Rim Strip
+    addPanel(22, 9, 0, 8, -15, 0.22, 0, 0, 0.90, 1.15, 1.55);
+    // Matte Negative-Fill Side Flags for Crisp 3D Face Separation
+    addPanel(16, 18, -17, 0, -2, 0, Math.PI * 0.5, 0, 0.05, 0.06, 0.08);
+    addPanel(16, 18,  17, 0, -2, 0, -Math.PI * 0.5, 0, 0.05, 0.06, 0.08);
+    // Gentle Studio Bounce Floor
+    addPanel(32, 32, 0, -14, 0, -Math.PI * 0.5, 0, 0, darkStudio ? 0.14 : 0.45, darkStudio ? 0.16 : 0.48, darkStudio ? 0.22 : 0.54);
 
-    const rt = pmremGen.fromScene(envScene, 0.032);
+    const rt = pmremGen.fromScene(envScene, 0.04);
     return rt.texture;
   }
 
@@ -1341,12 +1341,12 @@ Check: bat costs $1.05, total $1.10</div>
   const envMapDark  = buildStudioEnvironment(true);
   scene.environment = envMapLight;
 
-  // Physical Studio Key, Rim, Fill & Interior Canyon Accent Lights
-  const hemiLight = new THREE.HemisphereLight(0xF4F7FF, 0x2A2D38, 0.42);
+  // Eye-Comfort 3-Point Studio Lighting (Crisp directional 3D face shading with zero harsh glare or shadow acne)
+  const hemiLight = new THREE.HemisphereLight(0xF8FAFF, 0x383E4E, 0.82);
   scene.add(hemiLight);
 
-  const keyLight = new THREE.DirectionalLight(0xFFFDF9, 1.45);
-  keyLight.position.set(7.5, 13.5, 9.5);
+  const keyLight = new THREE.DirectionalLight(0xFFFDF9, 0.96);
+  keyLight.position.set(6.5, 12.5, 10.5);
   keyLight.castShadow = true;
   keyLight.shadow.mapSize.width = 2048;
   keyLight.shadow.mapSize.height = 2048;
@@ -1360,12 +1360,12 @@ Check: bat costs $1.05, total $1.10</div>
   keyLight.shadow.bias = -0.0005;
   scene.add(keyLight);
 
-  const rimLight = new THREE.DirectionalLight(0x93C5FD, 0.95);
-  rimLight.position.set(-10.5, 6.5, -8.5);
+  const rimLight = new THREE.DirectionalLight(0x7CC4FA, 0.58);
+  rimLight.position.set(-9.5, 6.0, -7.5);
   scene.add(rimLight);
 
-  const warmSideLight = new THREE.DirectionalLight(0xFDE68A, 0.52);
-  warmSideLight.position.set(10.0, -1.5, 6.0);
+  const warmSideLight = new THREE.DirectionalLight(0xFFD8A8, 0.44);
+  warmSideLight.position.set(-5.0, 2.5, 11.0);
   scene.add(warmSideLight);
 
   // Precision CNC Chamfered Box Geometry Helper (Eliminates CG razor-sharp 90° edges!)
@@ -1813,69 +1813,69 @@ Check: bat costs $1.05, total $1.10</div>
     )
   );
 
-  // B. Hyperrealistic Physical Hardware Materials (PBR Clearcoat Silicon, Brushed CNC Titanium, Electroplated Gold-Copper)
+  // B. Rich Satin-Anodized Hardware Materials (Zero white glare washout, crisp beveled edge definition)
   const matAnodizedDark = new THREE.MeshPhysicalMaterial({
-    color: 0x18191E,
-    metalness: 0.84,
-    roughness: 0.24,
-    clearcoat: 0.35,
-    clearcoatRoughness: 0.22,
+    color: 0x1A1D26,
+    metalness: 0.52,
+    roughness: 0.30,
+    clearcoat: 0.16,
+    clearcoatRoughness: 0.24,
     bumpMap: brushedMap,
-    bumpScale: 0.003,
-    envMapIntensity: 1.55
+    bumpScale: 0.0025,
+    envMapIntensity: 0.85
   });
 
   const matCoWoSSubstrate = new THREE.MeshPhysicalMaterial({
     color: 0xFFFFFF,
     map: cowosMap,
-    metalness: 0.62,
-    roughness: 0.22,
-    clearcoat: 0.68,
-    clearcoatRoughness: 0.12,
+    metalness: 0.38,
+    roughness: 0.28,
+    clearcoat: 0.25,
+    clearcoatRoughness: 0.18,
     bumpMap: siliconMaps.bumpTex,
-    bumpScale: 0.0025,
-    envMapIntensity: 1.45
+    bumpScale: 0.0020,
+    envMapIntensity: 0.78
   });
 
   const matBrushedAlum = new THREE.MeshPhysicalMaterial({
-    color: 0xD4D7E0,
-    metalness: 0.90,
-    roughness: 0.23,
-    clearcoat: 0.18,
+    color: 0xC8CFDC,
+    metalness: 0.65,
+    roughness: 0.28,
+    clearcoat: 0.12,
     bumpMap: brushedMap,
-    bumpScale: 0.0055,
-    envMapIntensity: 1.65
+    bumpScale: 0.004,
+    envMapIntensity: 0.92
   });
 
   const matCopperMetal = new THREE.MeshPhysicalMaterial({
-    color: 0xDF9B32,
-    metalness: 0.95,
-    roughness: 0.15,
-    clearcoat: 0.30,
-    clearcoatRoughness: 0.10,
-    envMapIntensity: 1.95
+    color: 0xD4741C,
+    metalness: 0.72,
+    roughness: 0.22,
+    clearcoat: 0.18,
+    clearcoatRoughness: 0.14,
+    envMapIntensity: 1.05
   });
 
   const matBlueAccent = new THREE.MeshPhysicalMaterial({
-    color: 0x0A66CC,
-    metalness: 0.72,
-    roughness: 0.16,
-    clearcoat: 0.90,
-    clearcoatRoughness: 0.06,
+    color: 0x0057E7,
+    metalness: 0.36,
+    roughness: 0.24,
+    clearcoat: 0.28,
+    clearcoatRoughness: 0.14,
     bumpMap: siliconMaps.bumpTex,
-    bumpScale: 0.004,
-    envMapIntensity: 1.80
+    bumpScale: 0.0025,
+    envMapIntensity: 0.82
   });
 
   const matEmeraldBus = new THREE.MeshPhysicalMaterial({
-    color: 0x128048,
-    metalness: 0.76,
-    roughness: 0.18,
-    clearcoat: 0.82,
-    clearcoatRoughness: 0.08,
+    color: 0x059669,
+    metalness: 0.38,
+    roughness: 0.24,
+    clearcoat: 0.26,
+    clearcoatRoughness: 0.14,
     bumpMap: siliconMaps.bumpTex,
-    bumpScale: 0.004,
-    envMapIntensity: 1.70
+    bumpScale: 0.0025,
+    envMapIntensity: 0.82
   });
 
   // Soft Ground Contact Ambient Occlusion Plate + Real Shadow Receiver Plane
@@ -1968,10 +1968,8 @@ Check: bat costs $1.05, total $1.10</div>
   const crownHalfGeo = createChamferBox(1.775, 0.145, 2.52, 0.016, 2);
   const topCrownCapL = new THREE.Mesh(crownHalfGeo, matAnodizedDark);
   topCrownCapL.position.set(-0.8875, 0, 0);
-  topCrownCapL.castShadow = true;
   const topCrownCapR = new THREE.Mesh(crownHalfGeo, matAnodizedDark);
   topCrownCapR.position.set(0.8875, 0, 0);
-  topCrownCapR.castShadow = true;
 
   // Machined Gold-Copper Rim Bezel Inside the Skylight Portal
   const crownPortalRing = new THREE.Mesh(
@@ -1990,7 +1988,6 @@ Check: bat costs $1.05, total $1.10</div>
       b % 2 === 0 ? matBlueAccent : matBrushedAlum
     );
     headBank.position.set(baseX, 0.125, 0);
-    headBank.castShadow = true;
     topCrownGroup.add(headBank);
     headBanks.push({ mesh: headBank, baseX });
   }
@@ -2006,7 +2003,6 @@ Check: bat costs $1.05, total $1.10</div>
   colPositions.forEach(([cx, cz]) => {
     const colMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.034, 0.034, 5.95, 20), matBrushedAlum);
     colMesh.position.set(cx, -0.02, cz);
-    colMesh.castShadow = true;
     siliconWorld.add(colMesh);
 
     const collarBot = new THREE.Mesh(new THREE.CylinderGeometry(0.082, 0.088, 0.12, 20), matCopperMetal);
@@ -2035,7 +2031,7 @@ Check: bat costs $1.05, total $1.10</div>
     const ctx = meta.ctx;
     ctx.clearRect(0, 0, cw, ch);
 
-    ctx.fillStyle = isDark ? 'rgba(20, 20, 26, 0.92)' : 'rgba(255, 255, 255, 0.92)';
+    ctx.fillStyle = isDark ? 'rgba(18, 19, 26, 0.96)' : 'rgba(255, 255, 255, 0.97)';
     ctx.strokeStyle = isDark ? '#383846' : '#D0D2DC';
     ctx.lineWidth = 3;
     const r = 18;
@@ -2073,7 +2069,7 @@ Check: bat costs $1.05, total $1.10</div>
     tex.encoding = THREE.sRGBEncoding;
     tex.anisotropy = 4;
     const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
-    spr.scale.set(2.15, 0.35, 1);
+    spr.scale.set(1.92, 0.31, 1);
     spr.position.copy(posVec3);
     siliconWorld.add(spr);
     const meta = { spr, cnv, ctx, tex, label, lightAccentHex, darkAccentHex };
@@ -2081,36 +2077,36 @@ Check: bat costs $1.05, total $1.10</div>
     return meta;
   }
 
-  const sprCrownMeta = makeCadSprite('LM HEAD · 202,048 VOCAB', '#0066CC', '#2997FF', new THREE.Vector3(0.0, 3.48, 0.0));
-  const sprOutMeta   = makeCadSprite('512 INT8 OUTLIER PINS', '#B57914', '#E5A024', new THREE.Vector3(2.38, 1.35, 0.45));
-  const sprDmaMeta   = makeCadSprite('5-SLOT ASYNC DMA RING', '#157F46', '#30D158', new THREE.Vector3(-2.62, -0.65, 0.5));
-  const sprBaseMeta  = makeCadSprite('CoWoS-L INTERPOSER · DDR5', '#141416', '#EAECEF', new THREE.Vector3(1.92, floorY + 0.42, 1.48));
+  // Positioned cleanly in outer architectural margins so zero pills overlap the 52 silicon layers or bottom HUD!
+  const sprCrownMeta = makeCadSprite('LM HEAD · 202,048 VOCAB', '#0057E7', '#3B82F6', new THREE.Vector3(0.0, 3.56, 0.0));
+  const sprOutMeta   = makeCadSprite('512 INT8 OUTLIER BUS', '#C86414', '#F59E0B', new THREE.Vector3(2.96, 1.25, 0.0));
+  const sprDmaMeta   = makeCadSprite('5-SLOT ASYNC DMA RING', '#059669', '#10B981', new THREE.Vector3(-3.08, -0.32, 0.2));
+  const sprBaseMeta  = makeCadSprite('CoWoS-L INTERPOSER · DDR5', '#FF5A5F', '#FF5A5F', new THREE.Vector3(2.48, floorY + 0.04, 1.55));
   const cadSpriteMetas = [sprCrownMeta, sprOutMeta, sprDmaMeta, sprBaseMeta];
   const cadSprites = cadSpriteMetas.map(m => m.spr);
 
-  // C. 4 CNC-Milled Finned Heat-Spreader Shields with Copper Heatpipes (Fracture Outward on Stage 1!)
-  const shieldCoreGeo = createChamferBox(0.068, 1.22, 2.24, 0.012, 2);
-  const shieldFinGeo  = createChamferBox(0.042, 0.026, 2.16, 0.005, 1);
-  const shieldPipeGeo = new THREE.CylinderGeometry(0.018, 0.018, 1.18, 12);
+  // C. 4 Sleek Open Architectural C-Frame Shard Brackets (Zero Venetian-blind stripe clutter — 100% open sightlines!)
+  const bracketSpineGeo = createChamferBox(0.036, 1.16, 0.048, 0.008, 1);
+  const bracketArmGeo   = createChamferBox(0.11, 0.032, 0.056, 0.006, 1);
+  const bracketClipGeo  = createChamferBox(0.052, 0.075, 0.068, 0.006, 1);
 
-  function buildFinnedHeatsinkAssembly(sideSign) {
+  function buildOpenShardBracket(sideSign) {
     const grp = new THREE.Group();
-    const plate = new THREE.Mesh(shieldCoreGeo, matBrushedAlum);
-    plate.castShadow = true;
-    plate.receiveShadow = true;
-    grp.add(plate);
+    // Minimalist front & back slim titanium spines with copper corner clips — completely open through the center!
+    [-0.96, 0.96].forEach(zPos => {
+      const spine = new THREE.Mesh(bracketSpineGeo, matAnodizedDark);
+      spine.position.set(0, 0, zPos);
+      grp.add(spine);
 
-    // 9 Machined Horizontal Cooling Louver Fins on the Exterior Face
-    for (let f = -4; f <= 4; f++) {
-      const fin = new THREE.Mesh(shieldFinGeo, matAnodizedDark);
-      fin.position.set(sideSign * 0.046, f * 0.125, 0);
-      grp.add(fin);
-    }
-    // Twin Embedded Copper Vapor-Chamber Heatpipes
-    [-0.68, 0.68].forEach(zPos => {
-      const pipe = new THREE.Mesh(shieldPipeGeo, matCopperMetal);
-      pipe.position.set(sideSign * 0.038, 0, zPos);
-      grp.add(pipe);
+      [-0.56, 0.56].forEach(yEnd => {
+        const arm = new THREE.Mesh(bracketArmGeo, matBrushedAlum);
+        arm.position.set(-sideSign * 0.042, yEnd, zPos);
+        grp.add(arm);
+
+        const clip = new THREE.Mesh(bracketClipGeo, matCopperMetal);
+        clip.position.set(sideSign * 0.012, yEnd * 0.88, zPos);
+        grp.add(clip);
+      });
     });
     return grp;
   }
@@ -2118,70 +2114,73 @@ Check: bat costs $1.05, total $1.10</div>
   const shardShields = [];
   for (let s = 0; s < 4; s++) {
     const sy = -2.12 + s * 1.38;
-    const lShield = buildFinnedHeatsinkAssembly(-1);
+    const lShield = buildOpenShardBracket(-1);
     lShield.position.set(-1.58, sy, 0);
     siliconWorld.add(lShield);
 
-    const rShield = buildFinnedHeatsinkAssembly(1);
+    const rShield = buildOpenShardBracket(1);
     rShield.position.set(1.58, sy, 0);
     siliconWorld.add(rShield);
 
     shardShields.push({ lShield, rShield, baseY: sy, shardIdx: s });
   }
 
-  // D. 2,496 HYPERREALISTIC 3D SILICON DIES, HBM STACKS & GOLD-COPPER MICRO-PILLARS (InstancedMesh!)
+  // D. 52-LAYER SATIN-ANODIZED SILICON DIES, GQA TOWERS & PRECISION COPPER OUTLIER BUSBARS (InstancedMesh!)
   const NUM_LAYERS = 52;
   const ATTN_PER_L = 8;
   const MLP_PER_L  = 24; // 6 cols (X) x 4 rows (Z)
-  const PIN_PER_L  = 16; // 4 cols (X) x 4 rows (Z)
+  const PIN_PER_L  = 4;  // 4 sleek horizontal Burnished Copper Busbars per layer (replaces 832 noisy pegs!)
 
-  // Clearcoated Monocrystalline Silicon Photolithography Wafer Material
+  // Velvety Satin-Anodized Silicon Wafer Material (Deep, rich color fidelity from every angle, zero white washout!)
   const matSiliconDie = new THREE.MeshPhysicalMaterial({
     color: 0xFFFFFF,
-    metalness: 0.80,
-    roughness: 0.17,
+    metalness: 0.30,
+    roughness: 0.32,
     roughnessMap: siliconMaps.roughTex,
     bumpMap: siliconMaps.bumpTex,
-    bumpScale: 0.0055,
-    clearcoat: 0.92,
-    clearcoatRoughness: 0.06,
-    envMapIntensity: 1.85
+    bumpScale: 0.0022,
+    clearcoat: 0.16,
+    clearcoatRoughness: 0.22,
+    envMapIntensity: 0.62
   });
 
-  // Stacked HBM3e / GQA Attention Die Material
+  // Stacked GQA Attention Sapphire/Coral Die Material
   const matHbmDie = new THREE.MeshPhysicalMaterial({
     color: 0xFFFFFF,
-    metalness: 0.84,
-    roughness: 0.20,
+    metalness: 0.32,
+    roughness: 0.28,
     bumpMap: siliconMaps.bumpTex,
-    bumpScale: 0.004,
-    clearcoat: 0.78,
-    clearcoatRoughness: 0.09,
-    envMapIntensity: 1.75
+    bumpScale: 0.0020,
+    clearcoat: 0.18,
+    clearcoatRoughness: 0.20,
+    envMapIntensity: 0.65
   });
 
-  // Electroplated Gold-Copper CoWoS Outlier Pin Material
+  // Burnished Copper-Bronze Outlier Interconnect Busbar Material
   const matGoldPin = new THREE.MeshPhysicalMaterial({
     color: 0xFFFFFF,
-    metalness: 0.96,
-    roughness: 0.13,
-    clearcoat: 0.35,
-    clearcoatRoughness: 0.08,
-    envMapIntensity: 2.15
+    metalness: 0.66,
+    roughness: 0.24,
+    clearcoat: 0.18,
+    clearcoatRoughness: 0.14,
+    envMapIntensity: 0.92
   });
 
-  const attnGeo = createChamferBox(0.114, 0.044, 0.224, 0.0065, 1);
-  const mlpGeo  = createChamferBox(0.134, 0.042, 0.384, 0.0070, 1);
-  const pinGeo  = new THREE.CylinderGeometry(0.026, 0.030, 0.064, 14);
+  const attnGeo = createChamferBox(0.124, 0.048, 0.240, 0.0065, 1);
+  const mlpGeo  = createChamferBox(0.136, 0.048, 0.388, 0.0070, 1);
+  const pinGeo  = createChamferBox(0.240, 0.036, 0.280, 0.0055, 1);
 
   const attnInst = new THREE.InstancedMesh(attnGeo, matHbmDie, NUM_LAYERS * ATTN_PER_L);
   const mlpInst  = new THREE.InstancedMesh(mlpGeo, matSiliconDie, NUM_LAYERS * MLP_PER_L);
   const pinInst  = new THREE.InstancedMesh(pinGeo, matGoldPin, NUM_LAYERS * PIN_PER_L);
 
-  attnInst.castShadow = true;
-  attnInst.receiveShadow = true;
-  mlpInst.castShadow = true;
-  mlpInst.receiveShadow = true;
+  // Disable wafer-on-wafer self-shadowing across 52 closely-stacked plates to eliminate muddy grey shadow-acne bands!
+  attnInst.castShadow = false;
+  attnInst.receiveShadow = false;
+  mlpInst.castShadow = false;
+  mlpInst.receiveShadow = false;
+  pinInst.castShadow = false;
+  pinInst.receiveShadow = false;
 
   attnInst.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
   mlpInst.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -2481,6 +2480,7 @@ Check: bat costs $1.05, total $1.10</div>
   let inPortal = !urlParams.has('studio');
   let stageMode = urlParams.get('mode') || 'quantize'; // 'monolith' | 'fracture' | 'quantize' | 'dive' | 'fpv'
   const fixedUParam = urlParams.has('u') ? parseFloat(urlParams.get('u')) : null;
+  const fixedYawParam = urlParams.has('yaw') ? parseFloat(urlParams.get('yaw')) : null;
   let selectedLayer = 26;
   let hoveredLayer = -1;
   let isGenerating = false;
@@ -2495,13 +2495,13 @@ Check: bat costs $1.05, total $1.10</div>
   let fpvBlend = (stageMode === 'fpv' && !inPortal) ? 1.0 : 0.0;
   let activePromptSnippet = '6,656-D RESIDUAL';
 
-  // Camera Spherical Orbit Targets (dist = 12.6 frames full Grounded Pedestal -> Top Crown with air!)
+  // Camera Spherical Orbit Targets (Poised front-hero angle so all 3 columns read cleanly with breathing room!)
   const camTarget = {
-    yaw: 0.56,
-    pitch: 0.22,
-    dist: inPortal ? 12.6 : 12.5,
+    yaw: (fixedYawParam !== null && !isNaN(fixedYawParam)) ? fixedYawParam : 0.28,
+    pitch: 0.17,
+    dist: inPortal ? 12.6 : 12.6,
     lookX: inPortal ? 0.0 : 1.08, // Shifts 3D superchip squarely into the open space between Inspector & Chat Sheet!
-    lookY: inPortal ? 0.0 : -0.10,
+    lookY: inPortal ? 0.0 : -0.06,
     lookZ: 0.0
   };
 
@@ -2587,10 +2587,10 @@ Check: bat costs $1.05, total $1.10</div>
       rigTarget.pinExtract = 1.0;
       rigTarget.layerGap = 0.09;
       rigTarget.fpvTunnel = 0.0;
-      camTarget.dist = 12.5;
-      camTarget.pitch = 0.22;
+      camTarget.dist = 12.6;
+      camTarget.pitch = 0.17;
       camTarget.lookX = lookXBase;
-      camTarget.lookY = -0.10;
+      camTarget.lookY = -0.06;
     } else if (mode === 'dive') {
       rigTarget.shellOpen = 1.35;
       rigTarget.fp16Bloated = 0.0;
@@ -2790,14 +2790,15 @@ Check: bat costs $1.05, total $1.10</div>
         <div class="fn-bit c">idx</div><div class="fn-bit c">i8</div>
       `;
     } else {
-      badge.textContent = `L${pad}` + (isDma ? ' · DMA RING' : ' · 2-BIT BULK');
-      badge.className = 'fn-badge' + (isDma ? ' emerald' : '');
+      const midOnly = isMid && !isDma;
+      badge.textContent = `L${pad}` + (isDma ? ' · DMA RING' : (midOnly ? ' · REASONING BRIDGE' : ' · 2-BIT BULK'));
+      badge.className = 'fn-badge' + (isDma ? ' emerald' : (midOnly ? ' coral' : ''));
       ratio.textContent = `112.1 MB (10.2×)`;
       title.textContent = isDma
         ? `Shard 0${shard}/04 Circular Async DMA Ring Wafer`
-        : `Shard 0${shard}/04 Crushed 2-Bit Group-64 Wafer`;
+        : (midOnly ? `Shard 0${shard}/04 Mid-Stack Deductive Bridge Wafer` : `Shard 0${shard}/04 Crushed 2-Bit Group-64 Wafer`);
       quant.textContent = `2-Bit · G=104..288 · 4w/byte`;
-      outEl.textContent = (isMid ? '512' : '384') + ` Cols · int8 Pins`;
+      outEl.textContent = (isMid ? '512' : '384') + ` Cols · int8 Bus`;
       bar.innerHTML = `
         <div class="fn-bit">w0</div><div class="fn-bit b">w1</div>
         <div class="fn-bit">w2</div><div class="fn-bit b">w3</div>
@@ -2808,16 +2809,18 @@ Check: bat costs $1.05, total $1.10</div>
   }
   updateNodeInspector(26);
 
-  // Reusable Matrix / Color Objects for Zero-GC 60FPS InstancedMesh Updates (Linear PBR Space!)
+  // Reusable Matrix / Color Objects for Zero-GC 60FPS InstancedMesh Updates (Rich Jewel-Anodized Linear PBR Space!)
   const dummyObj = new THREE.Object3D();
-  const colSpaceBlack = new THREE.Color(0x20222A).convertSRGBToLinear();
-  const colTitanium   = new THREE.Color(0xCBD0DC).convertSRGBToLinear();
-  const colRawFP16    = new THREE.Color(0xDCE0EC).convertSRGBToLinear();
-  const colBlueWave   = new THREE.Color(0x0B72E7).convertSRGBToLinear();
-  const colBlueBright = new THREE.Color(0x3B9EFF).convertSRGBToLinear();
-  const colEmerald    = new THREE.Color(0x189E58).convertSRGBToLinear();
-  const colCopperPin  = new THREE.Color(0xE5A235).convertSRGBToLinear();
-  const anchorVec3    = new THREE.Vector3();
+  const colCrownSapphire = new THREE.Color(0x0057E7).convertSRGBToLinear();
+  const colBulkSlate     = new THREE.Color(0x283144).convertSRGBToLinear();
+  const colAttnCobalt    = new THREE.Color(0x1D5BD6).convertSRGBToLinear();
+  const colCoralMid      = new THREE.Color(0xFF5A5F).convertSRGBToLinear();
+  const colRawFP16       = new THREE.Color(0x64748B).convertSRGBToLinear();
+  const colBlueWave      = new THREE.Color(0x0B72E7).convertSRGBToLinear();
+  const colBlueBright    = new THREE.Color(0x38BDF8).convertSRGBToLinear();
+  const colEmerald       = new THREE.Color(0x059669).convertSRGBToLinear();
+  const colCopperPin     = new THREE.Color(0xC86414).convertSRGBToLinear();
+  const anchorVec3       = new THREE.Vector3();
 
   // =========================================================================
   // 3B. REAL-TIME THEME ENGINE: SILVER DAYLIGHT <-> SPACE BLACK DARK MODE
@@ -2837,26 +2840,26 @@ Check: bat costs $1.05, total $1.10</div>
     // 1. Switch Dedicated Studio PMREM HDRI Softbox Rig, Tone-Mapping Exposure & CAD Floor Grids
     renderer.setClearColor(0x000000, 0);
     scene.environment = isDarkTheme ? envMapDark : envMapLight;
-    renderer.toneMappingExposure = isDarkTheme ? 1.18 : 1.08;
+    renderer.toneMappingExposure = isDarkTheme ? 1.08 : 1.00;
     cadGridLight.visible = !isDarkTheme;
     cadGridDark.visible  = isDarkTheme;
-    shadowPlate.material.opacity = isDarkTheme ? 0.92 : 0.72;
-    realShadowCatcher.material.opacity = isDarkTheme ? 0.34 : 0.14;
+    shadowPlate.material.opacity = isDarkTheme ? 0.88 : 0.58;
+    realShadowCatcher.material.opacity = isDarkTheme ? 0.26 : 0.10;
 
     compassRings.forEach(({ ring, idx }) => {
       ring.material.color.setHex(
         idx === 0
-          ? (isDarkTheme ? 0x2997FF : 0x0066CC)
-          : (isDarkTheme ? 0x2E2E3A : 0xBEBECA)
+          ? (isDarkTheme ? 0x3B82F6 : 0x0057E7)
+          : (isDarkTheme ? 0x2E3240 : 0xC4C8D4)
       );
     });
 
     // 2. Update Act I 32,000-Particle Singularity Portal Spiral Colors & Machined Astrolabe Rings
-    const pBase0 = isDarkTheme ? new THREE.Color(0xEAECEF) : new THREE.Color(0x16161B);
-    const pBase1 = isDarkTheme ? new THREE.Color(0x7C8091) : new THREE.Color(0x525665);
-    const pBlue  = isDarkTheme ? new THREE.Color(0x2997FF) : new THREE.Color(0x0066CC);
-    const pEm    = isDarkTheme ? new THREE.Color(0x30D158) : new THREE.Color(0x157F46);
-    const pCop   = isDarkTheme ? new THREE.Color(0xE5A024) : new THREE.Color(0xC6861A);
+    const pBase0 = isDarkTheme ? new THREE.Color(0xEAECEF) : new THREE.Color(0x161822);
+    const pBase1 = isDarkTheme ? new THREE.Color(0x7C8498) : new THREE.Color(0x475066);
+    const pBlue  = isDarkTheme ? new THREE.Color(0x3B82F6) : new THREE.Color(0x0057E7);
+    const pEm    = isDarkTheme ? new THREE.Color(0x10B981) : new THREE.Color(0x059669);
+    const pCop   = isDarkTheme ? new THREE.Color(0xFF5A5F) : new THREE.Color(0xE0484D);
 
     const cArr = portalGeo.attributes.aColor.array;
     for (let i = 0; i < PORTAL_COUNT; i++) {
@@ -2868,25 +2871,34 @@ Check: bat costs $1.05, total $1.10</div>
     }
     portalGeo.attributes.aColor.needsUpdate = true;
 
-    pRingInner.material.color.setHex(isDarkTheme ? 0x2997FF : 0x0066CC).convertSRGBToLinear();
-    pTicks.material.color.setHex(isDarkTheme ? 0xEAECEF : 0x16161B);
+    pRingInner.material.color.setHex(isDarkTheme ? 0x3B82F6 : 0x0057E7).convertSRGBToLinear();
+    pTicks.material.color.setHex(isDarkTheme ? 0xEAECEF : 0x161822);
     pRingOuter.material.color.setHex(isDarkTheme ? 0x8A8E9E : 0x42444E).convertSRGBToLinear();
 
-    // 3. Update Act II Hyperrealistic CNC Anodized Metals, Clearcoat Silicon Dies & Gold-Copper Pins
-    matBrushedAlum.color.setHex(isDarkTheme ? 0x4A4E5E : 0xD6DAE4).convertSRGBToLinear();
-    matAnodizedDark.color.setHex(isDarkTheme ? 0x1B1D24 : 0x20222A).convertSRGBToLinear();
-    wallWire.material.color.setHex(isDarkTheme ? 0x2997FF : 0x0066CC);
-    streamPoints.material.color.setHex(isDarkTheme ? 0x47A8FF : 0x0066CC);
+    // 3. Rich High-Contrast Anodized Palette in Both Daylight & Space Black Modes!
+    matBrushedAlum.color.setHex(isDarkTheme ? 0x52586A : 0xCFD5E2).convertSRGBToLinear();
+    matAnodizedDark.color.setHex(isDarkTheme ? 0x1E222D : 0x1F2430).convertSRGBToLinear();
+    matCopperMetal.color.setHex(isDarkTheme ? 0xE58524 : 0xC86414).convertSRGBToLinear();
+    wallWire.material.color.setHex(isDarkTheme ? 0x3B82F6 : 0x0057E7);
+    streamPoints.material.color.setHex(isDarkTheme ? 0x60A5FA : 0x0057E7);
 
-    // In Space Black mode: 4-bit Salient Thinking Crowns gleam in Platinum-Chrome (0xF2F6FF)
-    // while 2-bit bulk silicon dies gleam in Deep Space-Grey Monocrystalline Silicon (0x2B303D)!
-    colSpaceBlack.setHex(isDarkTheme ? 0xF2F6FF : 0x161820).convertSRGBToLinear();
-    colTitanium.setHex(isDarkTheme ? 0x2B303D : 0xB8C0D0).convertSRGBToLinear();
-    colRawFP16.setHex(isDarkTheme ? 0x6E768C : 0xDCE2F0).convertSRGBToLinear();
-    colBlueWave.setHex(isDarkTheme ? 0x2997FF : 0x0066CC).convertSRGBToLinear();
-    colBlueBright.setHex(isDarkTheme ? 0x5EB2FF : 0x248AFF).convertSRGBToLinear();
-    colEmerald.setHex(isDarkTheme ? 0x22C55E : 0x128A48).convertSRGBToLinear();
-    colCopperPin.setHex(isDarkTheme ? 0xF0AC3C : 0xDF9828).convertSRGBToLinear();
+    // High-contrast wafer palette:
+    // - Bulk 2-bit core: Deep Space-Indigo Slate (0x2A3244) in Light Mode so every layer pops against #F3F4F6!
+    //                    Rich Satin Gunmetal-Slate (0x3A455C) in Dark Mode so every layer stands out on #0B0B0E!
+    // - 4-bit Crowns (L00-02, L49-51): Royal Cobalt / Electric Sapphire
+    // - Mid-Stack Bridge (L24-27): Vivid Signal Coral (#FF5A5F)
+    // - 5 Async DMA Rings (L08,17,26,35,44): Deep Emerald Jade
+    // - Left GQA Attention: Crisp Cobalt Sapphire + Signal Coral accents
+    // - Right int8 Outlier Busbars: Warm Burnished Copper-Amber
+    colCrownSapphire.setHex(isDarkTheme ? 0x2E90FA : 0x0057E7).convertSRGBToLinear();
+    colBulkSlate.setHex(isDarkTheme ? 0x3A455C : 0x2A3346).convertSRGBToLinear();
+    colAttnCobalt.setHex(isDarkTheme ? 0x3B82F6 : 0x1D5BD6).convertSRGBToLinear();
+    colCoralMid.setHex(isDarkTheme ? 0xFF5A5F : 0xF04449).convertSRGBToLinear();
+    colRawFP16.setHex(isDarkTheme ? 0x64748B : 0x475569).convertSRGBToLinear();
+    colBlueWave.setHex(isDarkTheme ? 0x38BDF8 : 0x0284C7).convertSRGBToLinear();
+    colBlueBright.setHex(isDarkTheme ? 0x7DD3FC : 0x0EA5E9).convertSRGBToLinear();
+    colEmerald.setHex(isDarkTheme ? 0x10B981 : 0x059669).convertSRGBToLinear();
+    colCopperPin.setHex(isDarkTheme ? 0xF59E0B : 0xC86414).convertSRGBToLinear();
 
     cadSpriteMetas.forEach(m => renderCadSpriteCanvas(m, isDarkTheme));
     updatePromptTagText(promptTagMeta.label, isDarkTheme);
@@ -2936,9 +2948,9 @@ Check: bat costs $1.05, total $1.10</div>
       }
     }
 
-    // Gentle orbital motion when idle in exterior Studio view
-    if (!inPortal && !isDragging && fpvBlend < 0.25) {
-      camTarget.yaw += isGenerating ? 0.0028 : 0.0011;
+    // Gentle orbital motion when idle in exterior Studio view (locked when ?yaw= is specified for front inspection)
+    if (!inPortal && !isDragging && fpvBlend < 0.25 && fixedYawParam === null) {
+      camTarget.yaw += isGenerating ? 0.0024 : 0.00055;
     }
 
     // Smooth Spring Damping
@@ -3083,31 +3095,31 @@ Check: bat costs $1.05, total $1.10</div>
 
         hitSlabs[i].position.set(0, ly, 0);
 
-        // A. Left Subsystem: 8 GQA Attention Head Clusters (2x4 Grid)
-        const attnBaseX = -(0.68 + rigCurr.wingSpread * 0.52 + rigCurr.fp16Bloated * 0.45 + rigCurr.fpvTunnel * 0.16);
+        // A. Left Subsystem: 8 GQA Attention Head Clusters (2x4 Grid — Clean separation at X ≈ -1.32)
+        const attnBaseX = -(0.78 + rigCurr.wingSpread * 0.54 + rigCurr.fp16Bloated * 0.42 + rigCurr.fpvTunnel * 0.16);
         for (let h = 0; h < ATTN_PER_L; h++) {
           const col = h % 2;
           const row = Math.floor(h / 2);
-          const hx = attnBaseX + (col - 0.5) * (0.15 + rigCurr.wingSpread * 0.04);
+          const hx = attnBaseX + (col - 0.5) * (0.16 + rigCurr.wingSpread * 0.04);
           const hz = (row - 1.5) * 0.42 + popZ;
           dummyObj.position.set(hx, ly, hz);
-          dummyObj.scale.set(1, isCrown ? 1.35 : 1.0, 1);
+          dummyObj.scale.set(1, isCrown ? 1.32 : 1.0, 1);
           dummyObj.updateMatrix();
           attnInst.setMatrixAt(aIdx, dummyObj.matrix);
           attnInst.setColorAt(
             aIdx,
-            isWave ? colBlueBright : (isCrown ? colSpaceBlack : (isMid ? colBlueWave : colTitanium))
+            isWave ? colBlueBright : (isMid ? colCoralMid : (isDma ? colEmerald : (isCrown ? colCrownSapphire : colAttnCobalt)))
           );
           aIdx++;
         }
 
         // B. Center Subsystem: 24 SwiGLU MLP Matrix Voxels (6x4 Voxel Lattice!)
         //    When fpvTunnel -> 1.0, splits left 3 cols (Gate_proj) & right 3 cols (Up_proj) open into a 52-story canyon!
-        const crushedSpanX = isCrown ? 0.145 : 0.095;
+        const crushedSpanX = isCrown ? 0.145 : 0.105;
         const bloatedSpanX = 0.44;
         const spanX = crushedSpanX + (bloatedSpanX - crushedSpanX) * rigCurr.fp16Bloated;
-        const voxScaleX = (isCrown ? 0.95 : 0.62) + 1.45 * rigCurr.fp16Bloated;
-        const voxScaleY = (isCrown ? 1.35 : 0.92) + 0.45 * rigCurr.fp16Bloated;
+        const voxScaleX = (isCrown ? 0.95 : 0.72) + 1.35 * rigCurr.fp16Bloated;
+        const voxScaleY = (isCrown ? 1.32 : 0.98) + 0.42 * rigCurr.fp16Bloated;
 
         for (let m = 0; m < MLP_PER_L; m++) {
           const gx = (m % 6) - 2.5;
@@ -3119,31 +3131,31 @@ Check: bat costs $1.05, total $1.10</div>
           dummyObj.updateMatrix();
           mlpInst.setMatrixAt(mIdx, dummyObj.matrix);
 
-          let mCol = colTitanium;
+          let mCol = colBulkSlate;
           if (isWave) mCol = isDma ? colEmerald : colBlueBright;
           else if (rigCurr.fp16Bloated > 0.45) mCol = colRawFP16;
-          else if (isCrown) mCol = colSpaceBlack;
+          else if (isCrown) mCol = colCrownSapphire;
           else if (isDma) mCol = colEmerald;
+          else if (isMid) mCol = colCoralMid;
           else if (isSel) mCol = colBlueWave;
 
           mlpInst.setColorAt(mIdx, mCol);
           mIdx++;
         }
 
-        // C. Right Subsystem: 16 Salient Outlier Precision Copper Pins (4x4 Micro-Pin Array!)
-        const pinBaseX = 0.62 + rigCurr.pinExtract * 0.62 + rigCurr.fp16Bloated * 0.35 + rigCurr.fpvTunnel * 0.16;
+        // C. Right Subsystem: 4 Sleek Horizontal Burnished Copper Outlier Busbars (Zero vertical peg clutter!)
+        const pinBaseX = 0.78 + rigCurr.pinExtract * 0.54 + rigCurr.fp16Bloated * 0.35 + rigCurr.fpvTunnel * 0.16;
         for (let p = 0; p < PIN_PER_L; p++) {
-          const px = (p % 4) - 1.5;
-          const pz = Math.floor(p / 4) - 1.5;
+          const pz = (p - 1.5) * 0.44 + popZ;
           dummyObj.position.set(
-            pinBaseX + px * 0.085,
-            ly + rigCurr.pinExtract * 0.015,
-            pz * 0.42 + popZ
+            pinBaseX,
+            ly + rigCurr.pinExtract * 0.012,
+            pz
           );
-          dummyObj.scale.set(1, isCrown || isMid ? 1.45 : 1.0, 1);
+          dummyObj.scale.set(isCrown || isMid ? 1.18 : 1.0, isCrown || isMid ? 1.28 : 1.0, 1.0);
           dummyObj.updateMatrix();
           pinInst.setMatrixAt(pIdx, dummyObj.matrix);
-          pinInst.setColorAt(pIdx, isWave ? colBlueBright : colCopperPin);
+          pinInst.setColorAt(pIdx, isWave ? colBlueBright : (isMid && !isDma ? colCoralMid : colCopperPin));
           pIdx++;
         }
       }
